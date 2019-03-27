@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Formulario de Costos Misceláneos</title>
+</head>
+
+<body>
+	<h1>Formulario de Costos Misceláneos</h1>
+	<p>Ingrese todos los costos incurridos durante la demonstración. Todos los campos deben ser llenados para someter la forma</p>
+	<form action ="" method="get">
+		<div>
+			<label for="name">Nombre de Artículo: </label> <select id="name" name="article_name">
+				<option value="aceite"> Aceite </option>
+				<option value="aceite"> Aceite </option>
+				<option value="aceite"> Aceite </option>
+				<option value="aceite"> Aceite </option>
+			</select>
+		</div>
+		<div>
+			<label for="quantity">Cantidad</label> <select id="quantity" name="article_quantity">
+				<option value="aceite"> Aceite </option>
+				<option value="aceite"> Aceite </option>
+				<option value="aceite"> Aceite </option>
+				<option value="aceite"> Aceite </option>
+			</select>
+		</div>
+		<div>
+			<label for="price">Precio</label> <input type="number" id="price" name="article_price">
+		</div>
+		<div>
+			<label for="total">Total</label> <input type="number" id="total" name="articles_total" readonly>
+		</div>
+		<div>
+			<label for="photo">Evidencia de costos</label> <input type="file" id="evidence" name="article_evidence" accept="image/*" multiple>
+		</div>
+		<div class="edit_button">
+			<button type="button">Editar</button>
+		</div>
+		<div class="deny_button">
+			<button type="submit">Negar</button>
+		</div>
+		<div class="approve_button">
+			<button type="submit">Aprobar</button>
+		</div>
+	</form>
+</body>
+
+</html>

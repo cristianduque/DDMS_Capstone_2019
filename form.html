@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Formulario de Costos Misceláneos</title>
+</head>
+
+<style>
+      input:invalid {
+        border: 2px dashed red;
+      }
+      input:valid {
+        border: 2px solid green;
+      }
+      
+      form {
+      /* Just to center the form on the page */
+      margin: 0 auto;
+      width: 400px;
+      /* To see the outline of the form */
+      padding: 1em;
+      border: 1px solid #CCC;
+      border-radius: 1em;
+      }
+      
+      label {
+  	  /* To make sure that all labels have the same size and are properly         aligned */
+      display: inline-block;
+      width: 100px;
+      text-align: left;
+      }
+      
+     .submit_button, .save_button, .cancel_button {
+      display: inline-block;
+      }
+
+</style>
+
+<body>
+	<h1>Formulario de Costos Misceláneos</h1>
+	<p>Ingrese todos los costos incurridos durante la demonstración. Todos los campos deben ser llenados para someter la forma</p>
+	<form action ="" method="post">
+		<div>
+			<label for="name">Artículo: </label> <select id="name" name="article_name" required>
+            	<option selected> </option>
+				<option value="aceite"> Aceite </option>
+				<option value="servilletas"> Servilletas </option>
+				<option value="platos"> Platos </option>
+				<option value="palillos"> Palillos </option>
+			</select>
+		</div>
+        <br>
+		<div>
+			<label for="quantity">Cantidad</label> <input type="number" id="quantity" name="article_quantity" required>
+		</div>
+        <br>
+		<div>
+			<label for="price">Precio</label> <input type="number" id="price" name="article_price" required step=".01">
+		</div>
+        <br>
+		<div class="button">
+			<button type="add_button">Añadir otro Artículo</button>
+		</div>
+        <br>
+		<div>
+			<label for="total">Total: </label> <input type="number" id="total" name="articles_total" readonly>
+		</div>
+        <br>
+		<div>
+			<label for="photo">Evidencia </label> <input type="file" id="evidence" name="article_evidence" accept="image/*" multiple required>
+		</div>
+        <br>
+		<div class="submit_button">
+			<button type="submit">Someter</button>
+		</div>
+		<div class="save_button">
+			<button type="submit">Guardar</button>
+		</div>
+		<div class="cancel_button">
+			<button type="reset">Cancelar</button>
+		</div>
+
+	</form>
+</body>
+
+</html>
+<script>
+</script>
