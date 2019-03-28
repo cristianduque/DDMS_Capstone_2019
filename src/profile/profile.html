@@ -3,39 +3,122 @@
 <head>
     
     <title>Perfil</title>
+    
+    <!-- Scripts -->
+    <script type="text/javascript" src="chart.js"></script>
+    <script type="text/javascript" src="map.js"></script>
+    
+    <script type="text/javascript">
+    function buttonToogle() {
+        
+          var sales1 = document.getElementById("r1s1");
+          var sales2 = document.getElementById("r1s2");
+          var incen1 = document.getElementById("r1i1");
+          var incen2 = document.getElementById("r1i2");
+          var total  = document.getElementById("t1");
+        
+          sales1.innerHTML = "32";
+          sales2.innerHTML = "43";
+          incen1.innerHTML = "Level 1";
+          incen2.innerHTML = "Level 1";
+          total.innerHTML  = "75";
+    }
+    </script>
     <!-- production version, optimized for size and speed -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    
+    <!-- Google Charts API -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- Load and draw chart -->
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+    </script>
+
+    <!-- Page settings -->
     <meta name="viewport" content="initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Link to profile CSS -->
     <link rel="stylesheet" type="text/css" href="profile.css">
 
 </head>
     
 <body>
+    
     <h1>Profile</h1>
     <ul>
         <li><a href="profile.html">Perfil</a></li>
         <li><a href="history.html">Historial</a></li>
     </ul>
-    <h2>Alertas</h2>
     
+    <h2>Alertas</h2>
      <ul>
         <li>alerta 1</li>
         <li>alerta 2</li>
     </ul>
     
+    
+    <!-- Column Chart -->
+    <div id="chart">
+    <div id="chart_div"></div>
+    <!-- Button to toogle -->
+    <button id="toogle">Switch</button>
+    </div>
+    
+    <!-- Table -->
+    <table id="table"> 
+        
+        <tr id="table_header">
+            <th>Reporte</th>
+            <th>Familia</th>
+            <th>Ventas</th>
+            <th>Nivel de Incentivo</th>
+            <th>Ventas Total</th>
+        </tr>
+        
+        <div id="row1">
+            <tr>
+                <td rowspan="2">Reporte1</td>
+                <td>Embutidos</td><td id="r1s1">#</td><td id="r1i1">Level 1</td>
+                <td rowspan="2" id="t1">#</td>
+            </tr>
+            <tr>
+                <td>Empanados</td><td id="r1s2">#</td><td id="r1i2">Level 2</td>
+            </tr>
+        </div>
+        <div id="row2">
+            <tr>
+                <td rowspan="2">Reporte2</td>
+                <td>Embutidos</td><td>#</td><td>Level 1</td>
+                <td rowspan="2">#</td>
+            </tr>
+            <tr>
+                <td>Empanados</td><td>#</td><td>Level 2</td>
+            </tr>
+        </div>
+
+    </table>
+    
+     <!-- Button to toogle -->
+    <button id="table_test" onclick="buttonToogle()">Test</button>
+    
+    <h2>Gastos Pasados:</h2>
+        <ul>
+            <li>Gasto 1</li>
+            <li>Gasto 2</li>
+            <li>Gasto 3</li>
+            <li>Gasto 4</li>
+            <li>No record</li>
+            <li>Gasto 6</li> 
+        </ul>
+    <h2>Proximas demonstraciones:</h2>
+    <!-- Google Map -->
     <div id="map"></div>
-    <script>
-      var map;
-      function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 18.209527, lng: -67.139727},
-          zoom: 15
-        });
-      }
-    </script>
+
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDg71kA9ufXlx4ZdpQEvlii-nrKoDx-jlM&callback=initMap"
     async defer></script>
+    
 </body>
     
 </html>

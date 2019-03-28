@@ -2,17 +2,42 @@
 <html>
 <head>
     <title>Reporte</title>
+    
+        
+    <!-- Scripts -->
+    <script type="text/javascript" src="chart.js"></script>
     <!-- production version, optimized for size and speed -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+    <!-- Google Charts API -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- Load and draw chart -->
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+    </script>
+    
+ 
+    
+    <!-- Link to profile CSS -->
+    <link rel="stylesheet" type="text/css" href="history.css">
     
 </head>
+    
 <body>
-
-<h1>Profile</h1>
-<ul>
+    
+    <h1>Profile</h1>
+    <ul>
     <li><a href="profile.html">Perfil</a></li>
     <li><a href="history.html">Historial</a></li>
-</ul>
+    </ul>
+    
+    <!--Div that will hold the column chart-->
+    <div id="chart_div"></div>
+    <button id="toogle" onclick="buttonToogle()">Switch</button>
+    
+    
+    
     
 </body>
 </html>
