@@ -9,14 +9,17 @@
     <script type="text/javascript" src="map.js"></script>
     
     <script type="text/javascript">
+        
     function buttonToogle() {
         
+          var report = document.getElementById("rp1");
           var sales1 = document.getElementById("r1s1");
           var sales2 = document.getElementById("r1s2");
           var incen1 = document.getElementById("r1i1");
           var incen2 = document.getElementById("r1i2");
           var total  = document.getElementById("t1");
         
+          report.innerHTML = "Date"
           sales1.innerHTML = "32";
           sales2.innerHTML = "43";
           incen1.innerHTML = "Level 1";
@@ -60,14 +63,14 @@
     
     
     <!-- Column Chart -->
-    <div id="chart">
+    <div class="chart">
     <div id="chart_div"></div>
     <!-- Button to toogle -->
     <button id="toogle">Switch</button>
     </div>
     
     <!-- Table -->
-    <table id="table"> 
+    <table class="results"> 
         
         <tr id="table_header">
             <th>Reporte</th>
@@ -79,7 +82,7 @@
         
         <div id="row1">
             <tr>
-                <td rowspan="2">Reporte1</td>
+                <td rowspan="2" id="rp1">Reporte1</td>
                 <td>Embutidos</td><td id="r1s1">#</td><td id="r1i1">Level 1</td>
                 <td rowspan="2" id="t1">#</td>
             </tr>
@@ -89,19 +92,103 @@
         </div>
         <div id="row2">
             <tr>
-                <td rowspan="2">Reporte2</td>
-                <td>Embutidos</td><td>#</td><td>Level 1</td>
-                <td rowspan="2">#</td>
+                <td rowspan="2" id="rp2">Reporte1</td>
+                <td>Embutidos</td><td id="r2s1">#</td><td id="r2i1">Level 1</td>
+                <td rowspan="2" id="t2">#</td>
             </tr>
             <tr>
-                <td>Empanados</td><td>#</td><td>Level 2</td>
+                <td>Empanados</td><td id="r2s2">#</td><td id="r2i2">Level 2</td>
             </tr>
         </div>
+        <div id="row3">
+            <tr>
+                <td rowspan="2" id="rp3">Reporte1</td>
+                <td>Embutidos</td><td id="r3s1">#</td><td id="r3i1">Level 1</td>
+                <td rowspan="2" id="t3">#</td>
+            </tr>
+            <tr>
+                <td>Empanados</td><td id="r3s2">#</td><td id="r3i2">Level 2</td>
+            </tr>
+        </div>
+        <div id="row4">
+            <tr>
+                <td rowspan="2" id="rp4">Reporte1</td>
+                <td>Embutidos</td><td id="r4s1">#</td><td id="r4i1">Level 1</td>
+                <td rowspan="2" id="t4">#</td>
+            </tr>
+            <tr>
+                <td>Empanados</td><td id="r4s2">#</td><td id="r4i2">Level 2</td>
+            </tr>
+        </div>
+        <div id="row5">
+            <tr>
+                <td rowspan="2" id="rp5">Reporte1</td>
+                <td>Embutidos</td><td id="r5s1">#</td><td id="r5i1">Level 1</td>
+                <td rowspan="2" id="t5">#</td>
+            </tr>
+            <tr>
+                <td>Empanados</td><td id="r5s2">#</td><td id="r5i2">Level 2</td>
+            </tr>
+        </div>
+        <div id="row6">
+            <tr>
+                <td rowspan="2" id="rp6">Reporte1</td>
+                <td>Embutidos</td><td id="r6s1">#</td><td id="r6i1">Level 1</td>
+                <td rowspan="2" id="t6">#</td>
+            </tr>
+            <tr>
+                <td>Empanados</td><td id="r6s2">#</td><td id="r6i2">Level 2</td>
+            </tr>
+        </div>
+        <div id="row7">
+            <tr>
+                <td rowspan="2" id="rp7">Reporte1</td>
+                <td>Embutidos</td><td id="r7s1">#</td><td id="r7i1">Level 1</td>
+                <td rowspan="2" id="t7">#</td>
+            </tr>
+            <tr>
+                <td>Empanados</td><td id="r7s2">#</td><td id="r7i2">Level 2</td>
+            </tr>
+        </div>
+        <div id="row8">
+            <tr>
+                <td rowspan="2" id="rp8">Reporte1</td>
+                <td>Embutidos</td><td id="r8s1">#</td><td id="r8i1">Level 1</td>
+                <td rowspan="2" id="t8">#</td>
+            </tr>
+            <tr>
+                <td>Empanados</td><td id="r8s2">#</td><td id="r8i2">Level 2</td>
+            </tr>
+        </div>
+        <div id="row9">
+            <tr>
+                <td rowspan="2" id="rp9">Reporte1</td>
+                <td>Embutidos</td><td id="r9s1">#</td><td id="r9i1">Level 1</td>
+                <td rowspan="2" id="t9">#</td>
+            </tr>
+            <tr>
+                <td>Empanados</td><td id="r9s2">#</td><td id="r9i2">Level 2</td>
+            </tr>
+        </div>
+        <div id="row10">
+            <tr>
+                <td rowspan="2" id="rp10">Reporte1</td>
+                <td>Embutidos</td><td id="r10s1">#</td><td id="r10i1">Level 1</td>
+                <td rowspan="2" id="t10">#</td>
+            </tr>
+            <tr>
+                <td>Empanados</td><td id="r10s2">#</td><td id="r10i2">Level 2</td>
+            </tr>
+        </div>
+    
+        
 
     </table>
     
      <!-- Button to toogle -->
+    <div class="wrapper">
     <button id="table_test" onclick="buttonToogle()">Test</button>
+    </div>
     
     <h2>Gastos Pasados:</h2>
         <ul>
@@ -115,6 +202,13 @@
     <h2>Proximas demonstraciones:</h2>
     <!-- Google Map -->
     <div id="map"></div>
+    
+    <ul>
+        <li>demo 1</li>
+        <li>demo 2</li>
+    </ul>
+    
+    
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDg71kA9ufXlx4ZdpQEvlii-nrKoDx-jlM&callback=initMap"
     async defer></script>

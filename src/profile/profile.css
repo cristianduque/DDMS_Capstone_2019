@@ -1,3 +1,4 @@
+/* use # for id and . for class*/
 /* Optional: Makes the sample page fill the window. */
 html, body {
         height: 100%;
@@ -18,10 +19,23 @@ table, th, td {
         
       }      
 
-#chart{
-        margin-left: 30%;
+.chart{
+        margin: auto;
+        margin-left: auto;
         margin-right: auto;
-    
+}
+
+.results{
+    margin: auto;
+/*
+    margin-left: 40%;
+    margin-right: auto;
+*/
+
+}
+
+.wrapper{
+    text-align: center;
 }
 
 /* Edit button to toogle Profile Summary Chart*/
