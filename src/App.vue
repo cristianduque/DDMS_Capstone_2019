@@ -10,11 +10,11 @@
 </template>
 
 <script>
-    import Header from '../../IdeaProjects/DDMS_Capstone_2019/src/components/Header';
-    import Calendar from "../../IdeaProjects/DDMS_Capstone_2019/src/components/Calendar";
-    import Client from '../../IdeaProjects/DDMS_Capstone_2019/src/components/Client';
-    import Demonstrator from "../../IdeaProjects/DDMS_Capstone_2019/src/components/Demonstrator";
-    import Products from '../../IdeaProjects/DDMS_Capstone_2019/src/components/Products';
+    import Header from './components/Header';
+    import Calendar from "./components/Calendar";
+    import Client from './components/Client';
+    import Demonstrator from "./components/Demonstrator";
+    import Products from './components/Products';
 
     export default {
         name: 'app',
