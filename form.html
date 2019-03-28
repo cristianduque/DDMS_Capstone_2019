@@ -7,25 +7,27 @@
 </head>
 
 <style>
-      input:invalid {
+      input:invalid{
         border: 2px dashed red;
       }
-      input:valid {
+      input:valid{
         border: 2px solid green;
       }
-      
-      form {
+	  
+	  form {
       /* Just to center the form on the page */
-      margin: 0 auto;
-      width: 400px;
+      //margin: 0 auto;
+      //width: 400px;
       /* To see the outline of the form */
-      padding: 1em;
-      border: 1px solid #CCC;
-      border-radius: 1em;
+      //padding: 1em;
+      //border: 1px solid #CCC;
+      //border-radius: 1em;
       }
+	  
+	  
       
       label {
-  	  /* To make sure that all labels have the same size and are properly         aligned */
+  	  /* To make sure that all labels have the same size and are properly aligned */
       display: inline-block;
       width: 100px;
       text-align: left;
@@ -34,6 +36,11 @@
      .submit_button, .save_button, .cancel_button {
       display: inline-block;
       }
+	  
+	  fieldset{
+	  width: 400px;
+	  }
+
 
 </style>
 
@@ -41,26 +48,24 @@
 	<h1>Formulario de Costos Misceláneos</h1>
 	<p>Ingrese todos los costos incurridos durante la demonstración. Todos los campos deben ser llenados para someter la forma</p>
 	<form action ="" method="post">
-		<div>
+		<fieldset id="info">
+			<legend>Información de Artículo(s)</legend>
+			
 			<label for="name">Artículo: </label> <select id="name" name="article_name" required>
-            	<option selected> </option>
+				<option selected></option>
 				<option value="aceite"> Aceite </option>
 				<option value="servilletas"> Servilletas </option>
 				<option value="platos"> Platos </option>
 				<option value="palillos"> Palillos </option>
 			</select>
-		</div>
+			<br>
+			<label for="quantity">Cantidad: </label> <input type="number" id="quantity" name="article_quantity" required>
+			<br>
+			<label for="price">Precio: </label> <input type="number" id="price" name="article_price" required step=".01">
+		</fieldset>
         <br>
-		<div>
-			<label for="quantity">Cantidad</label> <input type="number" id="quantity" name="article_quantity" required>
-		</div>
-        <br>
-		<div>
-			<label for="price">Precio</label> <input type="number" id="price" name="article_price" required step=".01">
-		</div>
-        <br>
-		<div class="button">
-			<button type="add_button">Añadir otro Artículo</button>
+		<div class="add_button">
+			<button type="button" onclick="addFields()">Añadir otro Artículo</button>
 		</div>
         <br>
 		<div>
@@ -70,7 +75,10 @@
 		<div>
 			<label for="photo">Evidencia </label> <input type="file" id="evidence" name="article_evidence" accept="image/*" multiple required>
 		</div>
-        <br>
+		<div class="delete_button">
+			<button type="button">Borrar Foto</button>
+		</div>
+		<br>
 		<div class="submit_button">
 			<button type="submit">Someter</button>
 		</div>
@@ -86,4 +94,32 @@
 
 </html>
 <script>
+function addFields(){
+	var container = document.getElementById("info");
+	container.appendChild(document.createElement("br"));
+	container.appendChild(document.createElement("br"));
+	var name = document.createElement("label");
+	name.innerHTML = "Artículo: ";
+	container.appendChild(name);
+	var field = document.createElement("select");
+	field.setAttribute("required","true");
+	field.innerHTML = '<option selected>  </option> <option value="aceite"> Aceite </option> <option value="platos"> Platos </option> <option value="palillos"> Palillos </option>';
+	container.appendChild(field);
+	container.appendChild(document.createElement("br"));
+	var name1 = document.createElement("label");
+	name1.innerHTML = "Cantidad: ";
+	container.appendChild(name1);
+	var field1 = document.createElement("input");
+	field1.type = "number";
+	field1.setAttribute("required", "true");
+	container.appendChild(field1);
+	container.appendChild(document.createElement("br"));
+	var name2 = document.createElement("label");
+	name2.innerHTML = "Precio: ";
+	container.appendChild(name2);
+	var field2 = document.createElement("input");
+	field2.type = "number";
+	field2.setAttribute("required", "true");
+	container.appendChild(field2);
+}
 </script>
