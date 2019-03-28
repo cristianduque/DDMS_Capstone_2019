@@ -1,28 +1,33 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Header />
+    <Calendar />
+    <Client />
+    <Demonstrator />
+    <Products v-bind:product="productList" v-on=""/>
+
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+    import Header from '../../IdeaProjects/DDMS_Capstone_2019/src/components/Header';
+    import Calendar from "../../IdeaProjects/DDMS_Capstone_2019/src/components/Calendar";
+    import Client from '../../IdeaProjects/DDMS_Capstone_2019/src/components/Client';
+    import Demonstrator from "../../IdeaProjects/DDMS_Capstone_2019/src/components/Demonstrator";
+    import Products from '../../IdeaProjects/DDMS_Capstone_2019/src/components/Products';
 
-export default {
-  name: 'app',
-  components: {
-    HelloWorld
-  }
-}
+    export default {
+        name: 'app',
+        components: {
+            Products,
+            Demonstrator,
+            Calendar,
+            Header,
+            Client
+        }
+    }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style >
+
 </style>
