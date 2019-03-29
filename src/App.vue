@@ -1,29 +1,20 @@
 <template>
   <div id="app">
-    <Header />
-    <Calendar />
-    <Client />
-    <Demonstrator />
+    <CreateEvent />
     <Products v-bind:product="productList" v-on=""/>
 
   </div>
 </template>
 
 <script>
-    import Header from './components/Header';
-    import Calendar from "./components/Calendar";
-    import Client from './components/Client';
-    import Demonstrator from "./components/Demonstrator";
     import Products from './components/Products';
+    import CreateEvent from "./components/CreateEvent";
 
     export default {
         name: 'app',
         components: {
+            CreateEvent,
             Products,
-            Demonstrator,
-            Calendar,
-            Header,
-            Client
         }
     }
 </script>

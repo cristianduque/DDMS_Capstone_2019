@@ -4,7 +4,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <td><strong> Enter the products: </strong></td>
+                    <td><strong> Seleccione productos: </strong></td>
                     <td><strong> Selected: </strong></td>
                 </tr>
             </thead>
