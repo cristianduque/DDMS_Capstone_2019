@@ -7,32 +7,18 @@
     <!-- Scripts -->
     <script type="text/javascript" src="chart.js"></script>
     <script type="text/javascript" src="map.js"></script>
+    <script type="text/javascript" src="tables.js"></script>
     
-    <script type="text/javascript">
-        
-    function buttonToogle() {
-        
+    <!-- Bootstrap -->
 
-        var i;
-        for (i = 1; i < 11; i++) {
-          var report = document.getElementById("rp"+i);
-          var sales1 = document.getElementById("r"+i+"s1");
-          var sales2 = document.getElementById("r"+i+"s2");
-          var incen1 = document.getElementById("r"+i+"i1");
-          var incen2 = document.getElementById("r"+i+"i2");
-          var total  = document.getElementById("t"+i);
-        
-          report.innerHTML = "Date"
-          sales1.innerHTML = i;
-          sales2.innerHTML = i;
-          incen1.innerHTML = "Level 1";
-          incen2.innerHTML = "Level 1";
-          total.innerHTML  = i;
-        }
-    }
-    </script>
-    <!-- production version, optimized for size and speed -->
+    
+    <!-- VueJs -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    
+    <!-- Alerts -->
+    <script src="vue-swal/dist/vue-swal.js"></script>
+    <script src="https://unpkg.com/vue-swal"></script>
     
     <!-- Google Charts API -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -48,10 +34,12 @@
     
     <!-- Link to profile CSS -->
     <link rel="stylesheet" type="text/css" href="profile.css">
+    
+
 
 </head>
     
-<body>
+<body onload="getTable()">
     
     <h1>Profile</h1>
     <ul>
@@ -59,11 +47,21 @@
         <li><a href="history.html">Historial</a></li>
     </ul>
     
-    <h2>Alertas</h2>
+    <h2 id="AH!" >Alertas</h2>
+    <div id="alerts">
+    <ul>
+        <li v-for="alert in alerts">
+          {{ alert.text }}
+        </li>
+    </ul>
+    </div>
+    <script type="text/javascript" src=scripts.js></script>
+<!--
      <ul>
         <li>alerta 1</li>
         <li>alerta 2</li>
     </ul>
+-->
     
     
     <!-- Column Chart -->
@@ -189,11 +187,6 @@
 
     </table>
     
-     <!-- Button to toogle -->
-    <div class="wrapper">
-    <button id="table_test" onclick="buttonToogle()">Test</button>
-    </div>
-    
     <h2>Gastos Pasados:</h2>
         <ul>
             <li>Gasto 1</li>
@@ -216,6 +209,21 @@
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDg71kA9ufXlx4ZdpQEvlii-nrKoDx-jlM&callback=initMap"
     async defer></script>
+    
+<!--
+        <script type="text/javascript">
+        var app4 = new Vue({
+          el: '#app-4',
+          data: {
+            alerts: [
+              { text: 'Learn JavaScript' },
+              { text: 'Learn Vue' },
+              { text: 'Build something awesome' }
+            ]
+          }
+        })
+    </script>
+-->
     
 </body>
     

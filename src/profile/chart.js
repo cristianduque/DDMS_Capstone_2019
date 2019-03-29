@@ -17,6 +17,7 @@ function drawChart() {
                         ['2007/08', 4],
                         ['2008/09', 5]
                         ];
+    
         var embutidos = [['Date', 'Sales'],
                         ['2004/05', 1],
                         ['2005/06', 2],
@@ -83,14 +84,3 @@ function drawChart() {
         drawChart(); 
     
       }
-
-//// Change chart toogle button text
-//function buttonToogle() {
-//    
-//  var x = document.getElementById("toogle");
-//  if (x.innerHTML == "Empanados") {
-//    x.innerHTML = "Embutidos";
-//  } else {
-//    x.innerHTML = "Empanados";
-//  }
-//}
