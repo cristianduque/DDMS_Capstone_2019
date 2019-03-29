@@ -1,4 +1,4 @@
- var getAlerts= new Vue({
+ var alert= new Vue({
           el: '#alerts',
           data: {
             // Upcoming Demos
@@ -17,13 +17,15 @@
             updateAlert: function () {
                 var header = document.getElementById("AH!");
                 header.innerHTML += " (3)";
-        }
+            },
       },
-     
+      
       // Run functions @ page-load
       beforeMount(){
       this.updateAlert();
       this.alert();
+      
+   
  },
 })
  
