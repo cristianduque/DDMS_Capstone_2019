@@ -4,6 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Formulario de Costos Misceláneos</title>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16"></script>
 </head>
 
 <style>
@@ -13,7 +14,7 @@
       input:valid{
         border: 2px solid green;
       }
-	  
+
 	  form {
       /* Just to center the form on the page */
       //margin: 0 auto;
@@ -23,103 +24,114 @@
       //border: 1px solid #CCC;
       //border-radius: 1em;
       }
-	  
-	  
-      
+
       label {
   	  /* To make sure that all labels have the same size and are properly aligned */
       display: inline-block;
       width: 100px;
       text-align: left;
       }
-      
+
      .submit_button, .save_button, .cancel_button {
       display: inline-block;
       }
-	  
+
 	  fieldset{
 	  width: 400px;
 	  }
-
-
 </style>
 
 <body>
-	<h1>Formulario de Costos Misceláneos</h1>
-	<p>Ingrese todos los costos incurridos durante la demonstración. Todos los campos deben ser llenados para someter la forma</p>
-	<form action ="" method="post">
-		<fieldset id="info">
-			<legend>Información de Artículo(s)</legend>
-			
-			<label for="name">Artículo: </label> <select id="name" name="article_name" required>
-				<option selected></option>
-				<option value="aceite"> Aceite </option>
-				<option value="servilletas"> Servilletas </option>
-				<option value="platos"> Platos </option>
-				<option value="palillos"> Palillos </option>
-			</select>
+	<div id="app">
+		<h1>Formulario de Costos Misceláneos</h1>
+		<p>Ingrese todos los costos incurridos durante la demonstración. Todos los campos deben ser llenados para someter la forma</p>
+		<form action ="" method="post">
+			<fieldset id="info">
+				<legend>Información de Artículo(s)</legend>
+					<span v-for="n in fieldList">
+						<label for="name">Artículo: </label> <select id="name" name="article_name" v-model="n.artículo" required>
+							<option selected></option>
+							<option value="aceite"> Aceite </option>
+							<option value="servilletas"> Servilletas </option>
+							<option value="platos"> Platos </option>
+							<option value="palillos"> Palillos </option>
+						</select>
+						<br>
+						<label for="quantity">Cantidad(pqt.): </label> <input type="number" id="quantity" name="article_quantity" v-model="n.cantidad" required>
+						<br>
+						<label for="price">Precio: </label> <input type="number" @blur="calculateTotal" id="price" name="article_price" v-model="n.precio" required step=".01">
+						<br>
+					</span>
+			</fieldset>
 			<br>
-			<label for="quantity">Cantidad: </label> <input type="number" id="quantity" name="article_quantity" required>
+			<div class="add_button">
+				<button type="button" @click="addFields">Añadir otro Artículo</button>
+			</div>
 			<br>
-			<label for="price">Precio: </label> <input type="number" id="price" name="article_price" required step=".01">
-		</fieldset>
-        <br>
-		<div class="add_button">
-			<button type="button" onclick="addFields()">Añadir otro Artículo</button>
-		</div>
-        <br>
-		<div>
-			<label for="total">Total: </label> <input type="number" id="total" name="articles_total" readonly>
-		</div>
-        <br>
-		<div>
-			<label for="photo">Evidencia </label> <input type="file" id="evidence" name="article_evidence" accept="image/*" multiple required>
-		</div>
-		<div class="delete_button">
-			<button type="button">Borrar Foto</button>
-		</div>
-		<br>
-		<div class="submit_button">
-			<button type="submit">Someter</button>
-		</div>
-		<div class="save_button">
-			<button type="submit">Guardar</button>
-		</div>
-		<div class="cancel_button">
-			<button type="reset">Cancelar</button>
-		</div>
-
-	</form>
+			<div>
+				<label for="total">Total: </label> <input type="number" id="total" name="articles_total" required step=".01" readonly>
+			</div>
+			<br>
+			<div>
+				<label for="photo">Evidencia </label> <input type="file" id="evidence" name="article_evidence" v-model="evidence" accept="image/*" @change="addPhoto" multiple required>
+        <img v-bind:src="evidence" alt="evidence"></img>
+			</div>
+			<div class="delete_button">
+				<button type="button">Borrar Foto</button>
+			</div>
+			<br>
+			<div class="submit_button">
+				<button type="submit">Someter</button>
+			</div>
+			<div class="save_button">
+				<button type="submit">Guardar</button>
+			</div>
+			<div class="cancel_button">
+				<button type="reset">Cancelar</button>
+			</div>
+		</form>
+	</div>
 </body>
 
 </html>
-<script>
-function addFields(){
-	var container = document.getElementById("info");
-	container.appendChild(document.createElement("br"));
-	container.appendChild(document.createElement("br"));
-	var name = document.createElement("label");
-	name.innerHTML = "Artículo: ";
-	container.appendChild(name);
-	var field = document.createElement("select");
-	field.setAttribute("required","true");
-	field.innerHTML = '<option selected>  </option> <option value="aceite"> Aceite </option> <option value="platos"> Platos </option> <option value="palillos"> Palillos </option>';
-	container.appendChild(field);
-	container.appendChild(document.createElement("br"));
-	var name1 = document.createElement("label");
-	name1.innerHTML = "Cantidad: ";
-	container.appendChild(name1);
-	var field1 = document.createElement("input");
-	field1.type = "number";
-	field1.setAttribute("required", "true");
-	container.appendChild(field1);
-	container.appendChild(document.createElement("br"));
-	var name2 = document.createElement("label");
-	name2.innerHTML = "Precio: ";
-	container.appendChild(name2);
-	var field2 = document.createElement("input");
-	field2.type = "number";
-	field2.setAttribute("required", "true");
-	container.appendChild(field2);
-}
+<script type="text/javascript">
+
+var vueApp = new Vue({
+	el: "#app",
+	data: {
+		 //message: "Hello World!!!"
+		 evidenceList:[],
+		 fieldList: [{
+			 artículo: "",
+			 cantidad: "",
+			 precio: "",
+		 }]
+	},
+	methods: {
+		addFields: function(){
+			var elem = document.getElementById('info');
+			var space = document.createElement('br');
+			elem.appendChild(space);
+			this.fieldList.push({
+				artículo: "",
+				cantidad: "",
+				precio: "",
+			});
+			console.log(this.fieldList);
+		},
+
+		calculateTotal: function(){
+			var total = 0;
+			for(var i = 0; i<this.fieldList.length; i++){
+				total = this.fieldList[i].cantidad * this.fieldList[i].precio + total;
+			}
+			var calculatedTotal = document.getElementById('total');
+			calculatedTotal.setAttribute("value", total);
+		}
+	},
+
+	addPhoto: function(){
+		this.evidenceList.push
+	}
+});
 </script>
