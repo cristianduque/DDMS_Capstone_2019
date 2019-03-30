@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
+    
+  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+ 
+    <div id="app">
+    <v-app>
+      <v-content>
+        <v-container>
+          <template>
+              <v-card-title>
+              Reportes
+              <v-spacer></v-spacer>
+
+        </v-card-title>
+            
+            <v-data-table :headers="headers" :items="reports" :search="search" :pagination.sync="pagination" item-key="name" class="elevation-1">
+              <template slot="items" slot-scope="props">
+                <tr @click="rowClick(props.item.name)">
+                  <td rowspan="2">{{ props.item.title }}</td>
+                  <td class="text-xs-center">Embutidos</td>
+                  <td class="text-xs-center">{{ props.item.sale1 }}</td>
+                  <td class="text-xs-center">{{ props.item.ince1 }}</td>
+                  <td rowspan ="2" class="text-xs-center">{{props.item.total}}</td>
+                </tr>
+                <tr>
+                  <td class="text-xs-center">Empanados</td>
+                  <td class="text-xs-center">{{ props.item.sale2 }}</td>
+                  <td class="text-xs-center">{{ props.item.ince2 }}</td>
+                </tr>
+              </template>
+                
+            <div class="text-xs-center pt-2">
+              <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
+            </div>
+            <!-- Detects if there isn't any data and display accordingly -->
+             <template v-slot:no-data>
+                    <v-alert :value="true" color="error" icon="warning">Sorry, nothing to display here :(</v-alert>
+            </template>
+                
+            <!-- Alert if nothing found -->
+            <template v-slot:no-results >
+                <v-alert :value="true" color="error" icon="warning">
+                Your search for "{{ search }}" found no results.
+                </v-alert>
+            </template>
+            </v-data-table>
+          </template>
+        </v-container>
+
+      </v-content>
+    </v-app>
+  </div>
+    
+    
+  <script>
+    var vm = new Vue({
+      el: '#app',
+      methods: {
+        rowClick(name) {
+          this.selectedItem = name;
+        }
+      },
+      data: function () {
+        return {
+            
+          search: '',
+          pagination: {},
+          headers: [
+            {
+              text: 'Reporte',
+              align: 'left',
+              sortable: false,
+              value: 'title',
+              width: '25%'
+            },
+            { text: 'Familia', value: 'prod', width: '15%' },
+            { text: 'Ventas', value: 'sale1', width: '15%' },
+            { text: 'Nivel de Incentivo', value: 'ince1', width: '16%' },
+            { text: 'Total de Ventas', value: 'total', width: '16%' },
+        
+          ],
+          reports: [
+            {
+              value: false,
+              title: 'Reporte 1',
+              sale1: 23,
+              sale2: 25,
+              ince1: 1,
+              ince2: 4,
+              total: 45,
+
+            },
+            
+            
+          ]
+        }
+      }
+    })
+  </script>
+
+
+    
+</body>
+</html>

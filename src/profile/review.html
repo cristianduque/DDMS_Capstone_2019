@@ -1,42 +1,370 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Reporte</title>
+    <title>Review</title>
     
-        
-    <!-- Scripts -->
-    <script type="text/javascript" src="chart.js"></script>
-    <!-- production version, optimized for size and speed -->
+    <!-- VueJs -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    
+    <!-- Vuetify -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
 
     <!-- Google Charts API -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <!-- Load and draw chart -->
+    
+    <!-- Embutidos Donut Chart -->
     <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
+      google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawEmbutidos);
+        
+        function drawEmbutidos() {
+        var data = google.visualization.arrayToDataTable([
+          ['Categoria', 'Ventas'],
+          ['Embutidos',     20],
+          ['Total',      80]
+        ]);
+
+        var options = {
+          title: '',
+          legend: 'none',
+          pieSliceText: 'value',
+          pieStartAngle: 180,
+          pieHole: 0.4,
+          tooltip: { trigger: 'none' },
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('embutidos'));
+        chart.draw(data, options);
+      }
     </script>
     
- 
+    <!-- Empanados Donut Chart  -->
+    <script type="text/javascript">
+      google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawEmpanados);
+        
+        function drawEmpanados() {
+        var data = google.visualization.arrayToDataTable([
+          ['Categoria', 'Ventas'],
+          ['Embutidos',     35],
+          ['Total',      65]
+        ]);
+
+        var options = {
+          title: '',
+          legend: 'none',
+          pieSliceText: 'value',
+          pieStartAngle: 180,
+          pieHole: 0.4,
+          tooltip: { trigger: 'none' },
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('empanados'));
+        chart.draw(data, options);
+      }
+    </script>
     
     <!-- Link to profile CSS -->
-    <link rel="stylesheet" type="text/css" href="history.css">
+    <link rel="stylesheet" type="text/css" href="review.css">
+    
+    
     
 </head>
     
 <body>
     
+    <!-- Header -->
     <h1>Profile</h1>
     <ul>
-    <li><a href="profile.html">Perfil</a></li>
-    <li><a href="history.html">Historial</a></li>
+        <li><a href="profile.html">Perfil</a></li>
+        <li><a href="history.html">Historial</a></li>
     </ul>
     
-    <!--Div that will hold the column chart-->
-    <div id="chart_div"></div>
-    <button id="toogle" onclick="buttonToogle()">Switch</button>
+    <!-- Get Report Title -->
+    <h2 id="reporte">Reporte</h2>
+    <div id = "report"></div>
+    <script>
+        var report= new Vue({
+          el: '#report',
+          methods: {
+            // Get Report Name
+            getName: function () {
+                var header = document.getElementById("reporte");
+                header.innerHTML = "Supermercado Colegio - Feb 28";
+            },
+      },
+      
+      // Run functions @ page-load
+      beforeMount(){
+      this.getName();
+   
+ },
+})</script>
     
+    <!-- Donut Charts -->
+     <div id="embutidos" style="width: 900px; height: 405px;"></div>
+     <p>Embutidos</p>
+     <div id="empanados" style="width: 900px; height: 405px;"></div>
+     <p>Empanados</p>
+
+    <h2>Localización:</h2>
+    <!-- Google Map w/ Marker -->
+    <div id="map"></div>
+     <script type="text/javascript">
+          var map;
+          function initMap() {
+
+              // Center of Map (should be upcoming demo)
+              var colegio = {lat: 18.209527, lng: -67.139727};
+              map = new google.maps.Map(document.getElementById('map'), {center: colegio,zoom: 15});
+              //Marker
+              var marker = new google.maps.Marker({position: colegio, map: map});
+          }
+
+        </script>
+     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDg71kA9ufXlx4ZdpQEvlii-nrKoDx-jlM&callback=initMap" async defer></script> 
+
+    <!-- Work Hours Table -->
+    <div id="hours">
+    <v-app>
+      <v-content>
+        <v-container>
+          <template>
+              <v-card-title>
+              Horas Trabajadas
+              </v-card-title>
+            <v-spacer></v-spacer>
+            <v-data-table :headers="headers" :items="reports"  :hide-actions="true"  >
+              <template slot="items" slot-scope="props">
+                <tr @click="rowClick(props.item.name)">
+                  <td>{{ props.item.name }}</td>
+                  <td class="text-xs-center">{{ props.item.entrance }}</td>
+                  <td class="text-xs-center">{{ props.item.exit }}</td>
+                </tr>
+              </template>
+                
+            <!-- Detects if there isn't any data and display accordingly -->
+             <template v-slot:no-data>
+                    <v-alert :value="true" color="error" icon="warning">Sorry, nothing to display here :(</v-alert>
+            </template>
+                
+            </v-data-table>
+          </template>
+        </v-container>
+
+      </v-content>
+    </v-app>
+  </div>
+    <script>
+        var vm = new Vue({
+      el: '#hours',
+      data: function () {
+        return {
+            
+          headers: [
+            {
+              text: '',
+              align: 'left',
+              sortable: false,
+              value: 'name',
+              width: '25%'
+            },
+            { text: 'Entrada', value: 'entrance', width: '15%',sortable: false, align: 'center', },
+            { text: 'Salida', value: 'exit', width: '15%',sortable: false, align: 'center', },
+           
+          ],
+          reports: [
+            {
+              value: false,
+              name: 'Horas Establecidas',
+              entrance: '11:00',
+              exit: "4:00",
+            },
+                        {
+              value: false,
+              name: 'Horas Registradas',
+              entrance: '11:00',
+              exit: "4:02",
+            },
+          ]
+        }
+      }
+    })
+    </script>
     
+    <!-- Products Sold -->
+    <div id="products">
+    <v-app>
+      <v-content>
+        <v-container>
+          <template>
+              <v-card-title>
+              Productos Vendidos
+              </v-card-title>
+            <v-spacer></v-spacer>
+            <v-data-table :headers="headers" :items="reports"  :hide-actions="true"  >
+              <template slot="items" slot-scope="props">
+                <tr @click="rowClick(props.item.name)">
+                  <td>{{ props.item.name }}</td>
+                  <td class="text-xs-center">{{ props.item.sold }}</td>
+                </tr>
+              </template>
+                
+            <!-- Detects if there isn't any data and display accordingly -->
+             <template v-slot:no-data>
+                    <v-alert :value="true" color="error" icon="warning">Sorry, nothing to display here :(</v-alert>
+            </template>
+                
+            </v-data-table>
+          </template>
+        </v-container>
+
+      </v-content>
+    </v-app>
+  </div>
+    <script>
+        var vm = new Vue({
+      el: '#products',
+     
+      data: function () {
+        return {
+            
+          headers: [
+            {
+              text: '',
+              align: 'left',
+              sortable: false,
+              value: 'name',
+              width: '25%'
+            },
+            { text: 'Vendidos', value: 'sold', width: '15%',sortable: false, align: 'center', },
+            
+           
+          ],
+          reports: [
+            {
+              value: false,
+              name: 'Producto 1',
+              sold: 35,
+            },
+            {
+              value: false,
+              name: 'Producto 2',
+              sold: 45,
+            },
+                        {
+              value: false,
+              name: 'Producto 3',
+              sold: 10,
+            },
+          ]
+        }
+      }
+    })
+    </script>
+    
+     <!-- People Attended -->
+    <div id="attendance">
+    <v-app>
+      <v-content>
+        <v-container>
+          <template>
+              <v-card-title>
+              Personas Attendida
+              </v-card-title>
+            <v-spacer></v-spacer>
+            <v-data-table :headers="headers" :items="reports" :hide-actions="true"  >
+              <template slot="items" slot-scope="props">
+                <tr @click="rowClick(props.item.name)">
+                  <td>{{ props.item.name }}</td>
+                  <td class="text-xs-center">{{ props.item.attended }}</td>
+                </tr>
+              </template>
+                
+            <!-- Detects if there isn't any data and display accordingly -->
+             <template v-slot:no-data>
+                    <v-alert :value="true" color="error" icon="warning">Sorry, nothing to display here :(</v-alert>
+            </template>
+                
+            </v-data-table>
+          </template>
+        </v-container>
+
+      </v-content>
+    </v-app>
+  </div>
+    <script>
+        var vm = new Vue({
+      el: '#attendance',
+     
+      data: function () {
+        return {
+            
+          headers: [
+            {
+              text: '',
+              align: 'left',
+              sortable: false,
+              value: 'name',
+              width: '25%'
+            },
+            { text: 'Total de personas atendidas', value: 'attended', width: '15%',sortable: false, align: 'center', },
+            
+           
+          ],
+          reports: [
+            {
+              value: false,
+              name: 'Hora 1',
+              attended: 35,
+            },
+            {
+              value: false,
+              name: 'Hora 2',
+              attended: 35,
+            },
+            {
+              value: false,
+              name: 'Hora 3',
+              attended: 35,
+            },
+            {
+              value: false,
+              name: 'Hora 4',
+              attended: 35,
+            },
+            {
+              value: false,
+              name: 'Hora 5',
+              attended: 35,
+            },
+
+          ]
+        }
+      }
+    })
+    </script>
+    
+    <!-- Miscellaneous -->
+    <div id="add">
+      <v-app id="inspire">
+        <div class="text-xs-center">
+          <v-btn fab dark color="green">
+            <v-icon dark>add</v-icon>
+          </v-btn>
+          <p>Add Miscellaneous</p>
+        </div>
+      </v-app>       
+    </div>
+    <script>
+        new Vue({
+            el: '#add',
+        })
+    </script>
     
     
 </body>

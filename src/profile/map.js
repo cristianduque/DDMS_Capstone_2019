@@ -1,7 +1,9 @@
-      var map;
+  var map;
       function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 18.209527, lng: -67.139727},
-          zoom: 15
-        });
+          
+          // Center of Map (should be upcoming demo)
+          var colegio = {lat: 18.209527, lng: -67.139727};
+          map = new google.maps.Map(document.getElementById('map'), {center: colegio,zoom: 15});
+          //Markers of next demos
+          var marker = new google.maps.Marker({position: colegio, map: map});
       }

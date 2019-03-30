@@ -8,8 +8,8 @@
               { text: 'In 1 week' }
             ]
           },
-         methods: {
-             // Current day demo
+          methods: {
+             // Current day demo message
              alert() {
               this.$swal("Demo hoy!", "Supermercado Colegial", "info", );
             },
@@ -28,4 +28,6 @@
    
  },
 })
+ 
+
  
