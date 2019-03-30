@@ -8,7 +8,11 @@
 
         <div>
             <form class="date">
-                Seleccione la hora y fecha de la demostracion: <input type="date" name="date">
+                Seleccione la fecha de la demostracion: <input type="date" name="date">
+            </form>
+
+            <form class="hour">
+                Seleccione la hora de la demostracion: <input type="time" name="time">
             </form>
         </div>
 
@@ -47,6 +51,29 @@
             </form>
         </div>
 
+        <div>
+            <form class="multiplier"> Seleccione el multiplicador:
+                <input type="number">
+            </form>
+        </div>
+
+        <div>
+            <form class="approval"> Seleccione las personas del proceso de aprobacion:
+                    <select name="first-employee"> 1.
+                        <option value="Luis"> Luis </option>
+                    </select>
+                <br/>
+                    <select name="second-employee"> 2.
+                        <option value="Damaris"> Damaris </option>
+                    </select>
+                <br/>
+                    <select name="third-employee"> 3.
+                        <option value="Roberto"> Roberto </option>
+                    </select>
+
+            </form>
+        </div>
+
     </div>
 
 
@@ -75,6 +102,10 @@
         text-align: center;
     }
 
+    .hour {
+        text-align: center;
+    }
+
     .client {
         line-height: 40pt;
         padding-bottom:  auto !important;
@@ -88,6 +119,18 @@
     }
 
     .products {
+        line-height: 30pt;
+        padding-bottom: auto !important;
+        text-align: center !important;
+    }
+
+    .multiplier {
+        line-height: 30pt;
+        padding-bottom: auto !important;
+        text-align: center !important;
+    }
+
+    .approval {
         line-height: 30pt;
         padding-bottom: auto !important;
         text-align: center !important;

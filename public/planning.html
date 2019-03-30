@@ -43,6 +43,12 @@
             text-align: center;
         }
 
+        .hour {
+            line-height: 40pt;
+            padding-bottom:  auto !important;
+            text-align: center !important;
+        }
+
         .client {
             line-height: 40pt;
             padding-bottom:  auto !important;
@@ -60,6 +66,18 @@
             padding-bottom: auto !important;
             text-align: center !important;
         }
+
+        .multiplier {
+            line-height: 30pt;
+            padding-bottom: auto !important;
+            text-align: center !important;
+        }
+
+        .approval {
+            line-height: 30pt;
+            padding-bottom: auto !important;
+            text-align: center !important;
+        }
     </style>
 </head>
 <body>
@@ -69,7 +87,7 @@
     <nav>
         <!--<router-link to = "/">Home</router-link>-->
         <router-link to = "/CreateEvent">
-            <button id="create-event-button" class="foo bar">Create Event</button>
+            <button id="create-event-button">Create Event</button>
         </router-link>
         <router-link to = "/ManageEvent">
             <button id="manage-event-button"> Manage Event</button>
@@ -104,7 +122,11 @@
         '\n' +
         '        <div>\n' +
         '            <form class="date">\n' +
-        '                Seleccione la hora y fecha de la demostracion: <input type="date" name="date">\n' +
+        '                Seleccione la fecha de la demostracion: <input type="date" name="date">\n' +
+        '            </form>\n' +
+        '\n' +
+        '            <form class="hour">\n' +
+        '                Seleccione la hora de la demostracion: <input type="time" name="time">\n' +
         '            </form>\n' +
         '        </div>\n' +
         '\n' +
@@ -140,6 +162,29 @@
         '                <br/>\n' +
         '                <input type="checkbox"> Carne de embutido\n' +
         '                <br/>\n' +
+        '            </form>\n' +
+        '        </div>\n' +
+        '\n' +
+        '        <div>\n' +
+        '            <form class="multiplier"> Seleccione el multiplicador:\n' +
+        '                <input type="number">\n' +
+        '            </form>\n' +
+        '        </div>\n' +
+        '\n' +
+        '        <div>\n' +
+        '            <form class="approval"> Seleccione las personas del proceso de aprobacion:\n' +
+        '                    <select name="first-employee"> 1.\n' +
+        '                        <option value="Luis"> Luis </option>\n' +
+        '                    </select>\n' +
+        '                <br/>\n' +
+        '                    <select name="second-employee"> 2.\n' +
+        '                        <option value="Damaris"> Damaris </option>\n' +
+        '                    </select>\n' +
+        '                <br/>\n' +
+        '                    <select name="third-employee"> 3.\n' +
+        '                        <option value="Roberto"> Roberto </option>\n' +
+        '                    </select>\n' +
+        '\n' +
         '            </form>\n' +
         '        </div>\n' +
         '\n' +
