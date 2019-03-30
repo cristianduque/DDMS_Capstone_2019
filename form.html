@@ -5,6 +5,9 @@
 	<meta charset="utf-8">
 	<title>Formulario de Costos Misceláneos</title>
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
 </head>
 
 <style>
@@ -69,25 +72,25 @@
 			</div>
 			<br>
 			<div>
-				<label for="total">Total: </label> <input type="number" id="total" name="articles_total" required step=".01" readonly>
+				<label for="total">Total: </label> <input type="number" id="total" name="articles_total" readonly>
 			</div>
 			<br>
 			<div>
-				<label for="photo">Evidencia </label> <input type="file" id="evidence" name="article_evidence" v-model="evidence" accept="image/*" @change="addPhoto" multiple required>
-        <img v-bind:src="evidence" alt="evidence"></img>
+				<label for="photo">Evidencia </label> <input type="file" id="evidence" name="article_evidence"  accept="image/*" multiple required>
+
 			</div>
 			<div class="delete_button">
-				<button type="button">Borrar Foto</button>
+				<button type="button" @click="alert">Borrar Foto</button>
 			</div>
 			<br>
 			<div class="submit_button">
-				<button type="submit">Someter</button>
+				<button type="button" @click="alert('submit')">Someter</button>
 			</div>
 			<div class="save_button">
-				<button type="submit">Guardar</button>
+				<button type="button" @click="alert('save')">Guardar</button>
 			</div>
 			<div class="cancel_button">
-				<button type="reset">Cancelar</button>
+				<button type="button" @click="alert('cancel')">Cancelar</button>
 			</div>
 		</form>
 	</div>
@@ -100,7 +103,6 @@ var vueApp = new Vue({
 	el: "#app",
 	data: {
 		 //message: "Hello World!!!"
-		 evidenceList:[],
 		 fieldList: [{
 			 artículo: "",
 			 cantidad: "",
@@ -117,7 +119,7 @@ var vueApp = new Vue({
 				cantidad: "",
 				precio: "",
 			});
-			console.log(this.fieldList);
+			//console.log(this.fieldList);
 		},
 
 		calculateTotal: function(){
@@ -127,11 +129,23 @@ var vueApp = new Vue({
 			}
 			var calculatedTotal = document.getElementById('total');
 			calculatedTotal.setAttribute("value", total);
-		}
-	},
+		},
 
-	addPhoto: function(){
-		this.evidenceList.push
+		alert: function(text){
+			if(text == 'cancel'){
+				swal("Warning!!!","Are you sure you want to cancel the form?", "warning",{
+					buttons: ["No","Yes"]
+				});
+			}else if(text == 'submit'){
+				swal("Warning!!!","Are you sure you want to submit the form?", "warning",{
+					buttons: ["No","Yes"]
+				});
+			}else{
+				swal("Warning!!!","Are you sure you want to save the form?", "warning",{
+					buttons: ["No","Yes"]
+				});
+			}
+		}
 	}
 });
 </script>
