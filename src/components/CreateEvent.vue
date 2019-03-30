@@ -35,11 +35,21 @@
         </div>
 
         <div>
-
+            <form class="products"> Seleccione los productos:
+                <input type="checkbox"> Carne empanada de pollo
+                <br/>
+                <input type="checkbox"> Carne de bistec
+                <br/>
+                <input type="checkbox"> Carne de Salchicha
+                <br/>
+                <input type="checkbox"> Carne de embutido
+                <br/>
+            </form>
         </div>
 
-
     </div>
+
+
 
 </template>
 
@@ -76,4 +86,11 @@
         padding-bottom: auto !important;
         text-align: center !important;
     }
+
+    .products {
+        line-height: 30pt;
+        padding-bottom: auto !important;
+        text-align: center !important;
+    }
+
 </style>

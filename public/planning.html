@@ -38,13 +38,34 @@
             margin-right: 45px;
             font-size: 35px;
         }
+
+        .date {
+            text-align: center;
+        }
+
+        .client {
+            line-height: 40pt;
+            padding-bottom:  auto !important;
+            text-align: center !important;
+        }
+
+        .demonstrator {
+            line-height: 30pt;
+            padding-bottom: auto !important;
+            text-align: center !important;
+        }
+
+        .products {
+            line-height: 30pt;
+            padding-bottom: auto !important;
+            text-align: center !important;
+        }
     </style>
 </head>
 <body>
 <div id="app">
     <img alt="La Aguadillana logo" src="https://aguadillana.sharepoint.com/DDMS/Shared%20Documents/img/DDMSLogo.png">
-    <!--<h1>{{message}}</h1>
-    <img alt="La Aguadillana logo" src="img/LaAguadillanaLogo.png">-->
+
     <nav>
         <!--<router-link to = "/">Home</router-link>-->
         <router-link to = "/CreateEvent">
@@ -74,8 +95,55 @@
                 count:0
             }
         },
-        template: '<div> <h1> Hello CreateEvent! </h1></div>'
-
+        template: '<div class="planning-form">\n' +
+        '        <div>\n' +
+        '            <header class="header">\n' +
+        '                <h1>La Aguadillana </h1>\n' +
+        '            </header>\n' +
+        '        </div>\n' +
+        '\n' +
+        '        <div>\n' +
+        '            <form class="date">\n' +
+        '                Seleccione la hora y fecha de la demostracion: <input type="date" name="date">\n' +
+        '            </form>\n' +
+        '        </div>\n' +
+        '\n' +
+        '        <div>\n' +
+        '            <form class="client"> Seleccione el cliente:\n' +
+        '                <select name="cars">\n' +
+        '                    <option value="volvo">Volvo</option>\n' +
+        '                    <option value="saab">Saab</option>\n' +
+        '                    <option value="fiat">Fiat</option>\n' +
+        '                    <option value="audi">Audi</option>\n' +
+        '                </select>\n' +
+        '            </form>\n' +
+        '        </div>\n' +
+        '\n' +
+        '        <div>\n' +
+        '            <form class="demonstrator"> Seleccione la demostradora:\n' +
+        '                <select name="cars">\n' +
+        '                    <option value="volvo">Volvo</option>\n' +
+        '                    <option value="saab">Saab</option>\n' +
+        '                    <option value="fiat">Fiat</option>\n' +
+        '                    <option value="audi">Audi</option>\n' +
+        '                </select>\n' +
+        '            </form>\n' +
+        '        </div>\n' +
+        '\n' +
+        '        <div>\n' +
+        '            <form class="products"> Seleccione los productos:\n' +
+        '                <input type="checkbox"> Carne empanada de pollo\n' +
+        '                <br/>\n' +
+        '                <input type="checkbox"> Carne de bistec\n' +
+        '                <br/>\n' +
+        '                <input type="checkbox"> Carne de Salchicha\n' +
+        '                <br/>\n' +
+        '                <input type="checkbox"> Carne de embutido\n' +
+        '                <br/>\n' +
+        '            </form>\n' +
+        '        </div>\n' +
+        '\n' +
+        '    </div>'
     });
     var ManageEvent =  Vue.component('ManageEvent', {
         data: function (){
