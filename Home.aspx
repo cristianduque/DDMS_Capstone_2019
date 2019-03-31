@@ -29,7 +29,7 @@
     padding-top: 50px;
   }
 
-  nav {
+/*  nav {
     padding: 20px 20px 20px 0;
   }
 
@@ -42,7 +42,7 @@
     font-weight: bold;
     margin-right: 45px;
     font-size: 35px;
-  }
+  }*/
   </style>
   </head>
   <body>
@@ -50,13 +50,13 @@
       <img alt="La Aguadillana logo" src="https://aguadillana.sharepoint.com/DDMS/Shared%20Documents/img/DDMSLogo.png">
       <!--<h1>{{message}}</h1>
       <img alt="La Aguadillana logo" src="img/LaAguadillanaLogo.png">-->
-      <nav>
+      <nav class="nav nav-pills nav-fill">
         <!--<router-link to = "/">Home</router-link>-->
-        <router-link to = "/Planning">Planning</router-link>
-        <router-link to = "/ManageLists">Manage Lists</router-link>
-        <router-link to = "/Approvals">Approvals</router-link>
-        <router-link to = "/Report">Report</router-link>
-        <a href="https://aguadillana.sharepoint.com/DDMS/SitePages/Forms/ByAuthor.aspx" target="_blank" rel="noopener">Settings</a>
+        <router-link class="nav-item nav-link active" to = "/Planning">Planning</router-link>
+        <router-link class="nav-item nav-link" to = "/ManageLists">Manage Lists</router-link>
+        <router-link class="nav-item nav-link" to = "/Approvals">Approvals</router-link>
+        <router-link class="nav-item nav-link" to = "/Report">Report</router-link>
+        <a  class="nav-item nav-link" href="https://aguadillana.sharepoint.com/DDMS/SitePages/Forms/ByAuthor.aspx" target="_blank" rel="noopener">Settings</a>
       </nav>
 
       <!--<Approvals></Approvals>-->

@@ -58,17 +58,18 @@
        <router-view></router-view>
        <table>
 <tr>
-    <th>Title</th>
+    <th>Email</th>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Phone</th>
 </tr>
 <tr v-for="user in users">
     <td>{{ user.Title }}</td>
+    <td>{{user.First_x0020_Name}}</td>
+    <td>{{user.Last_x0020_Name}}</td>
+    <td>{{ user.Phone }}</td>
 </tr>
 </table>
-<form v-on:submit = "postListData"  action="home.aspx" method="post">
-  <input v-model="Title" placeholder="Login">
-     <button type="submit">Submitr</button>
-
-</form>
     </div>
     <script type="text/javascript">
       var Home = Vue.component('Home', {
@@ -127,8 +128,7 @@
   router,
   data: {
     message: "Data Demonstration Management System",
-    users: [],
-    Title:""
+    users: []
   },
   created: function(){
         this.getListData();
@@ -147,24 +147,7 @@
               console.log(response.data.value);
               vm.users = response.data.value
             });
-       },
-       postListData: function(){
-         $.ajax({
-       url: "https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items",
-       type: "POST",
-       headers: {
-           "accept": "application/json;odata=verbose",
-           "X-RequestDigest": $("#__REQUESTDIGEST").val(),
-           "content-Type": "application/json;odata=verbose"
-       },
-       data: JSON.stringify(data.Title),
-       success: function (data) {
-           console.log(data);
-       },
-       error: function (error) {
-           alert(JSON.stringify(error));
        }
-   });
    }
 
 

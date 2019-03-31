@@ -7,6 +7,10 @@
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16"></script>
   <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
   <style>
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -64,9 +68,9 @@
     <td>{{ user.Title }}</td>
 </tr>
 </table>
-<form v-on:submit = "postListData"  action="home.aspx" method="post">
+<form v-on:submit = "postListData"  method="post">
   <input v-model="Title" placeholder="Login">
-     <button type="submit">Submitr</button>
+     <button type="submit">Submit</button>
 
 </form>
     </div>
@@ -128,10 +132,11 @@
   data: {
     message: "Data Demonstration Management System",
     users: [],
-    Title:""
+    Title:"hola"
   },
   created: function(){
         this.getListData();
+        this.postListData();
     },
   methods: {
        getListData: function(){
@@ -149,23 +154,30 @@
             });
        },
        postListData: function(){
-         $.ajax({
-       url: "https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items",
-       type: "POST",
-       headers: {
-           "accept": "application/json;odata=verbose",
-           "X-RequestDigest": $("#__REQUESTDIGEST").val(),
-           "content-Type": "application/json;odata=verbose"
-       },
-       data: JSON.stringify(data.Title),
-       success: function (data) {
-           console.log(data);
-       },
-       error: function (error) {
-           alert(JSON.stringify(error));
-       }
-   });
+         var postData = {
+           __metadata: { type: "SP.Data.TestListItem" },
+           Title: this.Title
+         };
+         console.log(postData);
+         var headers ={
+           "Accept": "application/json;odata=verbose",
+           "Content-Type": "application/json;odata=verbose",
+           "X-HTTP-Method": "POST"
+         };
+         console.log(headers);
+         axios.post("https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items", JSON.stringify(postData),headers)
+         .then(function (response) {
+           this.getListData();
+           console.log("hola");
+         })
+         .catch(function (error) {
+           console.log(error);
+           console.log("failed");
+         });
+
+
    }
+ }
 
 
 
