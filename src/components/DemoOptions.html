@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<body>
+<button id="checkIn"onclick="disableCheckIn()">Check-in</button>
+<br>
+<button id="fill"onclick="disableCancel()">Fill Demo</button>
+<br>
+<button id="cancel"onclick="disableFill()">Cancel Demo</button>
+<br>
+<button id="checkOut" onclick="disableCheckOut()">Check-out</button>
+<br>
+<br>
+
+
+
+<script>
+    function disableCheckIn(){
+        document.getElementById("checkIn").disabled = true;
+    }
+
+    function disableCheckOut(){
+        document.getElementById("checkOut").disabled = true;
+    }
+
+    function disableFill(){
+        document.getElementById("fill").disabled = true;
+    }
+
+    function disableCancel(){
+        document.getElementById("cancel").disabled = true;
+    }
+
+
+</script>
+
+</body>
+</html>
