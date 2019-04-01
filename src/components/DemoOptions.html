@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <body>
-<button id="checkIn"onclick="disableCheckIn()">Check-in</button>
+<button id="checkIn"onclick="disableCheckIn(), getLocation()">Check-in</button>
 <br>
 <button id="fill"onclick="disableCancel()">Fill Demo</button>
 <br>
 <button id="cancel"onclick="disableFill()">Cancel Demo</button>
 <br>
-<button id="checkOut" onclick="disableCheckOut()">Check-out</button>
+<button id="checkOut" onclick="disableCheckOut(),getLocation()">Check-out</button>
 <br>
 <br>
 
@@ -30,6 +30,19 @@
         document.getElementById("cancel").disabled = true;
     }
 
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showPosition(position) {
+        alert( "Latitude: " + position.coords.latitude +
+            "   Longitude: " + position.coords.longitude);
+    }
 
 </script>
 
