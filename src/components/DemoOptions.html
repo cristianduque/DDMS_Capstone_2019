@@ -3,13 +3,13 @@
 <body>
 Bienvenida!
 <br>
-<button id="checkIn"onclick="disableCheckIn(),enableCheckOut(), getLocation(), enableFill()">Check-in</button>
+<button id="checkIn"onclick="disableCheckIn(),enableCheckOut(), getLocation(), enableFill(), date()">Check-in</button>
 <br>
 <button id="fill"onclick="disableCancel()">Fill Demo</button>
 <br>
 <button id="cancel"onclick="disableFill(), enterReason()">Cancel Demo</button>
 <br>
-<button id="checkOut" onclick="disableCheckOut(),getLocation()">Check-out</button>
+<button id="checkOut" onclick="disableCheckOut(),getLocation(), date()">Check-out</button>
 <br>
 <br>
 
@@ -57,9 +57,16 @@ Bienvenida!
     }
 
     function enterReason() {
-        var reason = prompt("Entre razón de cancelación : ", "reason");
+        var reason = prompt("Entre razon de cancelacion : ", "reason");
 
-        alert("Se sometió la razón. Su respuesta fue: " + reason);
+        //fix if user cancel in prompt
+
+        alert("Se sometio la razon. Su respuesta fue: " + reason);
+    }
+
+    function date(){
+        var date = new Date();
+        alert("Today is: " + (date.getMonth()+1) + "/" + date.getDate()+ "/" + date.getFullYear() + " "+ date.getHours()+ ":" + date.getMinutes()+ ":" + date.getSeconds());
     }
 
 </script>
