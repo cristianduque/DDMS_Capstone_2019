@@ -55,7 +55,7 @@ function drawChart() {
 
         // Create and draw the visualization.
         var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-        var button = document.getElementById("toogle");
+        var button = document.getElementById("chart_div");
     
         // Disabling the button while the chart is drawing.
         function drawChart() {
@@ -74,7 +74,7 @@ function drawChart() {
     
         //chart.draw(data, options);
     
-          
+        
         button.onclick = function() {
           current = 1 - current; // Switch Chart
           drawChart();

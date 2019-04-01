@@ -8,7 +8,6 @@
     <script type="text/javascript" src="chart.js"></script>
     <script type="text/javascript" src="map.js"></script>
    
-    
     <!-- Bootstrap -->
     
     <!-- VueJs -->
@@ -45,14 +44,86 @@
 </head>
     
 <body>
+
     
-    <h1>Profile</h1>
-    <ul>
-        <li><a href="profile.html">Perfil</a></li>
-        <li><a href="history.html">Historial</a></li>
-    </ul>
+    <!--  Toolbar -->
+<!--
+    <div id="toolbar">
+           
+
+      <v-app id="inspire">
+        <v-toolbar color="red" dark>
+            
+          <v-toolbar-side-icon></v-toolbar-side-icon>
+          <v-toolbar-title >Profile</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-toolbar-items class="hidden-sm-and-down">
+          </v-toolbar-items>
+            
+
+        </v-toolbar>
+          
+      </v-app>
+    </div>
+-->
+<div id="menu">
+  <v-app id="inspire">
+    <v-navigation-drawer
+      v-model="drawer"
+      fixed
+      app
+    >
+      <v-list dense>
+        <v-list-tile @click="">
+          <a href="profile.html"><v-list-tile-action>
+            <v-icon>home</v-icon>
+          </v-list-tile-action></a>
+          <v-list-tile-content>
+            <v-list-tile-title>Perfil</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile @click="">
+         <a href="history.html"> <v-list-tile-action>
+            <v-icon>list</v-icon>
+          </v-list-tile-action> </a>
+          <v-list-tile-content>
+              <v-list-tile-title>Historial</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
+    <v-toolbar color="red" dark fixed app>
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-title>Profile</v-toolbar-title>
+    </v-toolbar>
+    <v-content>
+      <v-container fluid fill-height>
+        <v-layout
+          justify-center
+          align-center
+        >
+          <v-flex text-xs-center>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+  </v-app>
+</div>
+<script>
+      var vm = new Vue({
+      el: '#menu',
+    data: () => ({
+      drawer: false
+    }),
+    props: {
+      source: String
+    }
+  })
+</script>
     
-    <!-- Alert of upcoming demo -->
+        
+   <!--     Alert of upcoming demo -->
+   <!--
     <h2 id="AH!" >Alertas</h2>
     <div id="alerts">
     <ul>
@@ -62,17 +133,15 @@
     </ul>
     </div>
     <script type="text/javascript" src=alerts.js></script>
+-->
 
-    
     <!-- Column Chart -->
-    <div class="chart">
-    <div id="chart_div"></div>
-    
+    <div id="chart">
         
-    <!-- Button to toogle -->
-    <button id="toogle">Switch</button>
-    </div>
-    
+        <div id="chart_div"> </div>  
+        <h3>Click on Chart to change view</h3>
+    </div>  
+
     <!-- Table -->
   <div id="table">
     <v-app>
@@ -85,7 +154,7 @@
 
         </v-card-title>
             
-            <v-data-table :headers="headers" :items="reports"  :hide-actions="true" :pagination.sync="pagination" item-key="name" class="elevation-1">
+            <v-data-table :headers="headers" :items="reports"  :hide-actions="true"  item-key="name" class="elevation-1">
               <template slot="items" slot-scope="props">
                 <tr @click="rowClick(props.item.name)">
                   <td rowspan="2">{{ props.item.title }}</td>
@@ -122,8 +191,6 @@
       </v-content>
     </v-app>
   </div>
-    
-    
   <script>
     var vm = new Vue({
       el: '#table',
@@ -160,7 +227,6 @@
               ince1: 1,
               ince2: 4,
               total: 45,
-
             },
             {
               value: false,
@@ -170,7 +236,78 @@
               ince1: 1,
               ince2: 4,
               total: 45,
-
+            },
+             {
+              value: false,
+              title: 'Reporte 3',
+              sale1: 23,
+              sale2: 25,
+              ince1: 1,
+              ince2: 4,
+              total: 45,
+            },
+             {
+              value: false,
+              title: 'Reporte 4',
+              sale1: 23,
+              sale2: 25,
+              ince1: 1,
+              ince2: 4,
+              total: 45,
+            },
+            {
+              value: false,
+              title: 'Reporte 5',
+              sale1: 23,
+              sale2: 25,
+              ince1: 1,
+              ince2: 4,
+              total: 45,
+            },
+            {
+              value: false,
+              title: 'Reporte 6',
+              sale1: 23,
+              sale2: 25,
+              ince1: 1,
+              ince2: 4,
+              total: 45,
+            },
+            {
+              value: false,
+              title: 'Reporte 7',
+              sale1: 23,
+              sale2: 25,
+              ince1: 1,
+              ince2: 4,
+              total: 45,
+            },
+            {
+              value: false,
+              title: 'Reporte 8',
+              sale1: 23,
+              sale2: 25,
+              ince1: 1,
+              ince2: 4,
+              total: 45,
+            },
+            {
+              value: false,
+              title: 'Reporte 9',
+              sale1: 23,
+              sale2: 25,
+              ince1: 1,
+              ince2: 4,
+              total: 45,
+            },
+            {
+              value: false,
+              title: 'Reporte 10',
+              sale1: 23,
+              sale2: 25,
+              ince1: 1,
+              ince2: 4,
+              total: 45,
             },
             
             
@@ -182,7 +319,8 @@
 
     
     <!-- Miscellaneous Costs of past 10 -->
-    <h2>Gastos Pasados:</h2>
+    <h2> Gastos Pasados:</h2>
+    <!--
        <div id="misc">
     <ul>
         <li v-for="cost in costs">
@@ -191,7 +329,92 @@
     </ul>
     </div>
     <script type="text/javascript" src=misc.js></script>
+-->
+   
+    <div id="list">
+  <div id="app">
+  <v-app id="inspire">
+    <v-layout row>
+      <v-flex xs12 sm6 offset-sm3>
+        <v-card>
+  
+          <v-list two-line>
+            <template v-for="(item, index) in items">
+              <v-list-tile
+                :key="item.title"
+                avatar
+                ripple
+                @click="toggle(index)"
+              >
+                <v-list-tile-content>
+                    <v-list-tile-title v-html="item.title"></v-list-tile-title>
+                <v-list-tile-sub-title v-html="item.subtitle"></v-list-tile-sub-title>
+<!--
+                  <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                  <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
+                  <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
+-->
+                </v-list-tile-content>
+  
+              </v-list-tile>
+              <v-divider
+                v-if="index + 1 < items.length"
+                :key="index"
+              ></v-divider>
+            </template>
+          </v-list>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-app>
+</div>
+</div>
+    <script>
+    new Vue({
+  el: '#list',
+  data () {
+    return {
+      selected: [2],
+      items: [
+        {
+          headline: 'Supermercado Pueblos',
+          title: 'Feb/24/2019',
+          subtitle: "<span class='text--primary'>Supermercados Pueblos - Mayaguez</span> &mdash; $5.47"
+        },
+        {
+          headline:'Supermercado Ajies' ,
+          title: 'Feb/28/2019',
+          subtitle: "<span class='text--primary'>Supermercado Ajies - Aguada</span> &mdash; $5.47"
+        },
+        {
+          headline: 'Supermercado Selectos',
+          title: 'Abril/1/2019',
+          subtitle: "<span class='text--primary'>Supermercado Selectos - Mayaguez</span> &mdash; $6.00"
+        },
+        {
+          headline: 'Supermercado Selectos II',
+          title: 'Abril/2/2019',
+          subtitle: "<span class='text--primary'>Supermercado Selectos II - Mayaguez</span> &mdash; $10.47"
+        },
+      ]
+    }
+  },
+
+  methods: {
+    toggle (index) {
+      const i = this.selected.indexOf(index)
+
+      if (i > -1) {
+        this.selected.splice(i, 1)
+      } else {
+        this.selected.push(index)
+      }
+    }
+  }
+})
     
+    </script>
+
     
     <h2>Proximas demonstraciones:</h2>
     <!-- Google Map -->
@@ -200,6 +423,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDg71kA9ufXlx4ZdpQEvlii-nrKoDx-jlM&callback=initMap"
     async defer></script> 
     
+<!--
     <div id="demos">
     <ul>
         <li v-for="demo in demos">
@@ -208,7 +432,88 @@
     </ul>
     </div>
     <script type="text/javascript" src=demos.js></script>
+-->
 
+     <div id="demos">
+  <div id="app">
+  <v-app id="inspire">
+    <v-layout row>
+      <v-flex xs12 sm6 offset-sm3>
+        <v-card>
+  
+          <v-list two-line>
+            <template v-for="(item, index) in items">
+              <v-list-tile
+                :key="item.title"
+                avatar
+                ripple
+                @click="toggle(index)"
+              >
+                <v-list-tile-content>
+
+                  <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                  <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
+                  <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
+                </v-list-tile-content>
+  
+              </v-list-tile>
+              <v-divider
+                v-if="index + 1 < items.length"
+                :key="index"
+              ></v-divider>
+            </template>
+          </v-list>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-app>
+</div>
+</div>
+     <script>
+   var demos = new Vue({
+  el: '#demos',
+  data () {
+    return {
+      selected: [2],
+      items: [
+        {
+          headline: 'Supermercado Pueblos',
+          title: 'Feb/24/2019',
+          subtitle: ""
+        },
+        {
+          headline:'Supermercado Ajies' ,
+          title: 'Feb/28/2019',
+          subtitle: ""
+        },
+        {
+          headline: 'Supermercado Selectos',
+          title: 'Abril/1/2019',
+          subtitle: ""
+        },
+        {
+          headline: 'Supermercado Selectos II',
+          title: 'Abril/2/2019',
+          subtitle: ""
+        },
+      ]
+    }
+  },
+
+  methods: {
+    toggle (index) {
+      const i = this.selected.indexOf(index)
+
+      if (i > -1) {
+        this.selected.splice(i, 1)
+      } else {
+        this.selected.push(index)
+      }
+    }
+  }
+})
+    
+    </script>
 
     
     

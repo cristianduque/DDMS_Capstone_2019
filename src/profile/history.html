@@ -27,21 +27,63 @@
 </head>
 <body>
 
-<h1>Profile</h1>
-<ul>
-    <li><a href="profile.html">Perfil</a></li>
-    <li><a href="history.html">Historial</a></li>
-</ul>
+<!-- Toolbar -->
+ <div id="menu">
+  <v-app id="inspire">
+    <v-navigation-drawer
+      v-model="drawer"
+      fixed
+      app
+    >
+      <v-list dense>
+        <v-list-tile @click="">
+           <a href="profile.html"> <v-list-tile-action>
+            <v-icon>home</v-icon>
+               </v-list-tile-action></a>
+          <v-list-tile-content>
+            <v-list-tile-title>Perfil</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile @click="">
+         <a href="history.html"> <v-list-tile-action>
+            <v-icon>list</v-icon>
+          </v-list-tile-action> </a>
+          <v-list-tile-content>
+              <v-list-tile-title>Historial</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
+    <v-toolbar color="red" dark fixed app>
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-title>Historial</v-toolbar-title>
+    </v-toolbar>
+    <v-content>
+      <v-container fluid fill-height>
+        <v-layout
+          justify-center
+          align-center
+        >
+          <v-flex text-xs-center>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+  </v-app>
+</div>
+ <script>
+      var vm = new Vue({
+      el: '#menu',
+    data: () => ({
+      drawer: false
+    }),
+    props: {
+      source: String
+    }
+  })
+</script>
     
-<h2>Alertas</h2>
-     <div id="alerts">
-    <ul>
-        <li v-for="alert in alerts">
-          {{ alert.text }}
-        </li>
-    </ul>
-    </div>
-    <script type="text/javascript" src=alerts.js></script>
+<!-- Data Table -->    
  <div id="app">
     <v-app>
       <v-content>
@@ -61,7 +103,7 @@
             
             <v-data-table :headers="headers" :items="reports" :search="search" :pagination.sync="pagination" item-key="name" class="elevation-1">
               <template slot="items" slot-scope="props">
-                <tr @click="rowClick(props.item.name)">
+               <tr @click="props.expanded = !props.expanded"> 
                   <td>{{ props.item.name }}</td>
                   <td class="text-xs-center">{{ props.item.month }}</td>
                   <td class="text-xs-center">{{ props.item.day }}</td>
@@ -69,8 +111,15 @@
                   <td class="text-xs-center">{{ props.item.pueblo }}</td>
                   <td class="text-xs-center">{{ props.item.chain }}</td>
                   <td class="text-xs-center">{{ props.item.approve }}</td>
+                  
                 </tr>
               </template>
+                
+            <template v-slot:expand="props">
+              <v-card flat>
+               <v-card-text>  <a id="r-link" href="review.html" > Ver reporte </a></v-card-text> 
+              </v-card>
+           </template>
                 
             <div class="text-xs-center pt-2">
               <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
@@ -97,7 +146,9 @@
  <script>
     var vm = new Vue({
       el: '#app',
+        expand: false,
       methods: {
+        
         rowClick(name) {
           this.selectedItem = name;
         }
@@ -131,7 +182,9 @@
               year: 2019,
               pueblo: 'Mayaguez',
               chain: 'UPR',
-              approve: false
+              approve: false,
+              link: "testbench.html"
+            
             },
             {
               value: false,
@@ -141,7 +194,8 @@
               year: 2018,
               pueblo: 'Rio Piedras',
               chain: 'UPR',
-              approve: true
+              approve: true,
+              link: "link 3"
             },
                         {
               value: false,
@@ -151,7 +205,8 @@
               year: 2019,
               pueblo: 'Aguadilla',
               chain: 'Inter',
-              approve: true
+              approve: true,
+              link: "link 2"
             },
             
             
