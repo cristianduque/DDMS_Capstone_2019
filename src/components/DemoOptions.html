@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <body>
-<button id="checkIn"onclick="disableCheckIn(), getLocation()">Check-in</button>
+
+<button id="checkIn"onclick="disableCheckIn(),enableCheckOut(), getLocation()">Check-in</button>
 <br>
 <button id="fill"onclick="disableCancel()">Fill Demo</button>
 <br>
@@ -14,8 +15,13 @@
 
 
 <script>
+    disableCheckOut();
     function disableCheckIn(){
         document.getElementById("checkIn").disabled = true;
+    }
+
+    function enableCheckOut(){
+        document.getElementById("checkOut").disabled = false;
     }
 
     function disableCheckOut(){
