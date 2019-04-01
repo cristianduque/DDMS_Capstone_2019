@@ -1,5 +1,21 @@
-<template>
-    <div class="planning-form">
+var Planning = Vue.component('Planning', {
+    data: function (){
+        return{
+            count:0
+        }
+    },
+    //template: '<button v-on:click="count++"> You clicked me {{count}} times in Approvals. </button>'
+});
+var CreateEvent = Vue.component('CreateEvent', {
+    data: {
+        object: {
+            firstName: 'John',
+            lastName: 'Doe',
+            age: 30
+        }
+    }
+    ,
+    template: `<div class="planning-form">
         <div>
             <header class="header">
                 <h1>La Aguadillana </h1>
@@ -17,9 +33,9 @@
         </div>
 
         <div>
-            <form class="client"> Seleccione el cliente:
+            <form id="client" class="client" v-on="getListData()"> Seleccione el cliente:
                 <select name="cars" v-for="user in users">
-                    <option value="user-title">{{user.Title}}</option>
+                    <option value="title">{{user.Title}}</option>
                 </select>
             </form>
         </div>
@@ -73,64 +89,42 @@
 
     </div>
 
-
-
-</template>
-
-<script>
-    export default {
-        name: "CreateEvent"
+        `, methods: {
+        getListData: function () {
+            var endPointUrl = "https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items";
+            console.log(endPointUrl);
+            var headers = {
+                "accept": "application/json;odata=verbose",
+                "content-type": "application/json;odata=verbose"
+            };
+            this.status = "getting data...";
+            var vm = this;
+            axios.get(endPointUrl).then(response => {
+                console.log(response.data.value);
+                vm.users = response.data.value
+            });
+        }
     }
-</script>
+});
+var ManageEvent =  Vue.component('ManageEvent', {
+    data: function (){
+        return{
+            count:0
+        }
+    },
+    template: '<div> <h1> Hello ManageEvent! </h1></div>'
+});
 
-<style scoped>
-    .header {
-        background: #333;
-        color: #fff;
-        text-align: center;
-        padding: 10px;
-    }
-    .header a {
-        color: #fff;
-        padding-right: 5px;
-    }
+const routes = [
+    //{ path: '/', component: Home},
+    { path: '/Planning', component: Planning},
+    { path: '/CreateEvent', component: CreateEvent},
+    { path: '/ManageEvent', component: ManageEvent}
+];
+const router = new VueRouter({
+    routes // short for `routes: routes`
+});
 
-    .date {
-        text-align: center;
-    }
-
-    .hour {
-        text-align: center;
-    }
-
-    .client {
-        line-height: 40pt;
-        padding-bottom:  auto !important;
-        text-align: center !important;
-    }
-
-    .demonstrator {
-        line-height: 30pt;
-        padding-bottom: auto !important;
-        text-align: center !important;
-    }
-
-    .products {
-        line-height: 30pt;
-        padding-bottom: auto !important;
-        text-align: center !important;
-    }
-
-    .multiplier {
-        line-height: 30pt;
-        padding-bottom: auto !important;
-        text-align: center !important;
-    }
-
-    .approval {
-        line-height: 30pt;
-        padding-bottom: auto !important;
-        text-align: center !important;
-    }
-
-</style>
+const app = new Vue({
+    router
+}).$mount('#app')
