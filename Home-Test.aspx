@@ -11,6 +11,8 @@
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script type="text/javascript" src="https://cdn.rawgit.com/highcharts/highcharts-vue/1ce7e656/dist/script-tag/highcharts-vue.min.js"></script>
   <style>
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -47,7 +49,7 @@
   </head>
   <body>
     <div id="app">
-      <img alt="La Aguadillana logo" src="img/DDMSLogo.png">
+      <img alt="La Aguadillana logo" src="https://aguadillana.sharepoint.com/DDMS/Shared%20Documents/img/DDMSLogo.png">
       <!--<h1>{{message}}</h1>
       <img alt="La Aguadillana logo" src="img/LaAguadillanaLogo.png">-->
       <nav>
@@ -60,20 +62,15 @@
 
       <!--<Approvals></Approvals>-->
        <router-view></router-view>
-       <table>
-<tr>
-    <th>Title</th>
-</tr>
-<tr v-for="user in users">
-    <td>{{ user.Title }}</td>
-</tr>
-</table>
-<form v-on:submit = "postListData"  method="post">
+
+<!--<form v-on:submit = "postListData"  method="post">
   <input v-model="Title" placeholder="Login">
      <button type="submit">Submit</button>
 
-</form>
+</form>-->
+   <highcharts :options="chartOptions"></highcharts>
     </div>
+
     <script type="text/javascript">
       var Home = Vue.component('Home', {
         data: function (){
@@ -105,7 +102,7 @@
               count:0
             }
           },
-          template: '<button v-on:click="count++"> You clicked me {{count}} times in Planning. </button>'
+          template: '<button v-on:click="count++"> You clicked me {{count}} times in Planning. </button> <form v-on:submit = "postListData"  method="post">  <input v-model="Title" placeholder="Login">   <button type="submit">Submit</button>  </form>'
         });
         var Report =  Vue.component('Report', {
             data: function (){
@@ -113,7 +110,7 @@
                 count:0
               }
             },
-            template: '<button v-on:click="count++"> You clicked me {{count}} times in Planning. </button>'
+            template: '<div><h1>Reports</h1><button v-on:click="count++"> You clicked me {{count}} times in Planning. </button>  <highcharts :options="chartOptions"></highcharts> <table><tr>  <th>Title</th></tr>    <tr v-for="user in users"><td>{{ user.Title }}</td>  </tr>  </table></div>'
           });
       const routes = [
       //{ path: '/', component: Home},
@@ -126,13 +123,47 @@
       const router = new VueRouter({
             routes // short for `routes: routes`
          });
+         Vue.use(HighchartsVue.default);
+        /* var Charts = new Vue ({
+           el: "#reports",
+           data() {
+             return {
+               chartOptions: {
+                 chart: {
+                   type: 'bar'
+                 },
+                 title: {
+                   text: 'test'
+                 },
+                 series: [{
+                   data: [10, 0, 8, 2, 6, 4, 5, 5]
+                 }]
+               }
+
+             }
+           }
+         });*/
   var vueApp = new Vue({
   el: "#app",
   router,
-  data: {
-    message: "Data Demonstration Management System",
-    users: [],
-    Title:"hola"
+  data() {
+
+    return {
+      chartOptions: {
+        chart: {
+          type: 'bar'
+        },
+        title: {
+          text: 'test'
+        },
+        series: [{
+          data: [10, 0, 8, 2, 6, 4, 5, 5]
+        }]
+      },
+      message: "Data Demonstration Management System",
+      users: [],
+      Title:"hola"
+    }
   },
   created: function(){
         this.getListData();
@@ -159,6 +190,7 @@
            Title: this.Title
          };
          console.log(postData);
+
          var headers ={
            "Accept": "application/json;odata=verbose",
            "Content-Type": "application/json;odata=verbose",
