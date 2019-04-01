@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 <body>
-
-<button id="checkIn"onclick="disableCheckIn(),enableCheckOut(), getLocation()">Check-in</button>
+Bienvenida!
+<br>
+<button id="checkIn"onclick="disableCheckIn(),enableCheckOut(), getLocation(), enableFill()">Check-in</button>
 <br>
 <button id="fill"onclick="disableCancel()">Fill Demo</button>
 <br>
-<button id="cancel"onclick="disableFill()">Cancel Demo</button>
+<button id="cancel"onclick="disableFill(), enterReason()">Cancel Demo</button>
 <br>
 <button id="checkOut" onclick="disableCheckOut(),getLocation()">Check-out</button>
 <br>
@@ -16,6 +17,7 @@
 
 <script>
     disableCheckOut();
+    disableFill();
     function disableCheckIn(){
         document.getElementById("checkIn").disabled = true;
     }
@@ -26,6 +28,10 @@
 
     function disableCheckOut(){
         document.getElementById("checkOut").disabled = true;
+    }
+
+    function enableFill(){
+        document.getElementById("fill").disabled = false;
     }
 
     function disableFill(){
@@ -48,6 +54,12 @@
     function showPosition(position) {
         alert( "Latitude: " + position.coords.latitude +
             "   Longitude: " + position.coords.longitude);
+    }
+
+    function enterReason() {
+        var reason = prompt("Entre razón de cancelación : ", "reason");
+
+        alert("Se sometió la razón. Su respuesta fue: " + reason);
     }
 
 </script>
