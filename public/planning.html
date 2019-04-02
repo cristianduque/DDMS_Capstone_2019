@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-<head>
     <meta charset="utf-8">
     <title>Planning</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+
     <style>
         #app {
             font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -37,14 +41,8 @@
             font-size: 35px;
         }
 
-        .date {
+        .date-hour {
             text-align: center;
-        }
-
-        .hour {
-            line-height: 40pt;
-            padding-bottom:  auto !important;
-            text-align: center !important;
         }
 
         .client {
@@ -76,11 +74,14 @@
             padding-bottom: auto !important;
             text-align: center !important;
         }
+        .header {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 <div id="app">
-
+<v-app></v-app>
 
 </div>
 
@@ -95,104 +96,95 @@
         <div>
     <img alt="La Aguadillana logo" src="https://aguadillana.sharepoint.com/DDMS/Shared%20Documents/img/DDMSLogo.png">
 
-    <nav>
+    <v-bottom-nav color="teal">
         <!--<router-link to = "/">Home</router-link>-->
-        <router-link to = "/CreateEvent"> Create Event
-            <!--<button id="create-event-button">Create Event</button>-->
-        </router-link>
-        <router-link to = "/ManageEvent"> Manage Event
-            <!--<button id="manage-event-button">Manage Event</button>-->
-        </router-link>
+        <v-btn color="teal" to = "/CreateEvent"> Create Event
 
-    </nav>
+        </v-btn>
+        <v-btn color="teal" to = "/ManageEvent"> Manage Event
+
+        </v-btn>
+
+    </v-bottom-nav>
     </div>
         `
     });
     var CreateEvent = Vue.component('CreateEvent', {
-        el: "#app",
-        data: {
-            users: []
-
+        data: function () {
+            return {
+                clients:[],
+                products: [],
+                demonstrators: [],
+                employees: []
+            }
         },
+        created: function(){
+            this.handlerData();
+        },
+        template: `<form class="planning-form">
 
-        template: `<div class="planning-form">
-        <div>
-            <header class="header">
-                <h1>La Aguadillana </h1>
-            </header>
+        <div class="date-hour">
+            <h1> Seleccione la fecha y hora de la demostracion:</h1>
+             <input type="datetime-local" name="date">
+
         </div>
 
-        <div>
-            <form class="date">
-                Seleccione la fecha de la demostracion: <input type="date" name="date">
-            </form>
-
-            <form class="hour">
-                Seleccione la hora de la demostracion: <input type="time" name="time">
-            </form>
-        </div>
-
-        <div>
-            <form id="client" class="client"> Seleccione el cliente:
-                <select id="userList">
-                    <option v-for="user in users">{{user.Title}}</option>
+        <div class="client">
+            <h1>Seleccione el cliente:</h1>
+                <select id="clientList">
+                    <option value="client" v-for="client in clients">{{client.Title}}</option>
                 </select>
-            </form>
         </div>
 
-        <div>
-            <form class="demonstrator"> Seleccione la demostradora:
+        <div class="demonstrator">
+            <h1>Seleccione la demostradora:</h1>
                 <select name="cars">
-                    <option value="volvo">Volvo</option>
-                    <option value="saab">Saab</option>
-                    <option value="fiat">Fiat</option>
-                    <option value="audi">Audi</option>
+                    <option value="demonstrator" v-for="item in demonstrators" v-if="item.bevs ==='DEMO'">{{item.vblv}}</option>
                 </select>
-            </form>
         </div>
 
-        <div>
-            <form class="products"> Seleccione los productos:
-                <input type="checkbox"> Carne empanada de pollo
-                <br/>
-                <input type="checkbox"> Carne de bistec
-                <br/>
-                <input type="checkbox"> Carne de Salchicha
-                <br/>
-                <input type="checkbox"> Carne de embutido
-                <br/>
-            </form>
+        <div class="products">
+            <h1>Seleccione los productos:</h1>
+            <v-list>
+                <li v-for="product in products">
+                  <input type="checkbox"> {{product.e9lf}}
+                </li>
+            </v-list>
         </div>
 
-        <div>
-            <form class="multiplier"> Seleccione el multiplicador:
-                <input type="number">
-            </form>
+        <div class="multiplier">
+            <h1> Seleccione el multiplicador: </h1>
+                    <input type="number">
         </div>
 
-        <div>
-            <form class="approval"> Seleccione las personas del proceso de aprobacion:
+        <div class="approval">
+
+            <h1> Seleccione las personas que seran parte del proceso de aprobacion:</h1>
                     <select name="first-employee"> 1.
-                        <option value="Luis"> Luis </option>
+                        <option v-for="item in employees" v-if="item.bevs ==='SUPERVISOR'"> {{item.vblv}} </option>
                     </select>
                 <br/>
                     <select name="second-employee"> 2.
-                        <option value="Damaris"> Damaris </option>
+                        <option v-for="item in employees" v-if="item.bevs ==='SUPERVISOR'"> {{item.vblv}} </option>
                     </select>
                 <br/>
                     <select name="third-employee"> 3.
-                        <option value="Roberto"> Roberto </option>
+                        <option v-for="item in employees" v-if="item.bevs ==='SUPERVISOR'"> {{item.vblv}}</option>
                     </select>
-
-            </form>
+            </h1>
         </div>
 
-    </div>
+        <div>
+            <v-btn color="success"> Add event</v-btn>
+            <v-btn color="success"> Cancel event</v-btn>
+        </div>
+
+    </form>
 
         `,
-        methods: {
-            getListData(){
-                var endPointUrl = "https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items";
+        methods:{
+            getClientListData: function () {
+                var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items";
                 console.log(endPointUrl);
                 var headers = {
                     "accept": "application/json;odata=verbose",
@@ -202,11 +194,58 @@
                 var vm = this;
                 axios.get(endPointUrl).then(response => {
                     console.log(response.data.value);
-                    this.users = response.data.value
+                    vm.clients = response.data.value;
                 });
+            },
+            getProductListData: function () {
+                var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items";
+                console.log(endPointUrl);
+                var headers = {
+                    "accept": "application/json;odata=verbose",
+                    "content-type": "application/json;odata=verbose"
+                };
+                this.status = "getting data...";
+                var vm = this;
+                axios.get(endPointUrl).then(response => {
+                    console.log(response.data.value);
+                    vm.products = response.data.value;
+                });
+            },
+            getDemonstratorListData: function () {
+                var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items";
+                console.log(endPointUrl);
+                var headers = {
+                    "accept": "application/json;odata=verbose",
+                    "content-type": "application/json;odata=verbose"
+                };
+                this.status = "getting data...";
+                var vm = this;
+                axios.get(endPointUrl).then(response => {
+                    console.log(response.data.value);
+                    vm.demonstrators = response.data.value;
+                });
+            },
+            getApprovalListData: function () {
+                var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items";
+                console.log(endPointUrl);
+                var headers = {
+                    "accept": "application/json;odata=verbose",
+                    "content-type": "application/json;odata=verbose"
+                };
+                this.status = "getting data...";
+                var vm = this;
+                axios.get(endPointUrl).then(response => {
+                    console.log(response.data.value);
+                    vm.employees = response.data.value;
+                });
+            },
+            handlerData: function () {
+                this.getProductListData();
+                this.getClientListData();
+                this.getDemonstratorListData();
+                this.getApprovalListData();
             }
         }
-
     });
     var ManageEvent =  Vue.component('ManageEvent', {
         data: function (){
@@ -230,26 +269,23 @@
     var vueApp = new Vue({
         el: "#app",
         template: '<div>\n        <Planning />\n        <router-view/>\n\n        </div>'
-       ,
-        router,
-        components:{
-            CreateEvent,
-            ManageEvent,
-            Planning
-        },
+        ,
         data() {
             return {
                 message: "Data Demonstration Management System",
                 users: [],
                 Title:"hola"
             }
+        },
+        router,
+        components:{
+            CreateEvent,
+            ManageEvent,
+            Planning
         }
     });
 
-
-
 </script>
-
 
 </body>
 </html>
