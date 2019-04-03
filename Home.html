@@ -4,13 +4,20 @@
   <head>
     <meta charset="utf-8">
     <title></title>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.18"></script>
   <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://code.highcharts.com/highcharts.js"></script>
+
   <script type="text/javascript" src="https://cdn.rawgit.com/highcharts/highcharts-vue/1ce7e656/dist/script-tag/highcharts-vue.min.js"></script>
+  <script src="vue-google-charts/dist/vue-google-charts.browser.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <!--Vuetify-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
+ <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+ <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   <style>
-  #app {
+  /* #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -27,7 +34,7 @@
     padding-top: 50px;
   }
 
-  nav {
+ nav {
     padding: 20px 20px 20px 0;
   }
 
@@ -40,24 +47,77 @@
     font-weight: bold;
     margin-right: 45px;
     font-size: 35px;
-  }
+  }*/
   </style>
   </head>
   <body>
     <div id="app">
-      <img alt="La Aguadillana logo" src="img/DDMSLogo.png">
+        <v-app>
+          <img alt="La Aguadillana logo" src="img/DDMSLogo.png">
+          <v-toolbar>
+             <v-toolbar-items>
+
+            <!--  <v-tab
+      v-for="route in routes"
+      :key="route"
+      href="route.path" router ripple><v-icon>{{route.icon}}</v-icon>{{route.name}}
+    </v-tab>-->
+
+          <v-btn flat to= '/Planning' >Planning</v-btn>
+          <v-btn flat to= '/ManageLists' >Manage List</v-btn>
+          <v-btn flat to= '/Approvals' >Approval</v-btn>
+          <v-btn flat to = '/Report' >Report</v-btn>
+
+        </v-toolbar-items>
+   </v-toolbar>
+   <transition name="fade">
+     <router-view></router-view>
+   </transition>
+
+
+
+
+      <!--<img alt="La Aguadillana logo" src="img/DDMSLogo.png">
       <!--<h1>{{message}}</h1>
       <img alt="La Aguadillana logo" src="img/LaAguadillanaLogo.png">-->
-      <nav>
+
+
+      <!--  <v-navigation-drawer permanent>
+    <v-toolbar flat>
+      <v-list>
+        <v-list-tile>
+          <v-list-tile-title class="title">
+            Application
+          </v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+    </v-toolbar>
+
+    <v-divider></v-divider>
+
+    <v-list dense class="pt-0">
+      <v-list-tile>
+
+      <v-list-tile-content>
+          <v-list-tile-title><router-link to = "/Planning">Planning</router-link></v-list-tile-title>
+
+          <v-list-tile-title><router-link to = "/ManageLists">Manage Lists</router-link></v-list-tile-title>
+
+          <v-list-tile-title><router-link to = "/Approvals">Approvals</router-link></v-list-tile-title>
+
+            <v-list-tile-action>
+            <v-icon light x-large>dashboard</v-icon>
+          </v-list-tile-action>
+
+          <v-list-tile-title><router-link to = "/Report">Report</router-link></v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+ </v-list>
         <!--<router-link to = "/">Home</router-link>-->
-        <router-link to = "/Planning">Planning</router-link>
-        <router-link to = "/ManageLists">Manage Lists</router-link>
-        <router-link to = "/Approvals">Approvals</router-link>
-        <router-link to = "/Report">Report</router-link>
-      </nav>
+  <!--</v-navigation-drawer>-->
 
       <!--<Approvals></Approvals>-->
-       <router-view></router-view>
+       <!--<router-view></router-view>
        <table>
 <tr>
     <th>Title</th>
@@ -70,9 +130,17 @@
   <input v-model="Title" placeholder="Login">
      <button type="submit">Submitr</button>
 
-</form>
+</form>-->
+
+</v-app>
     </div>
+    <!--Vuetify-->
+     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+
     <script type="text/javascript">
+     Vue.use(Vuetify);
+     Vue.use(VueRouter);
       var Home = Vue.component('Home', {
         data: function (){
           return{
@@ -87,7 +155,7 @@
             count:0
           }
         },
-        template: '<button v-on:click="count++"> You clicked me {{count}} times in Approvals. </button>'
+        template: '<h1>Approvals</h1><!--<button v-on:click="count++"> You clicked me {{count}} times in Approvals. </button>-->'
       });
     var Planning =  Vue.component('Planning', {
         data: function (){
@@ -115,10 +183,10 @@
           });
       const routes = [
       //{ path: '/', component: Home},
-         { path: '/Approvals', component: Approvals},
-         { path: '/Planning', component: Planning},
-         { path: '/Report', component: Report},
-         { path: '/ManageLists', component: ManageLists}
+         { path: '/Approvals', component: Approvals, name:'Home',icon:'home'},
+         { path: '/Planning', component: Planning , name:'Planning',icon:'home'},
+         { path: '/Report', component: Report, name:'Report',icon:'dashboard'},
+         { path: '/ManageLists', component: ManageLists, name:'Manage List' ,icon:'home'}
 
       ];
       const router = new VueRouter({
@@ -130,7 +198,21 @@
   data: {
     message: "Data Demonstration Management System",
     users: [],
-    Title:""
+    Title:"",
+    routes,
+    chartData: [
+        ['Year', 'Sales', 'Expenses', 'Profit'],
+        ['2014', 1000, 400, 200],
+        ['2015', 1170, 460, 250],
+        ['2016', 660, 1120, 300],
+        ['2017', 1030, 540, 350]
+      ],
+      chartOptions: {
+        chart: {
+          title: 'Company Performance',
+          subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+        }
+      }
   },
   created: function(){
         this.getListData();
@@ -149,6 +231,7 @@
               console.log(response.data.value);
               vm.users = response.data.value
             });
+
        },
        postListData: function(){
          $.ajax({
@@ -169,7 +252,7 @@
    });
    }
 
-
+}
 
 });
 
