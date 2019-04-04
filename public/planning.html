@@ -100,10 +100,10 @@
 </div>
 
 <script>
-    function checkDemonstratorConflict(select) {
-        if (select.options[select.selectedIndex].text == "ANGEL RIVERA")
-                var x = 1;
-    }
+    // function checkDemonstratorConflict(select) {
+    //     if (select.options[select.selectedIndex].text == "ANGEL RIVERA")
+    //             var x = 1;
+    // }
     var Planning = Vue.component('Planning', {
         data: function (){
             return{
@@ -134,10 +134,7 @@
                 products: [],
                 demonstrators: [],
                 employees: [],
-                events: [],
-                dismissible: true,
-                showAlert: false,
-                type: 'error'
+                events: []
             }
         },
         created: function(){
@@ -152,7 +149,7 @@
 
         <div class="client">
             <h3>Seleccione el cliente:</h3>
-                <select id="clientList">
+                <select id="clientList" v-on:change="checkClientConflict">
                     <option value="client" v-for="client in clients">{{client.Title}}</option>
                 </select>
         </div>
@@ -274,6 +271,30 @@
                     vm.events = response.data.value;
                 });
             },
+            checkClientConflict: function(){
+                for (var j = 0; j < this.clients.length; j++){
+                    var eClient = document.getElementById("clientList");
+                    var eDate = document.querySelector('input[type="datetime-local"]');
+                    var strItemClient = eClient.options[eClient.selectedIndex].text;
+                    var strItemDate = eDate.options[eDate.selectedIndex].text.toISOString();
+
+                    if(this.clients[j].Title == strItemClient && this.clients[j].event_date.toISOString() == strItemDate){
+                            //ALERT HERE
+                    }
+                }
+            },
+            checkDemonstratorConflict: function(){
+                for (var j = 0; j < this.demonstrators.length; j++){
+                    var eDemonstrator = document.getElementById("clientList");
+                    var eDate = document.querySelector('input[type="datetime-local"]');
+                    var strItemDemonstrator = eDemonstrator.options[eDemonstrator.selectedIndex].text;
+                    var strItemDate = eDate.options[eDate.selectedIndex].text.toISOString();
+
+                    if(this.demonstrators[j].Title == strItemDemonstrator && this.demonstrators[j].event_date.toISOString() == strItemDate){
+                        //ALERT HERE
+                    }
+                }
+            },
             handlerData: function () {
                 this.getProductListData();
                 this.getClientListData();
@@ -343,15 +364,7 @@
 
     var vueApp = new Vue({
         el: "#app",
-        template: '<div>\n        <Planning />\n        <router-view/>\n\n        </div>'
-        ,
-        data() {
-            return {
-                message: "Data Demonstration Management System",
-                users: [],
-                Title:"hola"
-            }
-        },
+        template: '<div>\n        <Planning />\n        <router-view/>\n\n        </div>',
         router,
         components:{
             CreateEvent,
