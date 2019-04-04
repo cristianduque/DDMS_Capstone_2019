@@ -156,7 +156,7 @@
 
         <div class="demonstrator">
             <h3>Seleccione la demostradora:</h3>
-                <select name="cars">
+                <select id="demList" name="cars">
                     <option value="demonstrator" v-for="item in demonstrators" v-if="item.bevs ==='DEMO'">{{item.vblv}}</option>
                 </select>
         </div>
@@ -285,7 +285,7 @@
             },
             checkDemonstratorConflict: function(){
                 for (var j = 0; j < this.demonstrators.length; j++){
-                    var eDemonstrator = document.getElementById("clientList");
+                    var eDemonstrator = document.getElementById("demList");
                     var eDate = document.querySelector('input[type="datetime-local"]');
                     var strItemDemonstrator = eDemonstrator.options[eDemonstrator.selectedIndex].text;
                     var strItemDate = eDate.options[eDate.selectedIndex].text.toISOString();
