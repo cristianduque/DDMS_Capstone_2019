@@ -15,10 +15,6 @@
   .submit_button, .save_button, .cancel_button{
    display: inline-block;
    }
-
-   .deny_button, .approve_button{
-    display: inline-block;
-    }
 </style>
 
 <body>
@@ -73,7 +69,7 @@
                   <h4>Acción</h4>
                 </v-card-title>
                 <v-card-actions>
-                  <span id="demonstrator" hidden>
+                  <span id="demonstrator">
                     <div class="cancel_button">
                       <v-btn type="button" @click="alert('cancel')">Cancelar</v-btn >
                     </div>
@@ -87,14 +83,6 @@
                   <span id="demonstrator2" hidden>
                       <div class="edit_button">
               					<v-btn type="button">Editar</v-btn>
-              				</div>
-                  </span>
-                  <span id="supervisor">
-                      <div class="deny_button">
-              					<v-btn type="button" @click="alert('deny')">Negar</v-btn >
-              				</div>
-                      <div class="approve_button">
-              					<v-btn type="button" @click="alert('approve')">Aprovar</button>
               				</div>
                   </span>
                 </v-card-actions>
