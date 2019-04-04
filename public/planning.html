@@ -144,7 +144,7 @@
 
         <div class="date-hour">
             <h3> Seleccione la fecha y hora de la demostracion:</h3>
-                  <input type="datetime-local" name="date">
+                  <input id="date-selected" type="datetime-local" name="date">
         </div>
 
         <div class="client">
@@ -272,25 +272,48 @@
                 });
             },
             checkClientConflict: function(){
-                for (var j = 0; j < this.clients.length; j++){
-                    var eClient = document.getElementById("clientList");
-                    var eDate = document.querySelector('input[type="datetime-local"]');
-                    var strItemClient = eClient.options[eClient.selectedIndex].text;
-                    var strItemDate = eDate.options[eDate.selectedIndex].text.toISOString();
+                for (var j = 0; j < this.events.length; j++){
+                    var temp = document.getElementById("clientList");
+                    var eClient = temp.options[temp.selectedIndex].text;
 
-                    if(this.clients[j].Title == strItemClient && this.clients[j].event_date.toISOString() == strItemDate){
-                            //ALERT HERE
+                    var temp1 = document.getElementById("date-selected").value;
+                    var temp2 = new Date(temp1);
+                    temp2.setHours(temp2.getHours() - 4);
+                    var eDate = temp2.toISOString();
+
+
+                    console.log(eClient);
+                    console.log(eDate);
+
+                    var date = new Date(this.events[j].event_date);
+                    date.setHours(date.getHours() - 3);
+
+                    // now you can get the string
+                    var isodateList = date.toISOString();
+
+                    console.log(isodateList);
+                    console.log(this.events[j].event_client);
+
+                    if(this.events[j].event_client == eClient && isodateList == eDate){
+                            alert("El cliente escogido tiene demostracion en la fecha escogida. Escoja otro cliente");
                     }
                 }
             },
             checkDemonstratorConflict: function(){
-                for (var j = 0; j < this.demonstrators.length; j++){
+                for (var j = 0; j < this.events.length; j++){
                     var eDemonstrator = document.getElementById("demList");
-                    var eDate = document.querySelector('input[type="datetime-local"]');
+                    var eDate = document.getElementById("date-selected");
+
                     var strItemDemonstrator = eDemonstrator.options[eDemonstrator.selectedIndex].text;
                     var strItemDate = eDate.options[eDate.selectedIndex].text.toISOString();
 
-                    if(this.demonstrators[j].Title == strItemDemonstrator && this.demonstrators[j].event_date.toISOString() == strItemDate){
+                    var date = this.demonstrators[j].event_date;
+                    date.setHours(date.getHours() - 3);
+
+                    // now you can get the string
+                    var isodate = date.toISOString();
+
+                    if(this.demonstrators[j].Title == strItemDemonstrator && this.demonstrators[j].event_date == strItemDate){
                         //ALERT HERE
                     }
                 }
