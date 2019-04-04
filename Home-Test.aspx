@@ -63,12 +63,22 @@
       <!--<Approvals></Approvals>-->
        <router-view></router-view>
 
-<!--<form v-on:submit = "postListData"  method="post">
+<form v-on:submit = "postListData">
   <input v-model="Title" placeholder="Login">
+  <input v-model="RequestDigest" id="request">
+  {{Title}}
      <button type="submit">Submit</button>
 
-</form>-->
+</form>
    <highcharts :options="chartOptions"></highcharts>
+   <table>
+<tr>
+<th>Title</th>
+</tr>
+<tr v-for="user in users">
+<td>{{ user.Title }}</td>
+</tr>
+</table>
     </div>
 
     <script type="text/javascript">
@@ -121,28 +131,9 @@
 
       ];
       const router = new VueRouter({
-            routes // short for `routes: routes`
+            routes
          });
          Vue.use(HighchartsVue.default);
-        /* var Charts = new Vue ({
-           el: "#reports",
-           data() {
-             return {
-               chartOptions: {
-                 chart: {
-                   type: 'bar'
-                 },
-                 title: {
-                   text: 'test'
-                 },
-                 series: [{
-                   data: [10, 0, 8, 2, 6, 4, 5, 5]
-                 }]
-               }
-
-             }
-           }
-         });*/
   var vueApp = new Vue({
   el: "#app",
   router,
@@ -162,17 +153,18 @@
       },
       message: "Data Demonstration Management System",
       users: [],
-      Title:"hola"
+      Title:"hola",
+      RequestDigest:""
     }
   },
   created: function(){
+        this.getRequestDigestValue();
         this.getListData();
         this.postListData();
     },
   methods: {
        getListData: function(){
         var endPointUrl = "https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items";
-        console.log(endPointUrl);
        var headers = {
            "accept": "application/json;odata=verbose",
             "content-type": "application/json;odata=verbose"
@@ -184,31 +176,49 @@
               vm.users = response.data.value
             });
        },
-       postListData: function(){
-         var postData = {
-           __metadata: { type: "SP.Data.TestListItem" },
-           Title: this.Title
-         };
-         console.log(postData);
+       getRequestDigestValue: function(){
 
          var headers ={
            "Accept": "application/json;odata=verbose",
-           "Content-Type": "application/json;odata=verbose",
-           "X-HTTP-Method": "POST"
          };
-         console.log(headers);
-         axios.post("https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items", JSON.stringify(postData),headers)
-         .then(function (response) {
-           this.getListData();
-           console.log("hola");
+         var vm = this;
+         axios.post("https://aguadillana.sharepoint.com/DDMS/_api/contextinfo",headers)
+         .then(response => {
+           console.log(response.data.FormDigestValue);
+           vm.RequestDigest = response.data.FormDigestValue
          })
          .catch(function (error) {
            console.log(error);
            console.log("failed");
          });
+   },
+   postListData: function(){
+     var postData = JSON.stringify({
+      " __metadata": { "type": "SP.Data.TestListItem" },
+       "Title": this.Title
+     });
+     console.log(postData);
+
+     var headers ={
+       "Accept": "application/json;odata=verbose",
+       "Content-Type": "application/json;odata=verbose",
+       //"X-HTTP-Method": "POST",
+       "X-RequestDigest": document.getElementById("request").value
+     };
+     console.log(headers);
+     axios.post("https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items", postData,headers)
+     .then(response => {
+       this.getListData();
+       console.log(response.data.value);
+     })
+     .catch(function (error) {
+       console.log(error);
+       console.log("failed");
+     });
 
 
-   }
+}
+
  }
 
 

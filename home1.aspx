@@ -53,26 +53,36 @@
   <body>
     <div id="app">
         <v-app>
-          <img alt="La Aguadillana logo" src="img/DDMSLogo.png">
+          <img alt="La Aguadillana logo" src="https://aguadillana.sharepoint.com/sites/DDMS/Shared%20Documents/DDMSLogo.png">
           <v-toolbar>
              <v-toolbar-items>
-
-            <!--  <v-tab
-      v-for="route in routes"
-      :key="route"
-      href="route.path" router ripple><v-icon>{{route.icon}}</v-icon>{{route.name}}
-    </v-tab>-->
-
           <v-btn flat to= '/Planning' >Planning</v-btn>
           <v-btn flat to= '/ManageLists' >Manage List</v-btn>
           <v-btn flat to= '/Approvals' >Approval</v-btn>
           <v-btn flat to = '/Report' >Report</v-btn>
-
+          <v-btn flat href = 'https://aguadillana.sharepoint.com/sites/DDMS/SitePages/Forms/ByAuthor.aspx'>Settings</v-btn>
         </v-toolbar-items>
    </v-toolbar>
    <transition name="fade">
      <router-view></router-view>
    </transition>
+   <v-data-table
+   :items="users"
+   class="elevation-l"
+   prev-icon="mdi-menu-left"
+   next-icon="mdi-menu-right"
+   sort-icon="mdi-menu-down"
+   >
+   <template>
+   <th><td>Title</td><td>Tienda</td><td>Pueblo</td></th>
+ </template>
+   <template v-slot:items="props">
+     <td>{{props.item.Title}}</td>
+     <td class="text-xs-right">{{props.item.Tienda}}</td>
+      <td class="text-xs-right">{{props.item.Pueblo}}</td>
+    </template>
+ </v-data-table>
+
 
 
 
@@ -198,6 +208,7 @@
   data: {
     message: "Data Demonstration Management System",
     users: [],
+    headers:[],
     Title:"",
     routes,
     chartData: [
@@ -215,11 +226,28 @@
       }
   },
   created: function(){
+        //this.getListFields();
         this.getListData();
     },
   methods: {
+       getListFields: function(){
+        var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/fields";
+        console.log(endPointUrl);
+       var headers = {
+           "accept": "application/json;odata=verbose",
+            "content-type": "application/json;odata=verbose"
+       };
+           this.status = "getting data...";
+           var vm = this;
+           axios.get(endPointUrl).then(response => {
+              console.log(response.data.value);
+              vm.headers = response.data.value
+            });
+
+       },
+
        getListData: function(){
-        var endPointUrl = "https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items";
+        var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items";
         console.log(endPointUrl);
        var headers = {
            "accept": "application/json;odata=verbose",
