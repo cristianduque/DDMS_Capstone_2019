@@ -9,6 +9,9 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://code.highcharts.com/highcharts.js"></script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+  <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+
   <script type="text/javascript" src="https://cdn.rawgit.com/highcharts/highcharts-vue/1ce7e656/dist/script-tag/highcharts-vue.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-google-maps/0.1.21/vue-google-maps.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -136,6 +139,22 @@
     <script type="text/javascript">
      Vue.use(Vuetify);
      Vue.use(VueRouter);
+     var Charts = Vue.component('line-chart', {
+       extends: VueChartJs.Line,
+       mounted () {
+    this.renderChart({
+      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      datasets: [
+        {
+          label: 'Data One',
+          backgroundColor: '#f87979',
+          data: [40, 39, 10, 40, 39, 80, 40]
+        }
+      ]
+    }, {responsive: true, maintainAspectRatio: false})
+  }
+
+     });
       var Home = Vue.component('Home', {
         data: function (){
           return{
@@ -155,10 +174,350 @@
     var Planning =  Vue.component('Planning', {
         data: function (){
           return{
-            count:0
-          }
+      today: '2019-01-08',
+      events: [
+        {
+          title: 'Vacation',
+          details: 'Going to the beach!',
+          date: '2018-12-30',
+          open: false
         },
-        template: '<button v-on:click="count++"> You clicked me {{count}} times in Planning. </button>'
+        {
+          title: 'Vacation',
+          details: 'Going to the beach!',
+          date: '2018-12-31',
+          open: false
+        },
+        {
+          title: 'Vacation',
+          details: 'Going to the beach!',
+          date: '2019-01-01',
+          open: false
+        },
+        {
+          title: 'Meeting',
+          details: 'Spending time on how we do not have enough time',
+          date: '2019-01-07',
+          open: false
+        },
+        {
+          title: '30th Birthday',
+          details: 'Celebrate responsibly',
+          date: '2019-01-03',
+          open: false
+        },
+        {
+          title: 'New Year',
+          details: 'Eat chocolate until you pass out',
+          date: '2019-01-01',
+          open: false
+        },
+        {
+          title: 'Conference',
+          details: 'Mute myself the whole time and wonder why I am on this call',
+          date: '2019-01-21',
+          open: false
+        },
+        {
+          title: 'Hackathon',
+          details: 'Code like there is no tommorrow',
+          date: '2019-02-01',
+          open: false
+        }
+      ]
+    }
+  },
+    computed: {
+      // convert the list of events into a map of lists keyed by date
+      eventsMap () {
+        const map = {}
+        this.events.forEach(e => (map[e.date] = map[e.date] || []).push(e))
+        return map
+      }
+    },
+    methods: {
+      open (event) {
+        alert(event.title)
+      }
+    },    style:`<style lang="stylus" scoped>
+.my-event {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 2px;
+  background-color: #1867c0;
+  color: #ffffff;
+  border: 1px solid #1867c0;
+  width: 100%;
+  font-size: 12px;
+  padding: 3px;
+  cursor: pointer;
+  margin-bottom: 1px;
+}
+</style>`,
+        template: `
+        <v-layout wrap>
+      <v-flex
+        sm12
+        lg3
+        class="pa-3 mb-3 feature-pane"
+      >
+        <v-btn
+          fab
+          outline
+          small
+          absolute
+          left
+          color="primary"
+          @click="$refs.calendar.prev()"
+        >
+          <v-icon dark>
+            keyboard_arrow_left
+          </v-icon>
+        </v-btn>
+        <v-btn
+          fab
+          outline
+          small
+          absolute
+          right
+          color="primary"
+          @click="$refs.calendar.next()"
+        >
+          <v-icon
+            dark
+          >
+            keyboard_arrow_right
+          </v-icon>
+        </v-btn>
+        <br><br><br>
+        <v-select
+          v-model="type"
+          :items="typeOptions"
+          label="Type"
+        ></v-select>
+        <v-checkbox
+          v-model="dark"
+          label="Dark"
+        ></v-checkbox>
+        <v-select
+          v-model="color"
+          :items="colorOptions"
+          label="Color"
+        ></v-select>
+        <v-menu
+          ref="startMenu"
+          v-model="startMenu"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          :return-value.sync="start"
+          transition="scale-transition"
+          min-width="290px"
+          lazy
+          offset-y
+          full-width
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              v-model="start"
+              label="Start Date"
+              prepend-icon="event"
+              readonly
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="start"
+            no-title
+            scrollable
+          >
+            <v-spacer></v-spacer>
+            <v-btn
+              flat
+              color="primary"
+              @click="startMenu = false"
+            >
+              Cancel
+            </v-btn>
+            <v-btn
+              flat
+              color="primary"
+              @click="$refs.startMenu.save(start)"
+            >
+              OK
+            </v-btn>
+          </v-date-picker>
+        </v-menu>
+        <v-menu
+          v-if="hasEnd"
+          ref="endMenu"
+          v-model="endMenu"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          :return-value.sync="end"
+          transition="scale-transition"
+          min-width="290px"
+          lazy
+          offset-y
+          full-width
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              v-model="end"
+              label="End Date"
+              prepend-icon="event"
+              readonly
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="end"
+            no-title
+            scrollable
+          >
+            <v-spacer></v-spacer>
+            <v-btn
+              flat
+              color="primary"
+              @click="endMenu = false"
+            >
+              Cancel
+            </v-btn>
+            <v-btn
+              flat
+              color="primary"
+              @click="$refs.endMenu.save(end)"
+            >
+              OK
+            </v-btn>
+          </v-date-picker>
+        </v-menu>
+        <v-menu
+          ref="nowMenu"
+          v-model="nowMenu"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          :return-value.sync="now"
+          transition="scale-transition"
+          min-width="290px"
+          lazy
+          offset-y
+          full-width
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              v-model="now"
+              label="Today"
+              prepend-icon="event"
+              readonly
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="now"
+            no-title
+            scrollable
+          >
+            <v-spacer></v-spacer>
+            <v-btn
+              flat
+              color="primary"
+              @click="nowMenu = false"
+            >
+              Cancel
+            </v-btn>
+            <v-btn
+              flat
+              color="primary"
+              @click="$refs.nowMenu.save(now)"
+            >
+              OK
+            </v-btn>
+          </v-date-picker>
+        </v-menu>
+        <v-select
+          v-model="weekdays"
+          :items="weekdaysOptions"
+          label="Weekdays"
+        ></v-select>
+        <v-text-field
+          v-if="type === 'custom-weekly'"
+          v-model="minWeeks"
+          label="Minimum Weeks"
+          type="number"
+        ></v-text-field>
+        <v-select
+          v-if="hasIntervals"
+          v-model="intervals"
+          :items="intervalsOptions"
+          label="Intervals"
+        ></v-select>
+        <v-select
+          v-if="type === 'custom-daily'"
+          v-model="maxDays"
+          :items="maxDaysOptions"
+          label="# of Days"
+        ></v-select>
+        <v-select
+          v-if="hasIntervals"
+          v-model="styleInterval"
+          :items="styleIntervalOptions"
+          label="Styling"
+        ></v-select>
+      </v-flex>
+      <v-flex
+        sm12
+        lg9
+        class="pl-3"
+      >
+        <v-sheet height="500">
+          <v-calendar
+            ref="calendar"
+            v-model="start"
+            :type="type"
+            :start="start"
+            :end="end"
+            :min-weeks="minWeeks"
+            :max-days="maxDays"
+            :now="now"
+            :dark="dark"
+            :weekdays="weekdays"
+            :first-interval="intervals.first"
+            :interval-minutes="intervals.minutes"
+            :interval-count="intervals.count"
+            :interval-height="intervals.height"
+            :interval-style="intervalStyle"
+            :show-interval-label="showIntervalLabel"
+            :color="color"
+          >
+            <template v-slot:day="day">
+              <div
+                v-if="day.day % 3 === 0"
+                class="day"
+              >
+                day slot {{ day.date }}
+              </div>
+            </template>
+            <template v-slot:header="day">
+              <div
+                v-if="day.weekday % 2"
+                class="day-header"
+              >
+                day-header slot {{ day.date }}
+              </div>
+            </template>
+            <template v-slot:day-body="day">
+              <div
+                v-if="day.weekday % 3 === 2"
+                class="day-body"
+              >
+                day-body slot {{ day.date }}
+              </div>
+            </template>
+          </v-calendar>
+        </v-sheet>
+      </v-flex>
+    </v-layout> `
       });
       var ManageLists =  Vue.component('ManageLists', {
           data: function (){
@@ -166,7 +525,7 @@
               count:0
             }
           },
-          template: '<button v-on:click="count++"> You clicked me {{count}} times in Planning. </button>'
+        template: '<button v-on:click="count++"> You clicked me {{count}} times in Manage List. </button>'
         });
         var Report =  Vue.component('Report', {
             data: function (){
@@ -180,27 +539,10 @@
                     },
                     { text: 'Tienda', align: 'left',value: 'Tienda' },
                     { text: 'Pueblo', align: 'left',value: 'Pueblo' }
-                  ],
-                  chartData: [
-                      ['Year', 'Sales', 'Expenses', 'Profit'],
-                      ['2014', 1000, 400, 200],
-                      ['2015', 1170, 460, 250],
-                      ['2016', 660, 1120, 300],
-                      ['2017', 1030, 540, 350]
-                    ],
-                    chartOptions: {
-                      chart: {
-                        title: 'Company Performance',
-                        subtitle: 'Sales, Expenses, and Profit: 2014-2017',
-                      }
-                    }
+                  ]
               }
             },
-            template: `   <GChart
-    type="ColumnChart"
-    :data="chartData"
-    :options="chartOptions"
-  />
+            template: `   <div><line-chart></line-chart>
   <v-data-table
              :headers="headers"
              :items="forms"
@@ -215,7 +557,7 @@
                <td class="text-xs-right">{{props.item.Tienda}}</td>
                 <td class="text-xs-right">{{props.item.Pueblo}}</td>
               </template>
-           </v-data-table>`,
+           </v-data-table></div>`,
            created: function(){
                  //this.getListFields();
                  this.getListData();
