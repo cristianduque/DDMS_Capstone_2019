@@ -10,7 +10,7 @@
   <script src="https://code.highcharts.com/highcharts.js"></script>
 
   <script type="text/javascript" src="https://cdn.rawgit.com/highcharts/highcharts-vue/1ce7e656/dist/script-tag/highcharts-vue.min.js"></script>
-  <script src="vue-google-charts/dist/vue-google-charts.browser.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-google-maps/0.1.21/vue-google-maps.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <!--Vuetify-->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
@@ -66,22 +66,7 @@
    <transition name="fade">
      <router-view></router-view>
    </transition>
-   <v-data-table
-   :items="users"
-   class="elevation-l"
-   prev-icon="mdi-menu-left"
-   next-icon="mdi-menu-right"
-   sort-icon="mdi-menu-down"
-   >
-   <template>
-   <th><td>Title</td><td>Tienda</td><td>Pueblo</td></th>
- </template>
-   <template v-slot:items="props">
-     <td>{{props.item.Title}}</td>
-     <td class="text-xs-right">{{props.item.Tienda}}</td>
-      <td class="text-xs-right">{{props.item.Pueblo}}</td>
-    </template>
- </v-data-table>
+
 
 
 
@@ -186,10 +171,72 @@
         var Report =  Vue.component('Report', {
             data: function (){
               return{
-                count:0
+                forms: [],
+                headers: [
+                    {
+                      text: 'Key',
+                      align: 'left',
+                      value: 'Title'
+                    },
+                    { text: 'Tienda', align: 'left',value: 'Tienda' },
+                    { text: 'Pueblo', align: 'left',value: 'Pueblo' }
+                  ],
+                  chartData: [
+                      ['Year', 'Sales', 'Expenses', 'Profit'],
+                      ['2014', 1000, 400, 200],
+                      ['2015', 1170, 460, 250],
+                      ['2016', 660, 1120, 300],
+                      ['2017', 1030, 540, 350]
+                    ],
+                    chartOptions: {
+                      chart: {
+                        title: 'Company Performance',
+                        subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+                      }
+                    }
               }
             },
-            template: '<button v-on:click="count++"> You clicked me {{count}} times in Planning. </button>'
+            template: `   <GChart
+    type="ColumnChart"
+    :data="chartData"
+    :options="chartOptions"
+  />
+  <v-data-table
+             :headers="headers"
+             :items="forms"
+             class="elevation-l"
+             prev-icon="mdi-menu-left"
+             next-icon="mdi-menu-right"
+             sort-icon="mdi-menu-down"
+             >
+
+             <template v-slot:items="props">
+               <td>{{props.item.Title}}</td>
+               <td class="text-xs-right">{{props.item.Tienda}}</td>
+                <td class="text-xs-right">{{props.item.Pueblo}}</td>
+              </template>
+           </v-data-table>`,
+           created: function(){
+                 //this.getListFields();
+                 this.getListData();
+             },
+           methods:{
+             getListData: function(){
+              var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items";
+              console.log(endPointUrl);
+             var headers = {
+                 "accept": "application/json;odata=verbose",
+                  "content-type": "application/json;odata=verbose"
+             };
+                 this.status = "getting data...";
+                 var vm = this;
+                 axios.get(endPointUrl).then(response => {
+                    console.log(response.data.value);
+                    vm.forms = response.data.value
+                  });
+
+             }
+           }
           });
       const routes = [
       //{ path: '/', component: Home},
@@ -208,7 +255,15 @@
   data: {
     message: "Data Demonstration Management System",
     users: [],
-    headers:[],
+    headers: [
+        {
+          text: 'Key',
+          align: 'left',
+          value: 'Title'
+        },
+        { text: 'Tienda', align: 'left',value: 'Tienda' },
+        { text: 'Pueblo', align: 'left',value: 'Pueblo' }
+      ],
     Title:"",
     routes,
     chartData: [
@@ -225,10 +280,6 @@
         }
       }
   },
-  created: function(){
-        //this.getListFields();
-        this.getListData();
-    },
   methods: {
        getListFields: function(){
         var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/fields";
@@ -242,22 +293,6 @@
            axios.get(endPointUrl).then(response => {
               console.log(response.data.value);
               vm.headers = response.data.value
-            });
-
-       },
-
-       getListData: function(){
-        var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items";
-        console.log(endPointUrl);
-       var headers = {
-           "accept": "application/json;odata=verbose",
-            "content-type": "application/json;odata=verbose"
-       };
-           this.status = "getting data...";
-           var vm = this;
-           axios.get(endPointUrl).then(response => {
-              console.log(response.data.value);
-              vm.users = response.data.value
             });
 
        },
