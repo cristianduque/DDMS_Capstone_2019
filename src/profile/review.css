@@ -1,5 +1,5 @@
  /* Optional: Makes the sample page fill the window. */
-      html, body {
+html, body {
         height: 100%;
         padding: 0;
         background-color: #fafafa;
@@ -26,16 +26,77 @@
       text-decoration: none;
     }
 
-    menu{
-        margin-bottom: -75%,
-    }
-    #map {
-        height: 70%;
-        width: 70%;
+
+#menu{
+   
+    height: 10%;
+}  
+
+.chart_container{
+    position: relative;
+    padding: 50%;
+    padding-bottom: 100%; 
+    height: 0;
+    overflow: auto;
+    margin: auto;  
+}
+
+#empanados{
+        position: absolute;
+        top: 3%;
+        left: 3%;
+        right: 3%;
+        width:90%;
+        height:500px;
         margin-left: auto;
         margin-right: auto;
-        border-radius: 12px;
-      }
-div{
-    margin-bottom: 0px;
+}
+
+#embutidos{
+        position: absolute;
+        top: 3%;
+        left: 3%;
+        right: 3%;
+        width:90%;
+        height:500px;
+        margin-left: auto;
+        margin-right: auto;
+}
+/* Set-up map container position relative*/
+.map_container{
+    position: relative;
+    padding: 50%;
+    padding-bottom: 100%; 
+    height: 0;
+    overflow: auto;
+    margin: auto;  
+    
+}
+
+#map {
+        position: absolute;
+        top: 3%;
+        left: 3%;
+        right: 3%;
+        width:90%;
+        height:500px;
+        margin-left: auto;
+        margin-right: auto;
+        
+        
+      }   
+
+#hours{
+    height: 40%;
+    padding-bottom: 5%;
+}
+
+#products{
+    height: 50%;
+    padding-bottom: 5%
+}
+
+#attendance{
+    height: 50%;
+    margin-bottom: 20%;
 }

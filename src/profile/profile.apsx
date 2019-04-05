@@ -12,7 +12,6 @@
     
     <!-- Axios -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
     
     <!-- Vuetify -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
@@ -710,7 +709,7 @@ a:active {
         </v-flex>
     </v-layout>
 
-    
+         
           
     </v-container>  
     

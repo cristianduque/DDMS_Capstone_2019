@@ -7,16 +7,12 @@
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
     
-    <!-- Axios -->
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    
     <!-- Vuetify -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
 
     <!-- Google Charts API -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -87,10 +83,6 @@
       }
     </script>
    
-    <!-- Page settings -->
-    <meta name="viewport" content="initial-scale=1.0">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
     
     <!-- Link to profile CSS -->
 <!--    <link rel="stylesheet" type="text/css" href="review.css">-->

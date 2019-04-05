@@ -4,6 +4,11 @@
 // draws it.
 function drawChart() {
     
+    console.log("Hello " + _spPageContextInfo.userLoginName);
+
+
+
+    
         // Some raw data (not necessarily accurate)
         var empanados = [['Date', 'Sales'],
                         ['2004/05', 5],
@@ -36,6 +41,21 @@ function drawChart() {
         data[0] = google.visualization.arrayToDataTable(empanados);
         data[1] = google.visualization.arrayToDataTable(embutidos);
 
+       // Fetch Table
+       var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')";
+                console.log(endPointUrl);
+                var headers = {
+                    "accept": "application/json;odata=verbose",
+                    "content-type": "application/json;odata=verbose"
+                };
+                this.status = "getting data...";
+                
+                axios.get(endPointUrl).then(response =>  {
+                    console.log(response.data.value[0].Title);
+                });
+                    
+                
+    
         // Set chart options
         var options = {'title':'Empanados',                     // set title
                        'legend': 'none',                        // remove legend
@@ -47,8 +67,8 @@ function drawChart() {
                                     duration: 500,              // animation time
                                     easing: 'out',},            // Fast out, slow in
                        'ticks': [0, 3, 6], // display labels every 25
-                       'width': 600,
-                       'height':300};
+                       'width': 'auto',
+                       'height': 'auto',};
     
         // Controls which chart to display
         var current = 0; // 0 = Empanados, 1 = Embutidos
@@ -56,6 +76,8 @@ function drawChart() {
         // Create and draw the visualization.
         var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
         var button = document.getElementById("chart_div");
+    
+    
     
         // Disabling the button while the chart is drawing.
         function drawChart() {
@@ -73,16 +95,21 @@ function drawChart() {
         }
     
         //chart.draw(data, options);
-    
         
-        button.onclick = function() {
-          current = 1 - current; // Switch Chart
-          drawChart();
+//        button.onclick = function() {
+//          current = 1 - current; // Switch Chart
+//          drawChart();
+//        }
+         
+        window.onresize = function(){
+            drawChart();
         }
         
+        
+       
         // Draw chart without key press
         drawChart(); 
-    
+        
+        
       }
-
 

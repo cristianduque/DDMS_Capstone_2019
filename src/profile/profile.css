@@ -1,4 +1,5 @@
 /* use # for id and . for class*/
+
 /* Optional: Makes the sample page fill the window. */
 html, body {
         height: 100%;
@@ -6,6 +7,7 @@ html, body {
         background-color: #fafafa;
       } 
 
+/* Avoid links to change color and etc. */
 a:link {
   color: black;
   background-color: transparent;
@@ -27,25 +29,92 @@ a:active {
   text-decoration: none;
 }
 
-
-/* Always set the map height explicitly to define the size of the div element that contains the map. */
-#map {
-        height: 70%;
-        width: 70%;
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 12px;
-        margin-bottom: 50px;
-        margin-top: 20px;
-        
-      }      
-
-.chart{
-        margin: auto;
-        margin-left: auto;
-        margin-right: auto;
+/* Adjust Menu vertical height problem */
+#menu{
+   
+    height: 10%;
 }
 
+#btn1{
+    height: 5%;
+}
+
+#btn2{
+    height: 5%;
+}
+
+#list{
+    padding: 3%;
+}
+
+/* Set-up map container position relative*/
+.map_container{
+    position: relative;
+    padding: 50%;
+    padding-bottom: 100%; 
+    height: 0;
+    overflow: auto;
+    margin: auto;  
+    
+}
+
+#map {
+        position: absolute;
+        top: 3%;
+        left: 3%;
+        right: 3%;
+        width:90%;
+        height:500px;
+        margin-left: auto;
+        margin-right: auto;
+        
+        
+      }      
+#demos{
+    
+    padding: 3%;
+    height: 0;
+    margin-bottom: 10%;
+}
+
+/*
+.chart_container {
+    position: relative;
+    padding-bottom: 100%;
+    padding-top: 10%;
+    height: 0;
+    overflow:hidden;
+    margin-top: -600px;
+    margin-bottom: 10px;
+}
+*/
+/*
+
+#chart_div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width:100%;
+    height:500px;
+}
+*/
+
+
+/*
+#chart_div{
+      margin-left: auto;
+      margin-right: auto;
+      
+    
+}
+*/
+
+
+/*
+#menu{
+    vertical-align: bottom;
+}
+*/
 .results{
     margin: auto;
 /*
