@@ -63,7 +63,7 @@
       <!--<Approvals></Approvals>-->
        <router-view></router-view>
 
-<form v-on:submit = "postListData">
+<form v-on:submit = "getRequestDigestValue">
   <input v-model="Title" placeholder="Login">
   <input v-model="RequestDigest" id="request">
   {{Title}}
@@ -177,15 +177,36 @@
             });
        },
        getRequestDigestValue: function(){
-
+         var postData = JSON.stringify({
+          " __metadata": { "type": "SP.Data.TestListItem" },
+           "Title": this.Title
+         });
          var headers ={
            "Accept": "application/json;odata=verbose",
          };
+
          var vm = this;
          axios.post("https://aguadillana.sharepoint.com/DDMS/_api/contextinfo",headers)
          .then(response => {
-           console.log(response.data.FormDigestValue);
+           console.log(response);
            vm.RequestDigest = response.data.FormDigestValue
+           var headers1 ={
+             "Accept": "application/json;odata=verbose",
+             "Content-Type": "application/json;odata=verbose",
+             "X-HTTP-Method": "POST",
+             "crossDomain": "true",
+             "X-RequestDigest": response.data.FormDigestValue
+           };
+           console.log(headers1);
+           axios.post("https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items", postData,headers1)
+           .then(response => {
+             this.getListData();
+             console.log(response.data.value);
+           })
+           .catch(function (error) {
+             console.log(error);
+             console.log("failed");
+           });
          })
          .catch(function (error) {
            console.log(error);

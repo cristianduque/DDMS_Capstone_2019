@@ -58,6 +58,7 @@
         <v-app>
           <img alt="La Aguadillana logo" src="https://aguadillana.sharepoint.com/sites/DDMS/Shared%20Documents/DDMSLogo.png">
           <v-toolbar>
+             <v-spacer></v-spacer>
              <v-toolbar-items>
           <v-btn flat to= '/Planning' >Planning</v-btn>
           <v-btn flat to= '/ManageLists' >Manage List</v-btn>
@@ -65,6 +66,7 @@
           <v-btn flat to = '/Report' >Report</v-btn>
           <v-btn flat href = 'https://aguadillana.sharepoint.com/sites/DDMS/SitePages/Forms/ByAuthor.aspx'>Settings</v-btn>
         </v-toolbar-items>
+        <v-spacer></v-spacer>
    </v-toolbar>
    <transition name="fade">
      <router-view></router-view>
@@ -151,6 +153,42 @@
           data: [40, 39, 10, 40, 39, 80, 40]
         }
       ]
+    }, {responsive: true, maintainAspectRatio: false})
+  }
+
+     });
+     var Charts = Vue.component('bar-chart', {
+       extends: VueChartJs.Bar,
+       mounted () {
+    this.renderChart({
+      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      datasets: [
+        {
+          label: 'Data One',
+          backgroundColor: '#f87979',
+          data: [40, 39, 10, 40, 39, 80, 40]
+        }
+      ]
+    }, {responsive: true, maintainAspectRatio: false})
+  }
+
+     });
+     var Charts = Vue.component('pie-chart', {
+       extends: VueChartJs.Pie,
+       mounted () {
+    this.renderChart({
+     labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+     datasets: [
+       {
+         backgroundColor: [
+           '#41B883',
+           '#E46651',
+           '#00D8FF',
+           '#DD1B16'
+         ],
+         data: [40, 20, 80, 10]
+       }
+     ]
     }, {responsive: true, maintainAspectRatio: false})
   }
 
@@ -542,7 +580,8 @@
                   ]
               }
             },
-            template: `   <div><line-chart></line-chart>
+            template: `   <div>
+            <line-chart></line-chart>
   <v-data-table
              :headers="headers"
              :items="forms"
@@ -557,7 +596,11 @@
                <td class="text-xs-right">{{props.item.Tienda}}</td>
                 <td class="text-xs-right">{{props.item.Pueblo}}</td>
               </template>
-           </v-data-table></div>`,
+           </v-data-table>
+           <bar-chart></bar-chart>
+           <pie-chart></pie-chart>
+           </div>
+           `,
            created: function(){
                  //this.getListFields();
                  this.getListData();
