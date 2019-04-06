@@ -710,9 +710,7 @@ a:active {
         </v-flex>
     </v-layout>
 
-         <script>
-    console.log("Hello " + _spPageContextInfo.userLoginName);
-    </script>
+    
           
     </v-container>  
     
