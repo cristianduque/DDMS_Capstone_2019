@@ -34,14 +34,14 @@
                 </v-card-title>
                 <v-card-text>
                   <span id="article_info" v-for="n in fieldList" >
-                    <v-select label="Artículo" :items="items" v-model="n.artículo" required></v-select>
-                    <v-text-field label="Cantidad(pqt.)"  type="number" v-model="n.cantidad" required></v-text-field>
-                    <v-text-field label="Precio" @blur="calculateTotal" prefix="$" type="number" step=".01" v-model="n.precio" required></v-text-field>
+                    <v-select label="Artículo" :readonly="!inputShow" :items="items" v-model="n.artículo" required></v-select>
+                    <v-text-field label="Cantidad(pqt.)" :readonly="!inputShow"  type="number" v-model="n.cantidad" required></v-text-field>
+                    <v-text-field label="Precio" :readonly="!inputShow" @blur="calculateTotal" prefix="$" type="number" step=".01" v-model="n.precio" required></v-text-field>
                   </span>
                     <v-text-field label="Total" v-model="total" prefix="$" type="number" readonly></v-text-field>
                 </v-card-text>
                 <v-card-actions>
-                  <div class="add_button">
+                  <div class="add_button" :hidden="!inputShow">
           					<v-btn type="button" @click="addFields">Añadir otro Artículo</v-btn>
           				</div>
                 </v-card-actions>
@@ -57,10 +57,12 @@
                   aspect-ratio="1"
                   class="grey lighten-2"
                 ></v-img>
-                  <input type="file" id="evidence" name="article_evidence" accept="image/*" multiple required>
+                  <input :hidden="!inputShow" type="file" id="evidence" name="article_evidence" accept="image/*" multiple required>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn type="button" @click="deletePhoto">Borrar Foto</v-btn>
+									<div :hidden="!inputShow">
+                  	<v-btn type="button" @click="deletePhoto">Borrar Foto</v-btn>
+									</div>
                 </v-card-actions>
               </v-card>
               <br>
@@ -69,7 +71,7 @@
                   <h4>Acción</h4>
                 </v-card-title>
                 <v-card-actions>
-                  <span id="demonstrator">
+                  <span id="demonstrator" :hidden="!inputShow">
                     <div class="cancel_button">
                       <v-btn type="button" @click="alert('cancel')">Cancelar</v-btn >
                     </div>
@@ -80,11 +82,9 @@
               				<v-btn type="button" @click="alert('submit')">Someter</v-btn >
               			</div>
                   </span>
-                  <span id="demonstrator2" hidden>
-                      <div class="edit_button">
-              					<v-btn type="button">Editar</v-btn>
-              				</div>
-                  </span>
+                  <div class="edit_button" :hidden="inputShow">
+              			<v-btn @click="inputShow=true" type="button">Editar</v-btn>
+              		</div>
                 </v-card-actions>
               </v-card>
             </v-form>
@@ -114,9 +114,9 @@
   			 "Aceite",
   			 "Platos"
   		 ],
-  		 inputShow: true,
+  		 inputShow: false,
        total: "",
-       src: `https://picsum.photos/500/300?image=${5 + 10}`
+       src: `../Capture.PNG`
   	},
     methods:{
       addFields: function(){
@@ -145,17 +145,13 @@
   					buttons: ["No","Yes"]
   				});
   			}else if(text == 'submit'){
-  				swal("Warning!!!","Are you sure you want to submit the form?", "warning",{
-  					buttons: ["No","Yes"]
-  				});
-  			}else if(text == 'deny'){
-  				swal("Warning!!!","Are you sure you want to deny the form?", "warning",{
-  					buttons: ["No","Yes"]
-  				});
-  			}else if(text == 'approve'){
-  			 	swal("Warning!!!","Are you sure you want to approve the form?", "warning",{
-  			 		buttons: ["No","Yes"]
-  			 	});
+					if(this.src != ''){
+						swal("Warning!!!","Are you sure you want to submit the form?", "warning",{
+							buttons: ["No","Yes"]
+						});
+					}else{
+						swal("Warning!!!","Cannot submit form without photo evidence", "error");
+					}
   			}else{
   			swal("Warning!!!","Are you sure you want to save the form?", "warning",{
   				buttons: ["No","Yes"]
