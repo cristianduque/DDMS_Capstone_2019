@@ -149,6 +149,7 @@
 						swal("Warning!!!","Are you sure you want to submit the form?", "warning",{
 							buttons: ["No","Yes"]
 						});
+						window.open('mailto:test@example.com?subject=Form%20Submission&body=Demostradora%20ha%20sometido%20un%20formulario');
 					}else{
 						swal("Warning!!!","Cannot submit form without photo evidence", "error");
 					}

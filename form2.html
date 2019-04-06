@@ -85,7 +85,7 @@
                 <v-card-actions>
                   <span id="approvals-end">
 										<div class="end_button">
-              				<v-btn  type="button" @click="alert('save')">Terminar</v-btn >
+              				<v-btn  type="button" @click="alert('end')">Terminar</v-btn >
               			</div>
 										<div class="cancel_button">
                       <v-btn type="button" @click="alert('cancel')">Cancelar</v-btn >
@@ -148,32 +148,20 @@
 
       alert: function(text){
   			if(text == 'cancel'){
-  				swal("Warning!!!","Are you sure you want to cancel the form?", "warning",{
+  				swal("Warning!!!","Are you sure you want to cancel?", "warning",{
   					buttons: ["No","Yes"]
   				});
-  			}else if(text == 'submit'){
-  				swal("Warning!!!","Are you sure you want to submit the form?", "warning",{
-  					buttons: ["No","Yes"]
-  				});
-  			}else if(text == 'deny'){
-  				swal("Warning!!!","Are you sure you want to deny the form?", "warning",{
-  					buttons: ["No","Yes"]
-  				});
-  			}else if(text == 'approve'){
-  			 	swal("Warning!!!","Are you sure you want to approve the form?", "warning",{
-  			 		buttons: ["No","Yes"]
-  			 	});
   			}else{
-  			swal("Warning!!!","Are you sure you want to save the form?", "warning",{
-  				buttons: ["No","Yes"]
+					swal("Warning!!!","Are you sure of your decisions?", "warning",{
+  					buttons: ["No","Yes"]
   				});
-  			}
+					window.open('mailto:test@example.com?subject=Form%20Status&body=su%20formulario%20ha%20sido%20denegado/aprovado');
+				}
   		},
 
       deletePhoto: function(){
         this.src='';
       }
-
     }
   })
 </script>
