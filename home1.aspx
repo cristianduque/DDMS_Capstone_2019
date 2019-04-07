@@ -497,8 +497,14 @@
               return{
                 forms: [],
                 ventas: [],
+                rutas:[],
+                clientes:[],
+                empaque:[],
+                familia:[],
                 ventasPorMes:[0,0,0,0,0,0,0,0,0,0,0,0],
                 demoPorMes:[0,0,0,0,0,0,0,0,0,0,0,0],
+                demoPorRoutes:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                ventasPorRoutes:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 tiendas: [],
                 mes:['January','February','March','April','May','June','July','August','September','October','November','December'],
                 headers: [
@@ -544,6 +550,8 @@
           <line-chart :labels="mes" :data="ventasPorMes"></line-chart>
             <line-chart :labels="mes" :data="demoPorMes"></line-chart>
           <bar-chart :labels="tiendas" :data="ventas"></bar-chart>
+          <bar-chart :labels="rutas" :data="demoPorRoutes"></bar-chart>
+          <bar-chart :labels="rutas" :data="ventasPorRoutes"></bar-chart>
            <v-data-table
              :headers="headers"
              :items="forms"
@@ -557,6 +565,7 @@
                <td>{{props.item.Title}}</td>
                <td class="text-xs-right">{{props.item.Tienda}}</td>
                 <td class="text-xs-right">{{props.item.Pueblo}}</td>
+                <td class="text-xs-right">{{props.item.route}}</td>
                 <td class="text-xs-right">{{props.item.PrecioEspecial}}</td>
                 <td class="text-xs-right">{{props.item.UnidadesVendidas}}</td>
               </template>
@@ -631,6 +640,9 @@
            methods:{
              getListData: function(){
               var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items";
+              var endPointUrl1 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Routes')/items";
+              var endPointUrl2 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items";
+              var endPointUrl3 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items";
               console.log(endPointUrl);
              var headers = {
                  "accept": "application/json;odata=verbose",
@@ -639,10 +651,40 @@
                  this.status = "getting data...";
                  var vm = this;
                  var sales=0;
-                 var i=0;
+                 var i=0,j=0;
                  var fecha;
                  var m;
                  //var demo=0;
+                 axios.get(endPointUrl1).then(response => {
+                    console.log(response.data.value);
+                    for(j; j< response.data.value.length; j++){
+                      //console.log(response.data.value[j].Title);
+                      vm.rutas[j] = response.data.value[j].Title;
+                    }
+                  });
+                  axios.get(endPointUrl2).then(response => {
+                     console.log(response.data.value);
+                     for(j; j< response.data.value.length; j++){
+                       //console.log(response.data.value[j].Title);
+                       vm.familia[j] = response.data.value[j].product_family;
+                       vm.empaque[j] = response.data.value[j].product_item_number;
+                     }
+                   });
+                   axios.get(endPointUrl2).then(response => {
+                      console.log(response.data.value);
+                      for(j; j< response.data.value.length; j++){
+                        //console.log(response.data.value[j].Title);
+                        vm.familia[j] = response.data.value[j].product_family;
+                        vm.empaque[j] = response.data.value[j].product_item_number;
+                      }
+                    });
+                    axios.get(endPointUrl3).then(response => {
+                       console.log(response.data.value);
+                       for(j; j< response.data.value.length; j++){
+                         //console.log(response.data.value[j].Title);
+                         vm.clientes[j] = response.data.value[j].clients_name;
+                       }
+                     });
 
                  axios.get(endPointUrl).then(response => {
                     console.log(response.data.value);
@@ -652,6 +694,8 @@
                       vm.tiendas.push(vm.forms[i].Tienda);
                       vm.ventasPorMes[fecha.getMonth()] += vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
                       vm.demoPorMes[fecha.getMonth()]++;
+                      vm.demoPorRoutes[vm.rutas.indexOf(vm.forms[i].route)]++;
+                      vm.ventasPorRoutes[vm.rutas.indexOf(vm.forms[i].route)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
                       console.log(vm.ventasPorMes);
                       console.log(vm.tiendas);
                       sales = vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
