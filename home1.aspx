@@ -13,45 +13,12 @@
   <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
 
   <script type="text/javascript" src="https://cdn.rawgit.com/highcharts/highcharts-vue/1ce7e656/dist/script-tag/highcharts-vue.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-google-maps/0.1.21/vue-google-maps.js"></script>
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-google-maps/0.1.21/vue-google-maps.js"></script>-->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <!--Vuetify-->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-  <style>
-  /* #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
-  }
-  body {
-    background-color: #EEEEEE;
-    font-family: 'Montserrat', sans-serif;
-    display: grid;
-    grid-template-rows: auto;
-    justify-items: center;
-    padding-top: 50px;
-  }
-
- nav {
-    padding: 20px 20px 20px 0;
-  }
-
-  nav a {
-    padding: 25px;
-    text-decoration: none;
-    background: #fff;
-    border-radius: 3px;
-    color: rgb(0, 110, 255);
-    font-weight: bold;
-    margin-right: 45px;
-    font-size: 35px;
-  }*/
-  </style>
   </head>
   <body>
     <div id="app">
@@ -71,67 +38,6 @@
    <transition name="fade">
      <router-view></router-view>
    </transition>
-
-
-
-
-
-
-      <!--<img alt="La Aguadillana logo" src="img/DDMSLogo.png">
-      <!--<h1>{{message}}</h1>
-      <img alt="La Aguadillana logo" src="img/LaAguadillanaLogo.png">-->
-
-
-      <!--  <v-navigation-drawer permanent>
-    <v-toolbar flat>
-      <v-list>
-        <v-list-tile>
-          <v-list-tile-title class="title">
-            Application
-          </v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-toolbar>
-
-    <v-divider></v-divider>
-
-    <v-list dense class="pt-0">
-      <v-list-tile>
-
-      <v-list-tile-content>
-          <v-list-tile-title><router-link to = "/Planning">Planning</router-link></v-list-tile-title>
-
-          <v-list-tile-title><router-link to = "/ManageLists">Manage Lists</router-link></v-list-tile-title>
-
-          <v-list-tile-title><router-link to = "/Approvals">Approvals</router-link></v-list-tile-title>
-
-            <v-list-tile-action>
-            <v-icon light x-large>dashboard</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-title><router-link to = "/Report">Report</router-link></v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
- </v-list>
-        <!--<router-link to = "/">Home</router-link>-->
-  <!--</v-navigation-drawer>-->
-
-      <!--<Approvals></Approvals>-->
-       <!--<router-view></router-view>
-       <table>
-<tr>
-    <th>Title</th>
-</tr>
-<tr v-for="user in users">
-    <td>{{ user.Title }}</td>
-</tr>
-</table>
-<form v-on:submit = "postListData"  action="home.aspx" method="post">
-  <input v-model="Title" placeholder="Login">
-     <button type="submit">Submitr</button>
-
-</form>-->
-
 </v-app>
     </div>
     <!--Vuetify-->
@@ -143,14 +49,15 @@
      Vue.use(VueRouter);
      var Charts = Vue.component('line-chart', {
        extends: VueChartJs.Line,
+       props: ['data', 'labels'],
        mounted () {
     this.renderChart({
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      labels: this.labels,
       datasets: [
         {
           label: 'Data One',
           backgroundColor: '#f87979',
-          data: [40, 39, 10, 40, 39, 80, 40]
+          data: this.data
         }
       ]
     }, {responsive: true, maintainAspectRatio: false})
@@ -159,38 +66,43 @@
      });
      var Charts = Vue.component('bar-chart', {
        extends: VueChartJs.Bar,
+        props: ['data', 'labels'],
        mounted () {
     this.renderChart({
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      labels: this.labels,
       datasets: [
         {
           label: 'Data One',
           backgroundColor: '#f87979',
-          data: [40, 39, 10, 40, 39, 80, 40]
+          data: this.data
         }
       ]
-    }, {responsive: true, maintainAspectRatio: false})
+    },{responsive: true, maintainAspectRatio: false})
   }
 
      });
      var Charts = Vue.component('pie-chart', {
        extends: VueChartJs.Pie,
+       props: ['data', 'labels'],
        mounted () {
     this.renderChart({
-     labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+     labels: this.labels,
      datasets: [
        {
          backgroundColor: [
            '#41B883',
            '#E46651',
            '#00D8FF',
-           '#DD1B16'
+           '#DD1B16',
+           'darkgreen',
+           'darkred',
+           'darkblue'
          ],
-         data: [40, 20, 80, 10]
+         data: this.data
        }
      ]
-    }, {responsive: true, maintainAspectRatio: false})
-  }
+   }, {responsive: true, maintainAspectRatio: false})
+ }
 
      });
       var Home = Vue.component('Home', {
@@ -569,6 +481,8 @@
             data: function (){
               return{
                 forms: [],
+                ventas: [],
+                tiendas: [],
                 headers: [
                     {
                       text: 'Key',
@@ -576,13 +490,42 @@
                       value: 'Title'
                     },
                     { text: 'Tienda', align: 'left',value: 'Tienda' },
-                    { text: 'Pueblo', align: 'left',value: 'Pueblo' }
-                  ]
+                    { text: 'Pueblo', align: 'left',value: 'Pueblo' },
+                    { text: 'Precio PrecioEspecial', align: 'left',value: 'PrecioEspecial' },
+                    { text: 'Unidades Vendidas', align: 'left',value: 'UnidadesVendidas' }
+                  ],
+                  tab: null,
+      items: [
+        'web', 'shopping', 'videos'
+      ]
               }
             },
-            template: `   <div>
-            <line-chart></line-chart>
-  <v-data-table
+            template: ` <div>
+            <template>
+       <v-tabs
+         v-model="tab"
+         color="cyan"
+         grow
+       >
+         <v-tabs-slider color="yellow"></v-tabs-slider>
+
+         <v-tab
+           v-for="item in items"
+           :key="item"
+         >
+           {{ item }}
+         </v-tab>
+       </v-tabs>
+     </template>
+
+     <v-tabs-items v-model="tab">
+
+      <v-tab-item>
+        <v-card flat>
+          <v-card-text>
+          <line-chart :labels="tiendas" :data="ventas"></line-chart>
+          <bar-chart :labels="tiendas" :data="ventas"></bar-chart>
+           <v-data-table
              :headers="headers"
              :items="forms"
              class="elevation-l"
@@ -595,15 +538,76 @@
                <td>{{props.item.Title}}</td>
                <td class="text-xs-right">{{props.item.Tienda}}</td>
                 <td class="text-xs-right">{{props.item.Pueblo}}</td>
+                <td class="text-xs-right">{{props.item.PrecioEspecial}}</td>
+                <td class="text-xs-right">{{props.item.UnidadesVendidas}}</td>
               </template>
            </v-data-table>
-           <bar-chart></bar-chart>
-           <pie-chart></pie-chart>
+
+           </v-card-text>
+
+           </v-card>
+           </v-tab-item>
+
+           <v-tab-item>
+             <v-card flat>
+               <v-card-text>
+               <bar-chart :labels="tiendas" :data="ventas"></bar-chart>
+                <v-data-table
+                  :headers="headers"
+                  :items="forms"
+                  class="elevation-l"
+                  prev-icon="mdi-menu-left"
+                  next-icon="mdi-menu-right"
+                  sort-icon="mdi-menu-down"
+                  >
+
+                  <template v-slot:items="props">
+                    <td>{{props.item.Title}}</td>
+                    <td class="text-xs-right">{{props.item.Tienda}}</td>
+                     <td class="text-xs-right">{{props.item.Pueblo}}</td>
+                     <td class="text-xs-right">{{props.item.PrecioEspecial}}</td>
+                     <td class="text-xs-right">{{props.item.UnidadesVendidas}}</td>
+                   </template>
+                </v-data-table>
+
+                </v-card-text>
+
+                </v-card>
+                </v-tab-item>
+
+                <v-tab-item>
+                  <v-card flat>
+                    <v-card-text>
+                    <pie-chart v-bind:labels="['four', 'five', 'six']"v-bind:data="[8,9,10]"></pie-chart>
+                     <v-data-table
+                       :headers="headers"
+                       :items="forms"
+                       class="elevation-l"
+                       prev-icon="mdi-menu-left"
+                       next-icon="mdi-menu-right"
+                       sort-icon="mdi-menu-down"
+                       >
+
+                       <template v-slot:items="props">
+                         <td>{{props.item.Title}}</td>
+                         <td class="text-xs-right">{{props.item.Tienda}}</td>
+                          <td class="text-xs-right">{{props.item.Pueblo}}</td>
+                          <td class="text-xs-right">{{props.item.PrecioEspecial}}</td>
+                          <td class="text-xs-right">{{props.item.UnidadesVendidas}}</td>
+                        </template>
+                     </v-data-table>
+
+                     </v-card-text>
+
+                     </v-card>
+                     </v-tab-item>
+    </v-tabs-items>
            </div>
            `,
            created: function(){
                  //this.getListFields();
                  this.getListData();
+                 console.log(this.forms);
              },
            methods:{
              getListData: function(){
@@ -615,11 +619,21 @@
              };
                  this.status = "getting data...";
                  var vm = this;
+                 var sales;
+                 var i=0;
                  axios.get(endPointUrl).then(response => {
                     console.log(response.data.value);
                     vm.forms = response.data.value
-                  });
+                    //console.log(vm.forms);
+                    for(i; i< vm.forms.length; i++){
+                      vm.tiendas.push(vm.forms[i].Tienda);
+                      console.log(vm.tiendas);
+                      sales = vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
+                      console.log(sales);
+                      vm.ventas.push(sales);
+                    }
 
+                  });
              }
            }
           });
@@ -640,15 +654,6 @@
   data: {
     message: "Data Demonstration Management System",
     users: [],
-    headers: [
-        {
-          text: 'Key',
-          align: 'left',
-          value: 'Title'
-        },
-        { text: 'Tienda', align: 'left',value: 'Tienda' },
-        { text: 'Pueblo', align: 'left',value: 'Pueblo' }
-      ],
     Title:"",
     routes,
     chartData: [

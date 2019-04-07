@@ -195,8 +195,9 @@
              "Content-Type": "application/json;odata=verbose",
              "X-HTTP-Method": "POST",
              "crossDomain": "true",
-             "X-RequestDigest": response.data.FormDigestValue
-           };
+             "X-RequestDigest": response.data.FormDigestValue,
+ "x-requestforceauthentication": true, "If-Match": "*"
+                      };
            console.log(headers1);
            axios.post("https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items", postData,headers1)
            .then(response => {
