@@ -4,7 +4,7 @@
 // draws it.
 function drawChart() {
     
-        // Gloabl variable scope
+        // Global variable scope
         var family ="";
         var form  = "";
         var form2 = "";
@@ -60,7 +60,7 @@ function drawChart() {
                     
             
                     // Get Reports by user email, order by date asc (last first), get top 10 and get only sales and product
-                    var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=email eq '"+ user_email +"'&$orderby=Fecha asc &$select=UnidadesVendidas,Producto,Title,Fecha";
+                    var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=email eq '"+ user_email +"'&$orderby=Fecha asc &$select=UnidadesVendidas,Producto,Title,Fecha,event_id";
                     var headers = {
                                 "async": false,
                                 "accept": "application/json;odata=verbose",
@@ -131,8 +131,8 @@ function drawChart() {
                                                 var j;
                                                 for( j=0; ; j++ ){
                                                     if(typeof response.data.value[j] === 'undefined'){break}
-                                                    console.log(response.data.value[j].Title);
-                                                    console.log(response.data.value[j].UnidadesVendidas);
+                                                    //console.log(response.data.value[j].Title);            //debug
+                                                    //console.log(response.data.value[j].UnidadesVendidas); //debug
                                                     let units2 = Number(form3[j].UnidadesVendidas);
                                                     units = Number(units) + units2; 
                                                     //console.log("Extras");       //debug
@@ -168,24 +168,19 @@ function drawChart() {
                                             }
                                             
                                         }); //Third Query
-                                       
-                                 
-                                  
-            
+
                                         
                                         }
                                     
                                 }
-                        
-                              
-                              
+  
     
                             }); // Second Query
                     
                 }); // First Query
         
-                console.log(empanados);
-                console.log(embutidos);
+                //console.log(empanados); //debug
+                //console.log(embutidos); //debug
    
                                                                
         function drawChart() {
@@ -203,9 +198,6 @@ function drawChart() {
                               }
          
 
-        
-        
-       
         // Draw chart without key press
         drawChart(); 
         

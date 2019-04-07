@@ -81,7 +81,7 @@ var table_profile = new Vue({
                     user_email = response.data.Email; 
                     //console.log("Fetch Reports"); // debug
                     // Get Reports by user email, order by date asc (last first), get top 10 and get only sales and product
-                    var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=email eq '"+ user_email +"'&$orderby=Fecha asc &$select=UnidadesVendidas,Producto,Title,Fecha";
+                    var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=email eq '"+ user_email +"'&$orderby=Fecha asc &$select=UnidadesVendidas,Producto,Title,Fecha,event_id";
                     var headers = {
                                 "async": false,
                                 "accept": "application/json;odata=verbose",

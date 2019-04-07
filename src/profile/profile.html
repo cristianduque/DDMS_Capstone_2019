@@ -218,6 +218,7 @@ a:active {
             </script>
         </v-flex>
     </v-layout> 
+    
    <!--     Alert of upcoming demo -->
    <!--
     <h2 id="AH!" >Alertas</h2>
@@ -244,48 +245,27 @@ a:active {
     
     <!-- Buttons   -->
     
-       <v-layout row>
-           
-        <v-flex xs3 >
+    <v-layout row> 
+        <v-flex xs12 >
            <div id="btn1">
               <v-app id="inspire">
                 <div class="text-xs-center">
-                  <v-btn>
-                   Touch Me
+                  <v-btn id="option">
+                   Cambiar
                   </v-btn>
                 </div>
               </v-app>       
             </div>  
           </v-flex>
-          
-        
-        <v-flex xs3 >
-           <div id="btn2">
-              <v-app id="inspire">
-                <div class="text-xs-center">
-                  <v-btn>
-                   Ouch!
-                  </v-btn>
-                </div>
-              </v-app>       
-            </div>  
-           </v-flex>
            
            
     </v-layout> 
-    
-     <script>
+    <script>
         new Vue({
             el: '#btn1',
         })
     </script>
     
-    <script>
-        new Vue({
-            el: '#btn2',
-        })
-     </script>
-        
     
     <!-- Table -->
     <v-layout row wrap>
@@ -301,36 +281,40 @@ a:active {
 
                     </v-card-title>
 
-                        <v-data-table :headers="headers" :items="reports"  :hide-actions="true"  item-key="name" class="elevation-1">
+                     <v-data-table :headers="headers" :items="reports"  :hide-actions="true"  item-key="name" class="elevation-1">
                           <template slot="items" slot-scope="props">
                             <tr @click="rowClick(props.item.name)">
-                              <td rowspan="2">{{ props.item.title }}</td>
-                              <td class="text-xs-center">Embutidos</td>
+                              <td>{{ props.item.title }}</td>
+                              <td class="text-xs-center">{{ props.item.family }}</td>
                               <td class="text-xs-center">{{ props.item.sale1 }}</td>
                               <td class="text-xs-center">{{ props.item.ince1 }}</td>
-                              <td rowspan ="2" class="text-xs-center">{{props.item.total}}</td>
+<!--                              <td class="text-xs-center">{{props.item.total}}</td>-->
                             </tr>
+<!--
                             <tr>
                               <td class="text-xs-center">Empanados</td>
                               <td class="text-xs-center">{{ props.item.sale2 }}</td>
                               <td class="text-xs-center">{{ props.item.ince2 }}</td>
                             </tr>
+-->
                           </template>
 
                         <div class="text-xs-center pt-2">
-                          <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
+                          
                         </div>
                         <!-- Detects if there isn't any data and display accordingly -->
                          <template v-slot:no-data>
-                                <v-alert :value="true" color="error" icon="warning">Sorry, nothing to display here :(</v-alert>
+                                <v-alert :value="true" color="error" icon="warning">Sorry, nothing to see here (⌐■_■)</v-alert>
                         </template>
 
                         <!-- Alert if nothing found -->
+<!--
                         <template v-slot:no-results >
                             <v-alert :value="true" color="error" icon="warning">
                             Your search for "{{ search }}" found no results.
                             </v-alert>
                         </template>
+-->
                         </v-data-table>
                       </template>
                     </v-container>
@@ -340,131 +324,7 @@ a:active {
             </div>
         </v-flex>    
     </v-layout>
-    <script>
-    var vm = new Vue({
-      el: '#table',
-      methods: {
-        rowClick(name) {
-          this.selectedItem = name;
-        }
-      },
-      data: function () {
-        return {
-            
-          search: '',
-          pagination: {},
-          headers: [
-            {
-              text: 'Reporte',
-              align: 'left',
-              sortable: false,
-              value: 'title',
-              width: '25%'
-            },
-            { text: 'Familia', value: 'prod', width: '15%',sortable: false , align: 'center', },
-            { text: 'Ventas', value: 'sale1', width: '15%',sortable: false , align: 'center', },
-            { text: 'Nivel de Incentivo', value: 'ince1', width: '16%',sortable: false, align: 'center', },
-            { text: 'Total de Ventas', value: 'total', width: '16%' , sortable: false, align: 'center',},
-        
-          ],
-          reports: [
-            {
-              value: false,
-              title: 'Reporte 1',
-              sale1: 23,
-              sale2: 25,
-              ince1: 1,
-              ince2: 4,
-              total: 45,
-            },
-            {
-              value: false,
-              title: 'Reporte 2',
-              sale1: 23,
-              sale2: 25,
-              ince1: 1,
-              ince2: 4,
-              total: 45,
-            },
-             {
-              value: false,
-              title: 'Reporte 3',
-              sale1: 23,
-              sale2: 25,
-              ince1: 1,
-              ince2: 4,
-              total: 45,
-            },
-             {
-              value: false,
-              title: 'Reporte 4',
-              sale1: 23,
-              sale2: 25,
-              ince1: 1,
-              ince2: 4,
-              total: 45,
-            },
-            {
-              value: false,
-              title: 'Reporte 5',
-              sale1: 23,
-              sale2: 25,
-              ince1: 1,
-              ince2: 4,
-              total: 45,
-            },
-            {
-              value: false,
-              title: 'Reporte 6',
-              sale1: 23,
-              sale2: 25,
-              ince1: 1,
-              ince2: 4,
-              total: 45,
-            },
-            {
-              value: false,
-              title: 'Reporte 7',
-              sale1: 23,
-              sale2: 25,
-              ince1: 1,
-              ince2: 4,
-              total: 45,
-            },
-            {
-              value: false,
-              title: 'Reporte 8',
-              sale1: 23,
-              sale2: 25,
-              ince1: 1,
-              ince2: 4,
-              total: 45,
-            },
-            {
-              value: false,
-              title: 'Reporte 9',
-              sale1: 23,
-              sale2: 25,
-              ince1: 1,
-              ince2: 4,
-              total: 45,
-            },
-            {
-              value: false,
-              title: 'Reporte 10',
-              sale1: 23,
-              sale2: 25,
-              ince1: 1,
-              ince2: 4,
-              total: 45,
-            },
-            
-            
-          ]
-        }
-      }
-    })
-  </script>
+    <script type="text/javascript" src=table_profile.js></script>
 
     
     <!-- Miscellaneous Costs of past 10 -->
@@ -523,81 +383,7 @@ a:active {
             </div>
         </v-flex>
     </v-layout>
-    <script>
-    new Vue({
-  el: '#list',
-  data () {
-    return {
-      selected: [2],
-      items: [
-        {
-          headline: 'Supermercado Pueblos',
-          title: 'Feb/24/2019',
-          subtitle: "<span class='text--primary'>Supermercados Pueblos - Mayaguez</span> &mdash; $5.47"
-        },
-        {
-          headline:'Supermercado Ajies' ,
-          title: 'Feb/28/2019',
-          subtitle: "<span class='text--primary'>Supermercado Ajies - Aguada</span> &mdash; $5.47"
-        },
-        {
-          headline: 'Supermercado Selectos',
-          title: 'Abril/1/2019',
-          subtitle: "<span class='text--primary'>Supermercado Selectos - Mayaguez</span> &mdash; $6.00"
-        },
-        {
-          headline: 'Supermercado Selectos II',
-          title: 'Abril/2/2019',
-          subtitle: "<span class='text--primary'>Supermercado Selectos II - Mayaguez</span> &mdash; $10.47"
-        },
-          {
-          headline: 'Supermercado Pueblos',
-          title: 'Feb/24/2019',
-          subtitle: "<span class='text--primary'>Supermercados Pueblos - Mayaguez</span> &mdash; $5.47"
-        },
-        {
-          headline:'Supermercado Ajies' ,
-          title: 'Feb/28/2019',
-          subtitle: "<span class='text--primary'>Supermercado Ajies - Aguada</span> &mdash; $5.47"
-        },
-        {
-          headline: 'Supermercado Selectos',
-          title: 'Abril/1/2019',
-          subtitle: "<span class='text--primary'>Supermercado Selectos - Mayaguez</span> &mdash; $6.00"
-        },
-        {
-          headline: 'Supermercado Selectos II',
-          title: 'Abril/2/2019',
-          subtitle: "<span class='text--primary'>Supermercado Selectos II - Mayaguez</span> &mdash; $10.47"
-        },
-          {
-          headline: 'Supermercado Pueblos',
-          title: 'Feb/24/2019',
-          subtitle: "<span class='text--primary'>Supermercados Pueblos - Mayaguez</span> &mdash; $5.47"
-        },
-        {
-          headline:'Supermercado Ajies' ,
-          title: 'Feb/28/2019',
-          subtitle: "<span class='text--primary'>Supermercado Ajies - Aguada</span> &mdash; $5.47"
-        },
-      
-      ]
-    }
-  },
-
-  methods: {
-    toggle (index) {
-      const i = this.selected.indexOf(index)
-
-      if (i > -1) {
-        this.selected.splice(i, 1)
-      } else {
-        this.selected.push(index)
-      }
-    }
-  }
-})
-    </script>
+    <script type="text/javascript" src=receipts.js></script>
 
     
     <h2>Proximas demonstraciones:</h2>
