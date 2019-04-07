@@ -505,6 +505,10 @@
                 demoPorMes:[0,0,0,0,0,0,0,0,0,0,0,0],
                 demoPorRoutes:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 ventasPorRoutes:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                demoPorEmpaque:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                ventasPorEmpaque:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                demoPorFamilia:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                ventasPorFamilia:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 tiendas: [],
                 mes:['January','February','March','April','May','June','July','August','September','October','November','December'],
                 headers: [
@@ -513,14 +517,15 @@
                       align: 'left',
                       value: 'Title'
                     },
-                    { text: 'Tienda', align: 'left',value: 'Tienda' },
-                    { text: 'Pueblo', align: 'left',value: 'Pueblo' },
-                    { text: 'Precio PrecioEspecial', align: 'left',value: 'PrecioEspecial' },
-                    { text: 'Unidades Vendidas', align: 'left',value: 'UnidadesVendidas' }
+                    { text: 'Tienda', align: 'center',value: 'Tienda' },
+                    { text: 'Pueblo', align: 'center',value: 'Pueblo' },
+                    { text: 'Pueblo', align: 'center',value: 'route' },
+                    { text: 'Precio PrecioEspecial', align: 'center',value: 'PrecioEspecial' },
+                    { text: 'Unidades Vendidas', align: 'center',value: 'UnidadesVendidas' }
                   ],
                   tab: null,
       items: [
-        'web', 'shopping', 'videos'
+        'Routes', 'Monthly', 'Empaque'
       ]
               }
             },
@@ -547,11 +552,20 @@
       <v-tab-item>
         <v-card flat>
           <v-card-text>
+          <h1>Monthly</h1>
           <line-chart :labels="mes" :data="ventasPorMes"></line-chart>
             <line-chart :labels="mes" :data="demoPorMes"></line-chart>
+            <h1>Clients</h1>
           <bar-chart :labels="tiendas" :data="ventas"></bar-chart>
+          <h1>Routes</h1>
           <bar-chart :labels="rutas" :data="demoPorRoutes"></bar-chart>
           <bar-chart :labels="rutas" :data="ventasPorRoutes"></bar-chart>
+          <h1>Family Of Products</h1>
+          <bar-chart :labels="familia" :data="demoPorFamilia"></bar-chart>
+          <bar-chart :labels="familia" :data="ventasPorFamilia"></bar-chart>
+          <h1>Empaque</h1>
+          <bar-chart :labels="empaque" :data="demoPorEmpaque"></bar-chart>
+          <bar-chart :labels="empaque" :data="ventasPorEmpaque"></bar-chart>
            <v-data-table
              :headers="headers"
              :items="forms"
@@ -654,48 +668,43 @@
                  var i=0,j=0;
                  var fecha;
                  var m;
-                 //var demo=0;
                  axios.get(endPointUrl1).then(response => {
                     console.log(response.data.value);
-                    for(j; j< response.data.value.length; j++){
+                    for(j=0; j< response.data.value.length; j++){
                       //console.log(response.data.value[j].Title);
                       vm.rutas[j] = response.data.value[j].Title;
                     }
                   });
                   axios.get(endPointUrl2).then(response => {
                      console.log(response.data.value);
-                     for(j; j< response.data.value.length; j++){
+                     for(j=0; j< response.data.value.length; j++){
                        //console.log(response.data.value[j].Title);
-                       vm.familia[j] = response.data.value[j].product_family;
-                       vm.empaque[j] = response.data.value[j].product_item_number;
+                       vm.familia[j] = response.data.value[j].r0hu;
+                       vm.empaque[j] = response.data.value[j].s2l1;
                      }
                    });
-                   axios.get(endPointUrl2).then(response => {
+                   axios.get(endPointUrl3).then(response => {
                       console.log(response.data.value);
-                      for(j; j< response.data.value.length; j++){
+                      for(j=0; j< response.data.value.length; j++){
                         //console.log(response.data.value[j].Title);
-                        vm.familia[j] = response.data.value[j].product_family;
-                        vm.empaque[j] = response.data.value[j].product_item_number;
+                        vm.clientes[j] = response.data.value[j].zqlz;
+
                       }
                     });
-                    axios.get(endPointUrl3).then(response => {
-                       console.log(response.data.value);
-                       for(j; j< response.data.value.length; j++){
-                         //console.log(response.data.value[j].Title);
-                         vm.clientes[j] = response.data.value[j].clients_name;
-                       }
-                     });
-
                  axios.get(endPointUrl).then(response => {
                     console.log(response.data.value);
                     vm.forms = response.data.value
-                    for(i; i< vm.forms.length; i++){
+                    for(i=0; i< vm.forms.length; i++){
                       fecha = new Date(vm.forms[i].Fecha);
                       vm.tiendas.push(vm.forms[i].Tienda);
                       vm.ventasPorMes[fecha.getMonth()] += vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
                       vm.demoPorMes[fecha.getMonth()]++;
                       vm.demoPorRoutes[vm.rutas.indexOf(vm.forms[i].route)]++;
                       vm.ventasPorRoutes[vm.rutas.indexOf(vm.forms[i].route)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
+                      vm.demoPorEmpaque[vm.empaque.indexOf(vm.forms[i].Producto)]++;
+                      vm.ventasPorEmpaque[vm.empaque.indexOf(vm.forms[i].Producto)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
+                      vm.demoPorFamilia[vm.familia.indexOf(vm.forms[i].familia)]++;
+                      vm.ventasPorFamilia[vm.familia.indexOf(vm.forms[i].familia)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
                       console.log(vm.ventasPorMes);
                       console.log(vm.tiendas);
                       sales = vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
