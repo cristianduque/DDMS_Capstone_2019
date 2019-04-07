@@ -55,12 +55,19 @@
       labels: this.labels,
       datasets: [
         {
+          lineTension: 0,
           label: 'Data One',
           backgroundColor: '#f87979',
+          borderColor: '#f87979',
+          fill: false,
           data: this.data
         }
       ]
-    }, {responsive: true, maintainAspectRatio: false})
+    }, {responsive: true, maintainAspectRatio: false, pieceLabel: {
+           render: 'value',
+           precision: 1
+         },
+         showAllTooltips: true})
   }
 
      });
@@ -77,7 +84,11 @@
           data: this.data
         }
       ]
-    },{responsive: true, maintainAspectRatio: false})
+    },{responsive: true, maintainAspectRatio: false, pieceLabel: {
+           render: 'value',
+           precision: 1
+         },
+         showAllTooltips: true})
   }
 
      });
@@ -101,7 +112,11 @@
          data: this.data
        }
      ]
-   }, {responsive: true, maintainAspectRatio: false})
+   }, {responsive: true, maintainAspectRatio: false, pieceLabel: {
+           render: 'value',
+           precision: 1
+         },
+         showAllTooltips: true})
  }
 
      });
@@ -482,7 +497,10 @@
               return{
                 forms: [],
                 ventas: [],
+                ventasPorMes:[0,0,0,0,0,0,0,0,0,0,0,0],
+                demoPorMes:[0,0,0,0,0,0,0,0,0,0,0,0],
                 tiendas: [],
+                mes:['January','February','March','April','May','June','July','August','September','October','November','December'],
                 headers: [
                     {
                       text: 'Key',
@@ -523,7 +541,8 @@
       <v-tab-item>
         <v-card flat>
           <v-card-text>
-          <line-chart :labels="tiendas" :data="ventas"></line-chart>
+          <line-chart :labels="mes" :data="ventasPorMes"></line-chart>
+            <line-chart :labels="mes" :data="demoPorMes"></line-chart>
           <bar-chart :labels="tiendas" :data="ventas"></bar-chart>
            <v-data-table
              :headers="headers"
@@ -607,7 +626,7 @@
            created: function(){
                  //this.getListFields();
                  this.getListData();
-                 console.log(this.forms);
+                 //console.log(this.forms);
              },
            methods:{
              getListData: function(){
@@ -619,14 +638,21 @@
              };
                  this.status = "getting data...";
                  var vm = this;
-                 var sales;
+                 var sales=0;
                  var i=0;
+                 var fecha;
+                 var m;
+                 //var demo=0;
+
                  axios.get(endPointUrl).then(response => {
                     console.log(response.data.value);
                     vm.forms = response.data.value
-                    //console.log(vm.forms);
                     for(i; i< vm.forms.length; i++){
+                      fecha = new Date(vm.forms[i].Fecha);
                       vm.tiendas.push(vm.forms[i].Tienda);
+                      vm.ventasPorMes[fecha.getMonth()] += vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
+                      vm.demoPorMes[fecha.getMonth()]++;
+                      console.log(vm.ventasPorMes);
                       console.log(vm.tiendas);
                       sales = vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
                       console.log(sales);
