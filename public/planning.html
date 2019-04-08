@@ -460,13 +460,18 @@
         data: function (){
             return{
                 eventList:[],
-                eventTitle: null,
+                eventTitle: "",
                 editEventInfo: [],
-                deleteItemId: ""
+                deleteItemId: "",
+                requestDigestManage: ""
             }
         },
         created: function(){
             this.handlerManageEventData();
+            this.getRequestDigestManage();
+        },
+        components:{
+            CreateEvent
         },
         template: `
         <div class="events">
@@ -503,8 +508,23 @@
             getEventEditTitle: function(){
                this.eventTitle = document.querySelector('input[name="demos"]:checked').value;
                console.log(this.eventTitle);
+                var vm = this;
+                var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items?$filter=Title eq '" + this.eventTitle + "'";
+                console.log(endPointUrl);
+                var headers = {
+                    "accept": "application/json;odata=verbose",
+                    "content-type": "application/json;odata=verbose"
+                };
+                this.status = "getting data...";
+                axios.get(endPointUrl).then(response => {
+                    console.log(response.data.value);
+                    vm.editEventInfo = response.data.value;
+                    vm.deleteItemId = vm.editEventInfo[0].Id;
+                    console.log(vm.deleteItemId);
+                });
 
             },
+
             getEventEditData: function(){
                 var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items?$filter=Title eq '" + this.eventTitle + "'";
                 console.log(endPointUrl);
@@ -517,12 +537,14 @@
                 axios.get(endPointUrl).then(response => {
                     console.log(response.data.value);
                     vm.editEventInfo = response.data.value;
-                    this.deleteItemId = vm.editEventInfo[0].Id;
+                    vm.deleteItemId = vm.editEventInfo[0].Id;
                     console.log(this.deleteItemId);
                 });
             },
             deleteEvent: function(){
+
                 var vm = this;
+
                 var endpoint = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/GetItemById(" + vm.deleteItemId + ")";
                 $.ajax({
                     url: endpoint,
@@ -530,7 +552,7 @@
                     contentType: "application/json;odata=verbose",
                     headers: {
                         "Accept": "application/json;odata=verbose",
-                        "X-RequestDigest": "0xD81F2D3D862B93C59061164E7B34E5450A2122A729449E8076FA967A923B7C89B117719B8EE4C8EE9541F5FD9E32AF2DCC3BF2601537D69CA1EAF8E43035D2D5,07 Apr 2019 21:35:23 -0000",
+                        "X-RequestDigest": vm.requestDigestManage,
                         "IF-MATCH": "*",
                         "X-HTTP-Method": "DELETE",
                     },
@@ -543,6 +565,23 @@
                         console.log(endpoint);
                     }
                 });
+            },
+            getRequestDigestManage: function(){
+                var vm = this;
+                var headers ={
+                    "Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
+                    "Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
+                };
+                axios.post("https://aguadillana.sharepoint.com/sites/DDMS/_api/contextinfo", headers)
+                    .then(response => {
+                        console.log(response);
+                        vm.requestDigestManage = response.data.FormDigestValue;
+                        console.log(vm.requestDigestManage);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        console.log("failed");
+                    });
             },
             handlerManageEventData: function() {
                 this.getEventListData();
