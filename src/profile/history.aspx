@@ -8,6 +8,9 @@
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
     
+    <!-- Axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
     <!-- Alerts -->
     <script src="https://unpkg.com/vue-swal"></script>
     
@@ -20,6 +23,7 @@
      <!-- Page settings -->
     <meta name="viewport" content="initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
     
     <!-- Link to profile CSS -->
 <!--    <link rel="stylesheet" type="text/css" href="history.css">-->
@@ -146,7 +150,7 @@
                   <td class="text-xs-center">{{ props.item.year }}</td>
                   <td class="text-xs-center">{{ props.item.pueblo }}</td>
                   <td class="text-xs-center">{{ props.item.chain }}</td>
-                  <td class="text-xs-center">{{ props.item.approve }}</td>
+<!--                  <td class="text-xs-center">{{ props.item.approve }}</td>-->
                   
                 </tr>
               </template>
@@ -179,78 +183,7 @@
     </v-app>
   </div>
     
- <script>
-    var vm = new Vue({
-      el: '#app',
-        expand: false,
-      methods: {
-        
-        rowClick(name) {
-          this.selectedItem = name;
-        }
-      },
-      data: function () {
-        return {
-            
-          search: '',
-          pagination: {},
-          headers: [
-            {
-              text: 'Supermercado',
-              align: 'left',
-              sortable: false,
-              value: 'name',
-              width: '25%'
-            },
-            { text: 'Mes', value: 'month', width: '15%' },
-            { text: 'Dia', value: 'day', width: '15%' },
-            { text: 'Año', value: 'year', width: '15%' },
-            { text: 'Pueblo', value: 'pueblo', width: '16%' },
-            { text: 'Cadena', value: 'chain', width: '16%' },
-            { text: 'Aprobado', value: 'approve', width: '16%' }
-          ],
-          reports: [
-            {
-              value: false,
-              name: 'Supermercado Colegio',
-              month: 'Feb',
-              day: 28,
-              year: 2019,
-              pueblo: 'Mayaguez',
-              chain: 'UPR',
-              approve: false,
-              link: "testbench.html"
-            
-            },
-            {
-              value: false,
-              name: 'Supermercado IUPI',
-              month: 'Abril',
-              day: 28,
-              year: 2018,
-              pueblo: 'Rio Piedras',
-              chain: 'UPR',
-              approve: true,
-              link: "link 3"
-            },
-                        {
-              value: false,
-              name: 'Supermercado Inter',
-              month: 'Feb',
-              day: 29,
-              year: 2019,
-              pueblo: 'Aguadilla',
-              chain: 'Inter',
-              approve: true,
-              link: "link 2"
-            },
-            
-            
-          ]
-        }
-      }
-    })
-  </script>
+ <script type="text/javascript" src=table_history.js></script>
 
 </body>
 </html>
