@@ -78,13 +78,13 @@
                 <v-card-actions>
                   <span id="demonstrator" :hidden="!inputShow">
                     <div class="cancel_button">
-                      <v-btn type="button" @click="getListData">Cancelar</v-btn >
+                      <v-btn type="button" @click="	getRequestDigestValue">Cancelar</v-btn >
                     </div>
                     <div class="save_button">
-              				<v-btn  type="button" @click="getRequestDigestValue">Guardar</v-btn >
+              				<v-btn  type="button" @click="alert('save')">Guardar</v-btn >
               			</div>
                     <div class="submit_button">
-              				<v-btn type="button" @click="postListData">Someter</v-btn >
+              				<v-btn type="button" @click="alert('submit')">Someter</v-btn >
               			</div>
                   </span>
                   <div class="edit_button" :hidden="inputShow">
@@ -122,7 +122,7 @@
   		 inputShow: false,
        total: "",
        src: `https://aguadillana.sharepoint.com/sites/DDMS/Shared%20Documents/Robie_House.jpg`,
-			 Title:"hola",
+			 Status:"",
 			 RequestDigest:"",
 			 listData: [],
   	},
@@ -156,15 +156,31 @@
 					if(this.src != ''){
 						swal("Warning!!!","Are you sure you want to submit the form?", "warning",{
 							buttons: ["No","Yes"]
-						});
-						window.open('mailto:test@example.com?subject=Form%20Submission&body=Demostradora%20ha%20sometido%20un%20formulario');
+						})
+						.then((willSend) =>{
+							if(willSend){
+								this.Status="Submitted";
+								this.postListData();
+								window.open('mailto:test@example.com?subject=Form%20Submission&body=Demostradora%20ha%20sometido%20un%20formulario');
+							}else{
+								swal("Check the form for any errors or missing information");
+							}
+						})
 					}else{
 						swal("Warning!!!","Cannot submit form without photo evidence", "error");
 					}
   			}else{
-  			swal("Warning!!!","Are you sure you want to save the form?", "warning",{
+  				swal("Warning!!!","Are you sure you want to save the form?", "warning",{
   				buttons: ["No","Yes"]
-  				});
+  				})
+					.then((willSave) =>{
+						if(willSave){
+							this.Status="Saved";
+							this.postListData();
+						}else{
+							swal("Check the form for any errors or missing information");
+						}
+					})
   			}
   		},
 
@@ -220,6 +236,7 @@
 						"reciept_price": this.fieldList[0].precio,
 						"OData__x0073_mm7": this.total,
 						"oazj":this.fieldList[0].cantidad,
+						"Receipt_Status":this.Status,
      			}),
      			headers: {
         		"accept": "application/json;odata=verbose",
@@ -230,6 +247,7 @@
      			},
      			success: function(data) {
          		console.log("Item created successfully");
+						swal("Info Succesfully Entered to List", {icon:"success"})
          		//this.getListData();
      			},
      			error: function(error) {
