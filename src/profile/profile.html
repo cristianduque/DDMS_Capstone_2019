@@ -220,17 +220,19 @@ a:active {
     </v-layout> 
     
    <!--     Alert of upcoming demo -->
-   <!--
-    <h2 id="AH!" >Alertas</h2>
+   
+<!--    <h2 id="AH!" >Alertas</h2>-->
     <div id="alerts">
+<!--
     <ul>
         <li v-for="alert in alerts">
           {{ alert.text }}
         </li>
     </ul>
+-->
     </div>
     <script type="text/javascript" src=alerts.js></script>
--->
+
 
     <!-- Column Chart -->
     <v-layout row wrap >
@@ -304,7 +306,7 @@ a:active {
                         </div>
                         <!-- Detects if there isn't any data and display accordingly -->
                          <template v-slot:no-data>
-                                <v-alert :value="true" color="error" icon="warning">Sorry, nothing to see here (⌐■_■)</v-alert>
+                                <v-alert :value="true" color="error" icon="warning">Sorry, no data found :(</v-alert>
                         </template>
 
                         <!-- Alert if nothing found -->
@@ -395,7 +397,7 @@ a:active {
             </div>    
          </v-flex>
     </v-layout>
-<!--     Script order matters  -->
+    <!--     Script order matters  -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDg71kA9ufXlx4ZdpQEvlii-nrKoDx-jlM&callback=initMap"
     async defer></script> 
     
@@ -448,54 +450,9 @@ a:active {
       </v-app>
     </div>
         </div>
-         <script>
-       var demos = new Vue({
-      el: '#demos',
-      data () {
-        return {
-          selected: [2],
-          items: [
-            {
-              headline: 'Supermercado Pueblos',
-              title: 'Feb/24/2019',
-              subtitle: ""
-            },
-            {
-              headline:'Supermercado Ajies' ,
-              title: 'Feb/28/2019',
-              subtitle: ""
-            },
-            {
-              headline: 'Supermercado Selectos',
-              title: 'Abril/1/2019',
-              subtitle: ""
-            },
-            {
-              headline: 'Supermercado Selectos II',
-              title: 'Abril/2/2019',
-              subtitle: ""
-            },
-          ]
-        }
-      },
-
-      methods: {
-        toggle (index) {
-          const i = this.selected.indexOf(index)
-
-          if (i > -1) {
-            this.selected.splice(i, 1)
-          } else {
-            this.selected.push(index)
-          }
-        }
-      }
-    })
-
-        </script>
         </v-flex>
     </v-layout>
-
+    <script type="text/javascript" src=upcoming_list.js></script>
     
           
     </v-container>  

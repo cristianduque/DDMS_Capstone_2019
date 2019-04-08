@@ -101,24 +101,26 @@ var receipts = new Vue({
                                             var dic = { headline: 'title',title: 'YYYY/MM/DD ',subtitle:""};
                                             var total = 0;
                                                 let form3 = response.data.value;
-                                                
-                                                if(typeof form3[0] === 'undefined'){ dic.headline = tit; dic.title = form2.Fecha;dic.subtitle ="<span class='text--primary'>"+title+"</span> &mdash; None "; this.items.push(dic); }
-                                                //console.log(title);
                                                 //console.log(form3); //make sure getting specified form receipts
                                                 // Get all receipts for that report
+                                                if(typeof form3[0] === 'undefined'){ dic.headline = tit; dic.title = form2.Fecha;dic.subtitle ="<span class='text--primary'>"+title+"</span> &mdash; None "; this.items.push(dic); }
+                                                //console.log(title);
+
+                                                
                                                 else{
+                                                //console.log(response.data.value[j]);
                                                 var j;
                                                 for( j=0; ; j++ ){
                                                     if(typeof response.data.value[j] === 'undefined'){total = 0; break}
                                                     total2 = Number(form3[j].OData__x0073_mm7); //
                                                     
                                                     total =total + total2; 
-                                                    console.log(total);
+                                                    //console.log(total);
          
                                                     dic.subtitle ="<span class='text--primary'>"+title+"</span> &mdash; $" + total + "";
                                                 }//for
                                                     //console.log(title);
-                                                    console.log(total);
+                                                    //console.log(total);
                                                 
                                                     dic.headline = tit; dic.title = form2.Fecha; 
                                                     this.items.push(dic);  

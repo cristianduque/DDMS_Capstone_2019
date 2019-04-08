@@ -1,26 +1,46 @@
- var alert= new Vue({
-          el: '#alerts',
-          data: {
-            // Upcoming Demos
-            
-          },
-          methods: {
-             // Current day demo message
-             alert() {
-              //this.$swal("Demo hoy!", "Supermercado Colegial", "info", );
-            },
-            
-            },
-            mounted(){
+var demos = new Vue({
+      el: '#demos',
+      data () {
+        return {
+          selected: [2],
+          items: [
+//            {
+////              headline: 'Supermercado Pueblos',
+////              title: 'Feb/24/2019',
+////              subtitle: ""
+//            },
+          ]
+        }
+      },
+
+      methods: {
+        toggle (index) {
+          const i = this.selected.indexOf(index)
+
+          if (i > -1) {
+            this.selected.splice(i, 1)
+          } else {
+            this.selected.push(index)
+          }
+        }
+      },
+    mounted(){
         
-        // Global variables
+        var family ="";
         var form  = "";
+        var form2 = "";
+        var form3 ="";
         var date  = "";
         var title = "";
+        var units   = 0;
+        var units2 = 0;
+        var product = "";
         var user_email = "";
         var day = "";
         var month = "";
 
+        //var dic = {headline: "NINGUNA DEMOSTRACION PAUTADA" , title: "", subtitle: "" ,};
+        //this.items.push(dic);
         
         var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/currentuser";
         var headers = {
@@ -61,7 +81,10 @@
                                day = date.substr(8,10);
                                var mo = date.substring(5,7);
                                var year = date.substring(0,4);
-                              
+                               //console.log(date);
+                               //console.log(day);
+                               //console.log(mo);
+                               //console.log(year);
                               var currentDate = new Date();
 
                                 var d = ""+currentDate.getDate();
@@ -70,26 +93,39 @@
                                 var mu = ""+(m+1);
                                 if( mu.length <= 1){ mu = "0"+mu;}
                                 if( d.length <= 1){ d = "0"+d;}
-
-                               // If today Alert user
+                                //var dateString = d + "-" +(m + 1) + "-" + y;
+                               //console.log(dateString);
+                               //console.log(y);
+                               //console.log(year);
+                               //console.log(mu);
+                               //console.log(mo);
+                               //console.log(d);
+                               //console.log(day);
+                               
                                if((year === y)&&(mo === mu)&&(day === d)){
-                                   this.$swal("Demo hoy!", title, "info", );
-                                  }
-
+                                   var dic = {headline: title , title: date, subtitle: "Abierto" ,};
+                                   this.items.push(dic);
+                               }
+                               else{
+                                   var dic = {headline: title , title: date, subtitle: "" ,};
+                               this.items.push(dic);
+                               }
+                               
+                               
+                              
+                              
+                              
                               }
                        }
           });
       });
-             
-    },
-      
-      // Run functions @ page-load
-      beforeMount(){
-      
-        this.alert();
-    
- },
-})
- 
-
- 
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    })

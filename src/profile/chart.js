@@ -27,7 +27,7 @@ function drawChart() {
         // Set chart options
         var options = {'title':'Empanados',                              // set title
                         'legend': 'none',                                // remove legend
-                        'vAxis': { title: 'Sales',
+                        'vAxis': { title: 'Ventas',
                          gridlines: { count: 6 },                        // set gridlines
                                       viewWindow: {min:0, max:160}},     // set limits
                         'hAxis': { textPoistion: 'right' },
