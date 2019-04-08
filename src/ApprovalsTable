@@ -1,0 +1,319 @@
+//falta GET
+//NO tiene edit
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Formulario de Costos Misceláneos</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div id="app">
+    <v-app>
+        <v-toolbar flat color="white">
+            <v-toolbar-title>Approvals</v-toolbar-title>
+            <v-divider
+                    class="mx-2"
+                    inset
+                    vertical
+            ></v-divider>
+            <v-spacer></v-spacer>
+
+        </v-toolbar>
+        <v-data-table
+                :headers="headers"
+                :items="desserts"
+                class="elevation-1"
+        >
+            <template v-slot:items="props">
+                <td>{{ props.item.title }}</td>
+                <td class="text-xs-right">{{ props.item.tienda }}</td>
+                <td class="text-xs-right">{{ props.item.pueblo }}</td>
+                <td class="text-xs-right">{{ props.item.producto }}</td>
+                <td class="text-xs-right">{{ props.item.fecha }}</td>
+
+                <td class="text-xs-right">{{ props.item.PrecioRegular }}</td>
+                <td class="text-xs-right">{{ props.item.PrecioEspecial }}</td>
+                <td class="text-xs-right">{{ props.item.InventarioInicial }}</td>
+                <td class="text-xs-right">{{ props.item.InventarioFinal }}</td>
+                <td class="text-xs-right">{{ props.item.UnidadesVendidas }}</td>
+                <td class="text-xs-right">{{ props.item.UnidadesCreditos }}</td>
+
+                <td class="text-xs-right">{{ props.item.Atendidos1 }}</td>
+                <td class="text-xs-right">{{ props.item.Atendidos2 }}</td>
+                <td class="text-xs-right">{{ props.item.Atendidos3 }}</td>
+                <td class="text-xs-right">{{ props.item.Atendidos4 }}</td>
+                <td class="text-xs-right">{{ props.item.Atendidos5 }}</td>
+                <td class="text-xs-right">{{ props.item.HoraLlegada }}</td>
+                <td class="text-xs-right">{{ props.item.HoraSalida }}</td>
+                <td class="text-xs-right">{{ props.item.LatLlegada }}</td>
+                <td class="text-xs-right">{{ props.item.LatSalida }}</td>
+                <td class="text-xs-right">{{ props.item.LonLlegada }}</td>
+                <td class="text-xs-right">{{ props.item.LonSalida }}</td>
+                <td class="text-xs-right">{{ props.item.HorasTrabajadas }}</td>
+                <td class="text-xs-right">{{ props.item.NombreEmpleado }}</td>
+                <td class="text-xs-right">{{ props.item.PuestoEmpleado }}</td>
+
+
+
+                <td class="justify-center layout px-0">
+                    <v-icon
+                            small
+                            class="mr-2"
+                            @click="editItem(props.item)"
+                    >
+                        edit
+                    </v-icon>
+                    <v-icon
+                            small
+                            @click="deleteItem(props.item)"
+                    >
+                        delete
+                    </v-icon>
+                </td>
+            </template>
+
+        </v-data-table>
+    </v-app>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+</body>
+</html>
+
+<script type="text/javascript">
+    var vueApp = new Vue({
+        el:"#app",
+        data: () => ({
+            dialog: false,
+            headers: [
+                {
+                    text: 'Title',
+                    align: 'left',
+                    sortable: false,
+                    value: 'title'
+                },
+                { text: 'Tienda', value: 'tienda' },
+                { text: 'Pueblo', value: 'pueblo' },
+                { text: 'Producto', value: 'producto' },
+                { text: 'Fecha', value: 'fecha' },
+                { text: 'Precio Regular', value: 'PrecioRegular' },
+                { text: 'Precio Especial', value: 'PrecioEspecial' },
+                { text: 'Inventario Inicial', value: 'InventarioInicial' },
+                { text: 'Inventario Final', value: 'InventarioFinal' },
+                { text: 'Unidades Vendidas', value: 'UnidadesVendidas' },
+                { text: 'Unidades Creditos', value: 'UnidadesCreditos' },
+                { text: 'Atendidos 1', value: 'Atendidos1' },
+                { text: 'Atendidos 2', value: 'Atendidos2' },
+                { text: 'Atendidos 3', value: 'Atendidos3' },
+                { text: 'Atendidos 4', value: 'Atendidos4' },
+                { text: 'Atendidos 5', value: 'Atendidos5' },
+                { text: 'Hora Llegada', value: 'HoraLlegada' },
+                { text: 'Hora Salida', value: 'HoraSalida' },
+                { text: 'Latitud Llegada', value: 'LatLlegada' },
+                { text: 'Latitud Salida', value: 'LatSalida' },
+                { text: 'Longitud Llegada', value: 'LonLlegada' },
+                { text: 'Longitud Salida', value: 'LonSalida' },
+                { text: 'Horas Trabajadas', value: 'HorasTrabajadas' },
+                { text: 'Nombre Empleado', value: 'NombreEmpleado' },
+                { text: 'Puesto Empleado', value: 'PuestoEmpleado' },
+
+
+
+
+
+
+
+                { text: 'Actions', value: 'name', sortable: false }
+            ],
+            desserts: [],
+            editedIndex: -1,
+            editedItem: {
+                title: '',
+                tienda: 0,
+                pueblo: 0,
+                producto: 0,
+                fecha: 0,
+                PrecioRegular: 0,
+                PrecioEspecial: 0,
+                InventarioInicial: 0,
+                InventarioFinal: 0,
+                UnidadesVendidas: 0,
+                UnidadesCreditos: 0,
+                Atendidos1: 0,
+                Atendidos2: 0,
+                Atendidos3: 0,
+                Atendidos4: 0,
+                Atendidos5: 0,
+                HoraLlegada: 0,
+                HoraSalida: 0,
+                LatLlegada: 0,
+                LatSalida: 0,
+                LonLlegada: 0,
+                LonSalida: 0,
+                HorasTrabajadas: 0,
+                NombreEmpleado: 0,
+                PuestoEmpleado: 0
+
+
+            },
+            defaultItem: {
+                title: 'dd',
+                tienda: 0,
+                pueblo: 0,
+                producto: 0,
+                fecha: 0,
+                PrecioRegular: 0,
+                PrecioEspecial: 0,
+                InventarioInicial: 0,
+                InventarioFinal: 0,
+                UnidadesVendidas: 0,
+                UnidadesCreditos: 0,
+                Atendidos1: 0,
+                Atendidos2: 0,
+                Atendidos3: 0,
+                Atendidos4: 0,
+                Atendidos5: 0,
+                HoraLlegada: 0,
+                HoraSalida: 0,
+                LatLlegada: 0,
+                LatSalida: 0,
+                LonLlegada: 0,
+                LonSalida: 0,
+                HorasTrabajadas: 0,
+                NombreEmpleado: 0,
+                PuestoEmpleado: 0
+            }
+        }),
+
+        computed: {
+            formTitle () {
+                return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+            }
+        },
+
+        watch: {
+            dialog (val) {
+                val || this.close()
+            }
+        },
+
+        created () {
+            this.initialize()
+        },
+
+        methods: {
+            initialize () {
+                //vm.desserts=response.data
+
+                this.desserts = [
+                    {
+                        title: 'dd',
+                        tienda: 10,
+                        pueblo: 0,
+                        producto: 0,
+                        fecha: 0,
+                        PrecioRegular: 0,
+                        PrecioEspecial: 0,
+                        InventarioInicial: 0,
+                        InventarioFinal: 0,
+                        UnidadesVendidas: 0,
+                        UnidadesCreditos: 0,
+                        Atendidos1: 0,
+                        Atendidos2: 0,
+                        Atendidos3: 0,
+                        Atendidos4: 0,
+                        Atendidos5: 0,
+                        HoraLlegada: 0,
+                        HoraSalida: 0,
+                        LatLlegada: 0,
+                        LatSalida: 0,
+                        LonLlegada: 0,
+                        LonSalida: 0,
+                        HorasTrabajadas: 0,
+                        NombreEmpleado: 0,
+                        PuestoEmpleado: 0
+                    },
+
+
+                    {
+                        title: 'dd',
+                        tienda: 0,
+                        pueblo: 0,
+                        producto: 0,
+                        fecha: 0,
+                        PrecioRegular: 0,
+                        PrecioEspecial: 0,
+                        InventarioInicial: 0,
+                        InventarioFinal: 0,
+                        UnidadesVendidas: 0,
+                        UnidadesCreditos: 0,
+                        Atendidos1: 0,
+                        Atendidos2: 0,
+                        Atendidos3: 0,
+                        Atendidos4: 0,
+                        Atendidos5: 0,
+                        HoraLlegada: 0,
+                        HoraSalida: 0,
+                        LatLlegada: 0,
+                        LatSalida: 0,
+                        LonLlegada: 0,
+                        LonSalida: 0,
+                        HorasTrabajadas: 0,
+                        NombreEmpleado: 0,
+                        PuestoEmpleado: 0
+
+
+                    }]
+
+
+
+
+            },
+
+            editItem (item) {
+                this.editedIndex = this.desserts.indexOf(item)
+                this.editedItem = Object.assign({}, item)
+                this.dialog = true
+            },
+
+            deleteItem (item) {
+                const index = this.desserts.indexOf(item)
+                confirm('Are you sure you want to delete this item?') && this.desserts.splice(index, 1)
+            },
+
+            close () {
+                this.dialog = false
+                setTimeout(() => {
+                    this.editedItem = Object.assign({}, this.defaultItem)
+                    this.editedIndex = -1
+                }, 300)
+            },
+
+            save () {
+                if (this.editedIndex > -1) {
+                    Object.assign(this.desserts[this.editedIndex], this.editedItem)
+                } else {
+                    this.desserts.push(this.editedItem)
+                }
+                this.close()
+            }
+        }
+
+    })
+</script>
