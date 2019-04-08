@@ -391,39 +391,45 @@
                     return;
                 }
 
-                $.ajax({
-                    async: true,
-                    url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items",
-                    method: "POST",
-                    data: JSON.stringify({
-                        '__metadata': {
-                            'type': 'SP.Data.EventsListItem' // it defines the ListEntityTypeName
+                if (confirm("Esta seguro de la adicion de este evento?: ")) {
+
+                    $.ajax({
+                        async: true,
+                        url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items",
+                        method: "POST",
+                        data: JSON.stringify({
+                            '__metadata': {
+                                'type': 'SP.Data.EventsListItem' // it defines the ListEntityTypeName
+                            },
+                            "Title": name,
+                            "event_id": event_id,
+                            "event_date": date,
+                            "event_client": client,
+                            "event_demonstrator": demonstrator,
+                            "products": checkedProducts,
+                            "event_mult": multiplier,
+                            "event_approver1": approver1,
+                            "event_approver2": approver2,
+                            "event_approver3": approver3,
+                            "Event_Status": 'AGENDA'
+                        }),
+                        headers: {
+                            "accept": "application/json;odata=verbose",
+                            "content-type": "application/json;odata=verbose",
+                            "X-RequestDigest": this.requestDigest
                         },
-                        "Title": name,
-                        "event_id": event_id,
-                        "event_date": date,
-                        "event_client": client,
-                        "event_demonstrator": demonstrator,
-                        "products": checkedProducts,
-                        "event_mult": multiplier,
-                        "event_approver1": approver1,
-                        "event_approver2": approver2,
-                        "event_approver3": approver3,
-                        "Event_Status": 'AGENDA'
-                    }),
-                    headers: {
-                        "accept": "application/json;odata=verbose",
-                        "content-type": "application/json;odata=verbose",
-                        "X-RequestDigest": this.requestDigest
-                    },
-                    success: function(data) {
-                        console.log("Item created successfully");
-                        window.history.back();
-                    },
-                    error: function(error) {
-                        console.log(JSON.stringify(error));
-                    }
-                });
+                        success: function (data) {
+                            console.log("Item created successfully");
+                        },
+                        error: function (error) {
+                            console.log(JSON.stringify(error));
+                        }
+                    });
+                }
+
+                else{
+                    window.location.href = '/sites/DDMS/Shared%20Documents/planning.aspx#/';
+                }
             },
 
             getRequestDigest: function(){
@@ -602,21 +608,6 @@
         props:[this.editEventInfo],
         template: `
         <form class="edit-form">
-
-            <div class="date-hour">
-                <h3> Seleccione la fecha y hora de la demostracion:</h3>
-                      <input id="date-selected" type="datetime-local" v-on:change="handlerAlerts" v-bind:value="editEventInfo[0].event_date">
-            </div>
-
-            <div class="client">
-                <h3>Seleccione el cliente:</h3>
-                    <select id="clientList" v-on:change="checkClientConflict">
-                        <option disabled value=""> Escoja uno </option>
-                        <option value="client" v-for="client in clients">{{client.Title}}</option>
-                        <option value="client" selected>{{editEventInfo[0].event_client}}</option>
-                    </select>
-            </div>
-
 
          </form>
         `,
