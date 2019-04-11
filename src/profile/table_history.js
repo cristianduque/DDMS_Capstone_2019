@@ -5,6 +5,10 @@
         
         rowClick(name) {
           this.selectedItem = name;
+        },
+        linkfn(title){
+            //console.log(title);
+            location.href = "https://aguadillana.sharepoint.com/sites/DDMS/perfil/SitePages/review.aspx?title="+title+"";
         }
       },
       data: function () {
@@ -58,6 +62,7 @@
         var units2 = 0;
         var tienda = "";
         var user_email = "";
+        var title ="";
          
         var months= ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -77,7 +82,7 @@
                     user_email = response.data.Email; 
                     //console.log(user_email);
             // Get user Reports
-            var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=email eq '"+ user_email +"'&$orderby=Fecha asc &$select=Tienda,Fecha,Pueblo";
+            var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=email eq '"+ user_email +"'&$orderby=Fecha asc &$select=Tienda,Fecha,Pueblo,Title";
             var headers = {
                         "async": false,
                         "accept": "application/json;odata=verbose",
@@ -101,10 +106,11 @@
                             let tienda     = form[i].Tienda;  // Client's identifier number
                             let date       = form[i].Fecha;   
                             let pueblo     = form[i].Pueblo;  
+                            let title       = form[i].Title;
                             //console.log(tienda);
                             
                             // Get Clients supermarket name and chain
-                            var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items?$filter= t1q7 eq '"+ tienda +"' &$select=q89x,zqlz";
+                            var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items?$filter= t1q7 eq '"+ tienda +"' &$select=Title,q89x,zqlz";
                             var headers = {
                                         "async": false,
                                         "accept": "application/json;odata=verbose",
@@ -128,6 +134,7 @@
                                 
                                 dic.name = chain+" | "+municipio; dic.month = months[Number(mo)-1];
                                 dic.day = Number(day); dic.year = year; dic.pueblo = municipio; dic.chain = chain;
+                                dic.link = title;
                                 
                                 this.reports.push(dic);
                             }); //Third

@@ -428,7 +428,7 @@ a:active {
                     :key="item.title"
                     avatar
                     ripple
-                    @click="toggle(index)"
+                    @click= "toggle(index)"
                   >
                     <v-list-tile-content>
 

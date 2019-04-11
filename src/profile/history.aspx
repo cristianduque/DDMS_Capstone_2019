@@ -143,7 +143,7 @@
             
             <v-data-table :headers="headers" :items="reports" :search="search" :pagination.sync="pagination" item-key="name" class="elevation-1">
               <template slot="items" slot-scope="props">
-               <tr @click="props.expanded = !props.expanded"> 
+               <tr @click= "linkfn( props.item.link )"> 
                   <td>{{ props.item.name }}</td>
                   <td class="text-xs-center">{{ props.item.month }}</td>
                   <td class="text-xs-center">{{ props.item.day }}</td>

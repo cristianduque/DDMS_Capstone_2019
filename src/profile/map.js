@@ -42,7 +42,7 @@
                            // Check if event is schedule or in progress
                            if(form[i].Event_Status != 'FINISH'){
                               // Get Coordinates
-                              var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items?$filter= Title eq'"+form[i].event_client +"' &$select=wu4k,x3w5";
+                              var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items?$filter=client_name eq'"+form[i].event_name +"' &$select=wu4k,x3w5";
                               var headers = {"async": false,"accept": "application/json;odata=verbose","content-type": "application/json;odata=verbose"};
                               this.status = "getting data..."; 
                               axios.get(endPointUrl).then(response => {

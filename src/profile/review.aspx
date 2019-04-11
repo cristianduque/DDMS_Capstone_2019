@@ -7,85 +7,28 @@
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
     
+    <!-- Axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
     <!-- Vuetify -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
 
     <!-- Google Charts API -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    
-     
-    <!-- Empanados Donut Chart  -->
-    <script type="text/javascript">
-      google.charts.load("current", {packages:["corechart"]});
-      google.charts.setOnLoadCallback(drawEmpanados);
-        
-        function drawEmpanados() {
-        var data = google.visualization.arrayToDataTable([
-          ['Categoria', 'Ventas'],
-          ['Embutidos',     35],
-          ['Total',      65]
-        ]);
-
-        var options = {
-          width: 'auto',
-          height: 'auto',
-          title: '',
-          legend: 'none',
-          pieSliceText: 'value',
-          pieStartAngle: 180,
-          pieHole: 0.4,
-          tooltip: { trigger: 'none' },
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('empanados'));
-        chart.draw(data, options);
-            
-         window.onresize = function(){
-            drawEmpanados();
-        }
-      }
-        
-    </script>
-    
-    <!-- Embutidos Donut Chart -->
-    <script type="text/javascript">
-      google.charts.load("current", {packages:["corechart"]});
-      google.charts.setOnLoadCallback(drawEmbutidos);
-        
-        function drawEmbutidos() {
-        var data = google.visualization.arrayToDataTable([
-          ['Categoria', 'Ventas'],
-          ['Embutidos',     20],
-          ['Total',      80]
-        ]);
-
-        var options = {
-          width: 'auto',
-          height: 'auto',
-          title: '',
-          legend: 'none',
-          pieSliceText: 'value',
-          pieStartAngle: 180,
-          pieHole: 0.4,
-          tooltip: { trigger: 'none' },
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('embutidos'));
-        chart.draw(data, options);
-            
-         window.onresize = function(){
-            drawEmbutidos();
-        }
-      }
-    </script>
    
+    <!-- Page settings -->
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
     
     <!-- Link to profile CSS -->
 <!--    <link rel="stylesheet" type="text/css" href="review.css">-->
+    
     <style>
      /* Optional: Makes the sample page fill the window. */
 html, body {
@@ -114,7 +57,10 @@ html, body {
       background-color: transparent;
       text-decoration: none;
     }
-
+    .v-progress-circular{ 
+        margin: 1rem;
+    }
+ 
 
 #menu{
    
@@ -191,8 +137,7 @@ html, body {
 }
 
     </style>
-    
-    
+        
     
 </head>
     
@@ -218,7 +163,6 @@ html, body {
         </div>
         </v-flex>
     </v-layout>  
-    
     <script>
       var vm = new Vue({
       el: '#menu',
@@ -244,8 +188,10 @@ html, body {
           methods: {
             // Get Report Name
             getName: function () {
+                var id = window.location.href.split('=').pop()
+                //console.log(id);
                 var header = document.getElementById("reporte");
-                header.innerHTML = "Supermercado Colegio - Feb 28";
+                header.innerHTML = id;
             },
       },
       
@@ -258,6 +204,37 @@ html, body {
     
     <!-- Donut Charts -->
     <v-layout row wrap>
+        
+        <div class="text-xs-center">
+        
+            <v-flex xs6 id="pie">
+            <v-progress-circular
+              :rotate="90"
+              :size="150"
+              :width="30"
+              :value="value"
+              color="primary"
+            >
+              {{ value }}
+            </v-progress-circular>
+            </v-flex>
+            <h2>Embutidos</h2>
+
+            <v-flex xs6 id="pie2">
+            <v-progress-circular
+              :rotate="90"
+              :size="150"
+              :width="30"
+              :value="value"
+              color="primary"
+            >
+              {{ value }}
+            </v-progress-circular>
+            </v-flex>
+            <h2>Empanados</h2>
+    </div>
+    
+<!--
         <v-flex xs6 md6 shrink pa-1>
             <div class="chart_container">
              <div id="embutidos"></div>
@@ -270,8 +247,14 @@ html, body {
             </div>
              <p>Empanados</p>
         </v-flex>
+-->
     </v-layout>
+        
+    <script type="text/javascript" src="embutidos_chart.js"></script>
     
+    <script type="text/javascript" src="empanados_chart.js"></script>
+    
+        
     <h2>Localización:</h2>
     <!-- Google Map w/ Marker -->
     <v-layout row wrap>
@@ -281,18 +264,7 @@ html, body {
             </div>
          </v-flex>
     </v-layout>
-    <script type="text/javascript">
-          var map;
-          function initMap() {
-
-              // Center of Map (should be upcoming demo)
-              var colegio = {lat: 18.209527, lng: -67.139727};
-              map = new google.maps.Map(document.getElementById('map'), {center: colegio,zoom: 15});
-              //Marker
-              var marker = new google.maps.Marker({position: colegio, map: map});
-          }
-
-        </script>
+    <script type="text/javascript" src="map_report.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDg71kA9ufXlx4ZdpQEvlii-nrKoDx-jlM&callback=initMap" async defer></script> 
 
     <!-- Work Hours Table -->
@@ -330,42 +302,7 @@ html, body {
   </div>
         </v-flex>
     </v-layout>
-    <script>
-        var vm = new Vue({
-      el: '#hours',
-      data: function () {
-        return {
-            
-          headers: [
-            {
-              text: '',
-              align: 'left',
-              sortable: false,
-              value: 'name',
-              width: '25%'
-            },
-            { text: 'Entrada', value: 'entrance', width: '15%',sortable: false, align: 'center', },
-            { text: 'Salida', value: 'exit', width: '15%',sortable: false, align: 'center', },
-           
-          ],
-          reports: [
-            {
-              value: false,
-              name: 'Horas Establecidas',
-              entrance: '11:00',
-              exit: "4:00",
-            },
-                        {
-              value: false,
-              name: 'Horas Registradas',
-              entrance: '11:00',
-              exit: "4:02",
-            },
-          ]
-        }
-      }
-    })
-    </script>
+    <script type="text/javascript" src="hours_table.js"></script>
     
     <!-- Products Sold -->
     <v-layout row wrap>
@@ -401,46 +338,7 @@ html, body {
   </div>
         </v-flex>
     </v-layout>
-    <script>
-        var vm = new Vue({
-      el: '#products',
-     
-      data: function () {
-        return {
-            
-          headers: [
-            {
-              text: '',
-              align: 'left',
-              sortable: false,
-              value: 'name',
-              width: '25%'
-            },
-            { text: 'Vendidos', value: 'sold', width: '15%',sortable: false, align: 'center', },
-            
-           
-          ],
-          reports: [
-            {
-              value: false,
-              name: 'Producto 1',
-              sold: 35,
-            },
-            {
-              value: false,
-              name: 'Producto 2',
-              sold: 45,
-            },
-                        {
-              value: false,
-              name: 'Producto 3',
-              sold: 10,
-            },
-          ]
-        }
-      }
-    })
-    </script>
+    <script type="text/javascript" src="products_table.js"></script>
     
      <!-- People Attended -->
     <v-layout row wrap>
@@ -476,57 +374,7 @@ html, body {
   </div>
         </v-flex>
     </v-layout>
-    <script>
-        var vm = new Vue({
-      el: '#attendance',
-     
-      data: function () {
-        return {
-            
-          headers: [
-            {
-              text: '',
-              align: 'left',
-              sortable: false,
-              value: 'name',
-              width: '25%'
-            },
-            { text: 'Total de personas atendidas', value: 'attended', width: '15%',sortable: false, align: 'center', },
-            
-           
-          ],
-          reports: [
-            {
-              value: false,
-              name: 'Hora 1',
-              attended: 35,
-            },
-            {
-              value: false,
-              name: 'Hora 2',
-              attended: 35,
-            },
-            {
-              value: false,
-              name: 'Hora 3',
-              attended: 35,
-            },
-            {
-              value: false,
-              name: 'Hora 4',
-              attended: 35,
-            },
-            {
-              value: false,
-              name: 'Hora 5',
-              attended: 35,
-            },
-
-          ]
-        }
-      }
-    })
-    </script>
+    <script type="text/javascript" src="people_table.js"></script>
     
     <!-- Miscellaneous -->
     <v-layout row wrap>
@@ -543,11 +391,7 @@ html, body {
     </div>
         </v-flex>
     </v-layout>
-    <script>
-        new Vue({
-            el: '#add',
-        })
-    </script>
+    <script type="text/javascript" src="miscellaneous.js"></script>
     
     </v-container>
 </body>

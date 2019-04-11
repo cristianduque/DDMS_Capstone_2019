@@ -16,7 +16,7 @@ var demos = new Vue({
       methods: {
         toggle (index) {
           const i = this.selected.indexOf(index)
-
+          console.log("pressed");
           if (i > -1) {
             this.selected.splice(i, 1)
           } else {
