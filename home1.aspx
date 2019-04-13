@@ -15,6 +15,10 @@
   <script type="text/javascript" src="https://cdn.rawgit.com/highcharts/highcharts-vue/1ce7e656/dist/script-tag/highcharts-vue.min.js"></script>
   <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-google-maps/0.1.21/vue-google-maps.js"></script>-->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
   <!--Vuetify-->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
@@ -45,52 +49,87 @@
     <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
 
     <script type="text/javascript">
+
      Vue.use(Vuetify);
      Vue.use(VueRouter);
      var Charts = Vue.component('line-chart', {
        extends: VueChartJs.Line,
-       props: ['data', 'labels'],
+       mixins: [VueChartJs.mixins.reactiveProp],
+       //props: ['data','options'], //'labels','label'],
+       data: function () {
+       return {
+       options: {
+       scales: {
+         yAxes: [{
+           ticks: {
+             beginAtZero: true
+           },
+           gridLines: {
+             display: true
+           }
+         }],
+         xAxes: [{
+           ticks: {
+             beginAtZero: true
+           },
+           gridLines: {
+             display: false
+           }
+         }]
+       },
+       legend: {
+         display: true
+       },
+       responsive: true,
+       maintainAspectRatio: false,
+       height: 200
+       }
+       }
+       },
        mounted () {
-    this.renderChart({
-      labels: this.labels,
-      datasets: [
-        {
-          lineTension: 0,
-          label: 'Data One',
-          backgroundColor: '#f87979',
-          borderColor: '#f87979',
-          fill: false,
-          data: this.data
-        }
-      ]
-    }, {responsive: true, maintainAspectRatio: false, pieceLabel: {
-           render: 'value',
-           precision: 1
-         },
-         showAllTooltips: true})
-  }
+       this.renderChart(this.chartData,this.options);
 
+       }
      });
      var Charts = Vue.component('bar-chart', {
        extends: VueChartJs.Bar,
-        props: ['data', 'labels'],
-       mounted () {
-    this.renderChart({
-      labels: this.labels,
-      datasets: [
-        {
-          label: 'Data One',
-          backgroundColor: '#f87979',
-          data: this.data
-        }
-      ]
-    },{responsive: true, maintainAspectRatio: false, pieceLabel: {
-           render: 'value',
-           precision: 1
-         },
-         showAllTooltips: true})
-  }
+       //extends: VueChartJs.Mixins,
+        mixins: [VueChartJs.mixins.reactiveProp],
+        //props: ['data','options'], //'labels','label'],
+        data: function () {
+		return {
+			options: {
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true
+						},
+						gridLines: {
+							display: true
+						}
+					}],
+					xAxes: [{
+						ticks: {
+							beginAtZero: true
+						},
+						gridLines: {
+							display: false
+						}
+					}]
+				},
+				legend: {
+					display: true
+				},
+				responsive: true,
+				maintainAspectRatio: false,
+				height: 200
+			}
+		}
+	},
+  mounted () {
+    this.renderChart(this.chartData,this.options);
 
+  }
      });
      var Charts = Vue.component('pie-chart', {
        extends: VueChartJs.Pie,
@@ -139,57 +178,7 @@
     var Planning =  Vue.component('Planning', {
         data: function (){
           return{
-      today: '2019-01-08',
-      events: [
-        {
-          title: 'Vacation',
-          details: 'Going to the beach!',
-          date: '2018-12-30',
-          open: false
-        },
-        {
-          title: 'Vacation',
-          details: 'Going to the beach!',
-          date: '2018-12-31',
-          open: false
-        },
-        {
-          title: 'Vacation',
-          details: 'Going to the beach!',
-          date: '2019-01-01',
-          open: false
-        },
-        {
-          title: 'Meeting',
-          details: 'Spending time on how we do not have enough time',
-          date: '2019-01-07',
-          open: false
-        },
-        {
-          title: '30th Birthday',
-          details: 'Celebrate responsibly',
-          date: '2019-01-03',
-          open: false
-        },
-        {
-          title: 'New Year',
-          details: 'Eat chocolate until you pass out',
-          date: '2019-01-01',
-          open: false
-        },
-        {
-          title: 'Conference',
-          details: 'Mute myself the whole time and wonder why I am on this call',
-          date: '2019-01-21',
-          open: false
-        },
-        {
-          title: 'Hackathon',
-          details: 'Code like there is no tommorrow',
-          date: '2019-02-01',
-          open: false
-        }
-      ]
+
     }
   },
     computed: {
@@ -204,293 +193,184 @@
       open (event) {
         alert(event.title)
       }
-    },    style:`<style lang="stylus" scoped>
-.my-event {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border-radius: 2px;
-  background-color: #1867c0;
-  color: #ffffff;
-  border: 1px solid #1867c0;
-  width: 100%;
-  font-size: 12px;
-  padding: 3px;
-  cursor: pointer;
-  margin-bottom: 1px;
-}
-</style>`,
-        template: `
-        <v-layout wrap>
-      <v-flex
-        sm12
-        lg3
-        class="pa-3 mb-3 feature-pane"
-      >
-        <v-btn
-          fab
-          outline
-          small
-          absolute
-          left
-          color="primary"
-          @click="$refs.calendar.prev()"
-        >
-          <v-icon dark>
-            keyboard_arrow_left
-          </v-icon>
-        </v-btn>
-        <v-btn
-          fab
-          outline
-          small
-          absolute
-          right
-          color="primary"
-          @click="$refs.calendar.next()"
-        >
-          <v-icon
-            dark
-          >
-            keyboard_arrow_right
-          </v-icon>
-        </v-btn>
-        <br><br><br>
-        <v-select
-          v-model="type"
-          :items="typeOptions"
-          label="Type"
-        ></v-select>
-        <v-checkbox
-          v-model="dark"
-          label="Dark"
-        ></v-checkbox>
-        <v-select
-          v-model="color"
-          :items="colorOptions"
-          label="Color"
-        ></v-select>
-        <v-menu
-          ref="startMenu"
-          v-model="startMenu"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          :return-value.sync="start"
-          transition="scale-transition"
-          min-width="290px"
-          lazy
-          offset-y
-          full-width
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="start"
-              label="Start Date"
-              prepend-icon="event"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="start"
-            no-title
-            scrollable
-          >
-            <v-spacer></v-spacer>
-            <v-btn
-              flat
-              color="primary"
-              @click="startMenu = false"
-            >
-              Cancel
-            </v-btn>
-            <v-btn
-              flat
-              color="primary"
-              @click="$refs.startMenu.save(start)"
-            >
-              OK
-            </v-btn>
-          </v-date-picker>
-        </v-menu>
-        <v-menu
-          v-if="hasEnd"
-          ref="endMenu"
-          v-model="endMenu"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          :return-value.sync="end"
-          transition="scale-transition"
-          min-width="290px"
-          lazy
-          offset-y
-          full-width
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="end"
-              label="End Date"
-              prepend-icon="event"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="end"
-            no-title
-            scrollable
-          >
-            <v-spacer></v-spacer>
-            <v-btn
-              flat
-              color="primary"
-              @click="endMenu = false"
-            >
-              Cancel
-            </v-btn>
-            <v-btn
-              flat
-              color="primary"
-              @click="$refs.endMenu.save(end)"
-            >
-              OK
-            </v-btn>
-          </v-date-picker>
-        </v-menu>
-        <v-menu
-          ref="nowMenu"
-          v-model="nowMenu"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          :return-value.sync="now"
-          transition="scale-transition"
-          min-width="290px"
-          lazy
-          offset-y
-          full-width
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="now"
-              label="Today"
-              prepend-icon="event"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="now"
-            no-title
-            scrollable
-          >
-            <v-spacer></v-spacer>
-            <v-btn
-              flat
-              color="primary"
-              @click="nowMenu = false"
-            >
-              Cancel
-            </v-btn>
-            <v-btn
-              flat
-              color="primary"
-              @click="$refs.nowMenu.save(now)"
-            >
-              OK
-            </v-btn>
-          </v-date-picker>
-        </v-menu>
-        <v-select
-          v-model="weekdays"
-          :items="weekdaysOptions"
-          label="Weekdays"
-        ></v-select>
-        <v-text-field
-          v-if="type === 'custom-weekly'"
-          v-model="minWeeks"
-          label="Minimum Weeks"
-          type="number"
-        ></v-text-field>
-        <v-select
-          v-if="hasIntervals"
-          v-model="intervals"
-          :items="intervalsOptions"
-          label="Intervals"
-        ></v-select>
-        <v-select
-          v-if="type === 'custom-daily'"
-          v-model="maxDays"
-          :items="maxDaysOptions"
-          label="# of Days"
-        ></v-select>
-        <v-select
-          v-if="hasIntervals"
-          v-model="styleInterval"
-          :items="styleIntervalOptions"
-          label="Styling"
-        ></v-select>
-      </v-flex>
-      <v-flex
-        sm12
-        lg9
-        class="pl-3"
-      >
-        <v-sheet height="500">
-          <v-calendar
-            ref="calendar"
-            v-model="start"
-            :type="type"
-            :start="start"
-            :end="end"
-            :min-weeks="minWeeks"
-            :max-days="maxDays"
-            :now="now"
-            :dark="dark"
-            :weekdays="weekdays"
-            :first-interval="intervals.first"
-            :interval-minutes="intervals.minutes"
-            :interval-count="intervals.count"
-            :interval-height="intervals.height"
-            :interval-style="intervalStyle"
-            :show-interval-label="showIntervalLabel"
-            :color="color"
-          >
-            <template v-slot:day="day">
-              <div
-                v-if="day.day % 3 === 0"
-                class="day"
-              >
-                day slot {{ day.date }}
-              </div>
-            </template>
-            <template v-slot:header="day">
-              <div
-                v-if="day.weekday % 2"
-                class="day-header"
-              >
-                day-header slot {{ day.date }}
-              </div>
-            </template>
-            <template v-slot:day-body="day">
-              <div
-                v-if="day.weekday % 3 === 2"
-                class="day-body"
-              >
-                day-body slot {{ day.date }}
-              </div>
-            </template>
-          </v-calendar>
-        </v-sheet>
-      </v-flex>
-    </v-layout> `
+    },
+        template: ``
       });
       var ManageLists =  Vue.component('ManageLists', {
           data: function (){
             return{
-              count:0
+              count:0,
+              Product_Number:'',
+              Product_Name:'',
+              Product_Units:'' ,
+              Product_Family:'',
+              Product_Cost:0 ,
+              Goal: '',
+              Emp_FN:'',
+              Emp_LN:'',
+              Emp_Rt:0,
+              Emp_role: '',
+              Emp_Route: '',
+              Emp_email:''
             }
           },
-        template: '<button v-on:click="count++"> You clicked me {{count}} times in Manage List. </button>'
+        template: ` <div><v-form>
+              <v-card>
+                <v-card-title primary-title>
+                  <h4>Producto</h4>
+                </v-card-title>
+	                <v-card-text>
+											<v-text-field label="Product_Number"  type="text" v-model="Product_Number" ></v-text-field>
+											<v-text-field label="Product_Name"  type="text" v-model="Product_Name" ></v-text-field>
+											<v-text-field label="Product_Units"  type="text" v-model="Product_Units" ></v-text-field>
+	                    <v-text-field label="Product_Family" type="text"  v-model="Product_Family"></v-text-field>
+	                    <v-text-field label="Product_Cost"  type="number" v-model="Product_Cost"></v-text-field>
+	                    <v-text-field label="Goal"  type="text" v-model="Goal" ></v-text-field>
+	                </v-card-text>
+
+              </v-card>
+              <br>
+              <v-card>
+                <v-card-title>
+                  <h4>Crear Producto</h4>
+                </v-card-title>
+                <v-card-actions>
+										<div class="end_button">
+              				<v-btn  type="button" @click="postListDataProduct">Someter</v-btn >
+              			</div>
+                </v-card-actions>
+              </v-card>
+            </v-form>
+
+            <v-form>
+                  <v-card>
+                    <v-card-title primary-title>
+                      <h4>Demostradora</h4>
+                    </v-card-title>
+    	                <v-card-text>
+    											<v-text-field label="Name"  type="text" v-model="Emp_FN" ></v-text-field>
+    											<v-text-field label="Last name"  type="text" v-model="Emp_LN" ></v-text-field>
+    											<v-text-field label="rate"  type="text" v-model="Emp_Rt" ></v-text-field>
+    	                    <v-text-field label="route" type="text"  v-model="Emp_Route"></v-text-field>
+    	                    <v-text-field label="email"  type="text" v-model="Emp_email"></v-text-field>
+    	                    <v-text-field label="role"  type="text" v-model="Emp_role" ></v-text-field>
+    	                </v-card-text>
+    									<v-spacer></v-spacer>
+                  </v-card>
+                  <br>
+                  <v-card>
+                    <v-card-title>
+                      <h4>Crear Demostradora</h4>
+                    </v-card-title>
+                    <v-card-actions>
+    										<div class="end_button">
+                  				<v-btn  type="button" @click="postListDataEmployee">Someter</v-btn >
+                  			</div>
+                    </v-card-actions>
+                  </v-card>
+                </v-form>
+                </div>`,
+            created: function(){
+              this.getRequestDigestValue();
+              //this.getListData();
+            },
+            methods:{
+              postListDataProduct: function(){
+              $.ajax({
+                   async: true,
+                   url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items",
+                   method: "POST",
+                   data: JSON.stringify({
+                       '__metadata': {
+                           'type': 'SP.Data.ProductListItem' // it defines the ListEntityTypeName
+                       },
+                       "s2l1": this.Product_Number,
+                       "e9lf": this.Product_Name,
+                       "a83e": this.Product_Units,
+                       "r0hu": this.Product_Family,
+                       "qrdu": this.Product_Cost,
+                       "se1v": this.Goal
+                   }),
+
+                   headers: {
+                       "accept": "application/json;odata=verbose",
+                       "content-type": "application/json;odata=verbose",
+                       "X-RequestDigest": this.RequestDigest
+                       //"Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
+                       //"Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
+                   },
+                   success: function(data) {
+                       console.log("Item created successfully");
+                       //this.getListData();
+                   },
+                   error: function(error) {
+                       console.log(JSON.stringify(error));
+
+                   }
+              });
+            },
+
+              postListDataEmployee: function(){
+              $.ajax({
+                   async: true,
+                   url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items",
+                   method: "POST",
+                   data: JSON.stringify({
+                       '__metadata': {
+                           'type': 'SP.Data.EmployeeListItem' // it defines the ListEntityTypeName
+                       },
+                       "vblv": this.Emp_FN,
+                       "cytw": this.Emp_LN,
+                       "OData__x0079_ex6": this.Emp_Rt,
+                       "w3s7": this.Emp_Route,
+                       "OData__x0077_v79": this.Emp_email,
+                       "bevs": this.Emp_role
+                   }),
+
+                   headers: {
+                       "accept": "application/json;odata=verbose",
+                       "content-type": "application/json;odata=verbose",
+                       "X-RequestDigest": this.RequestDigest
+                       //"Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
+                       //"Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
+                   },
+                   success: function(data) {
+                       console.log("Item created successfully");
+                       //this.getListData();
+                   },
+                   error: function(error) {
+                       console.log(JSON.stringify(error));
+
+                   }
+              });
+            }
+
+              ,
+              getRequestDigestValue: function(){
+
+                var headers ={
+                  "Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
+                  "Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
+                };
+
+                var vm = this;
+                axios.post("https://aguadillana.sharepoint.com/sites/DDMS/_api/contextinfo",headers)
+                .then(response => {
+                  console.log(response);
+                  vm.RequestDigest = response.data.FormDigestValue
+                })
+                .catch(function (error) {
+                  console.log(error);
+                  console.log("failed");
+                });
+          },
+
+        }
+
+
+
+
+
         });
         var Report =  Vue.component('Report', {
             data: function (){
@@ -501,6 +381,31 @@
                 clientes:[],
                 empaque:[],
                 familia:[],
+                TotalQRuta:0,
+                TotalVRuta:0,
+                TotalQFamilia:0,
+                TotalVFamilia:0,
+                TotalQEmpaque:0,
+                TotalVEmpaque:0,
+                TotalQMes:0,
+                TotalVMes:0,
+
+                AvgQRuta:0,
+                AvgVRuta:0,
+                AvgQFamilia:0,
+                AvgVFamilia:0,
+                AvgQEmpaque:0,
+                AvgVEmpaque:0,
+                AvgQMes:0,
+                AvgVMes:0,
+                chartDemosPorRutaData:null,
+                chartventasPorRoutes:null,
+                chartdemoPorFamilia:null,
+                chartventasPorFamilia:null,
+                chartdemoPorEmpaque:null,
+                chartventasPorEmpaque:null,
+                chartdemoPorMes:[],
+                chartventasPorMes:[],
                 ventasPorMes:[0,0,0,0,0,0,0,0,0,0,0,0],
                 demoPorMes:[0,0,0,0,0,0,0,0,0,0,0,0],
                 demoPorRoutes:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -510,14 +415,29 @@
                 demoPorFamilia:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 ventasPorFamilia:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 tiendas: [],
+                 search: '',
+
                 mes:['January','February','March','April','May','June','July','August','September','October','November','December'],
+                headersDemostradora: [
+                    {
+                      text: 'Key',
+                      align: 'left',
+                      value: 'Title'
+                    },
+                    { text: 'Demostradora', align: 'center',value: 'Demostradora' },
+                    { text: 'Fecha', align: 'center',value: 'Fecha' },
+                    { text: 'Hora de Llegada', align: 'center',value: 'HoraLlegada' },
+                    { text: 'Producto', align: 'center',value: 'Producto' },
+                    { text: 'Horas Trabajadas', align: 'center',value: 'HorasTrabajadas' },
+                    { text: 'Unidades Vendidas', align: 'center',value: 'UnidadesVendidas' }
+                  ],
                 headers: [
                     {
                       text: 'Key',
                       align: 'left',
                       value: 'Title'
                     },
-                    { text: 'Tienda', align: 'center',value: 'Tienda' },
+                    { text: 'Tienda', align: 'center',value: 'Demostradora' },
                     { text: 'Pueblo', align: 'center',value: 'Pueblo' },
                     { text: 'Pueblo', align: 'center',value: 'route' },
                     { text: 'Precio PrecioEspecial', align: 'center',value: 'PrecioEspecial' },
@@ -525,15 +445,14 @@
                   ],
                   tab: null,
       items: [
-        'Routes', 'Monthly', 'Empaque'
+        'Reporte de Demos', 'Reporte de Demostradora'
       ]
               }
-            },
-            template: ` <div>
+            }, template:` <div>
             <template>
        <v-tabs
          v-model="tab"
-         color="cyan"
+         color="gray"
          grow
        >
          <v-tabs-slider color="yellow"></v-tabs-slider>
@@ -546,26 +465,34 @@
          </v-tab>
        </v-tabs>
      </template>
+    <v-tabs-items v-model="tab">
 
-     <v-tabs-items v-model="tab">
+
 
       <v-tab-item>
         <v-card flat>
           <v-card-text>
+          <v-btn @click="getListData()">Generate Report</v-btn>
           <h1>Monthly</h1>
-          <line-chart :labels="mes" :data="ventasPorMes"></line-chart>
-            <line-chart :labels="mes" :data="demoPorMes"></line-chart>
-            <h1>Clients</h1>
-          <bar-chart :labels="tiendas" :data="ventas"></bar-chart>
+          <p>Total de Demos: {{TotalQMes}} -  Promedio: {{AvgQMes}}</p>
+          <p>Total de Ventas:$ {{TotalVMes}} -  Promedio:$ {{AvgVMes}}</p>
+            <line-chart  :chart-data="chartdemoPorMes"></line-chart>
+            <line-chart  :chart-data="chartventasPorMes"></line-chart>
           <h1>Routes</h1>
-          <bar-chart :labels="rutas" :data="demoPorRoutes"></bar-chart>
-          <bar-chart :labels="rutas" :data="ventasPorRoutes"></bar-chart>
+          <p>Total de Demos: {{TotalQRuta}} -  Promedio: {{AvgQRuta}}</p>
+          <p>Total de Ventas:$ {{TotalVRuta}} - Promedio:$ {{AvgVRuta}}</p>
+          <bar-chart :chart-data="chartDemosPorRutaData"></bar-chart>
+          <bar-chart :chart-data="chartventasPorRoutes"></bar-chart>
           <h1>Family Of Products</h1>
-          <bar-chart :labels="familia" :data="demoPorFamilia"></bar-chart>
-          <bar-chart :labels="familia" :data="ventasPorFamilia"></bar-chart>
+          <p>Total de Demos: {{TotalQFamilia}} -  Promedio: {{AvgQFamilia}}</p>
+          <p>Total de Ventas:$ {{TotalVFamilia}} -  Promedio:$ {{AvgVFamilia}} </p>
+          <bar-chart :chart-data="chartdemoPorFamilia"></bar-chart>
+          <bar-chart :chart-data="chartventasPorFamilia"></bar-chart>
           <h1>Empaque</h1>
-          <bar-chart :labels="empaque" :data="demoPorEmpaque"></bar-chart>
-          <bar-chart :labels="empaque" :data="ventasPorEmpaque"></bar-chart>
+          <p>Total de Demos: {{TotalQEmpaque}} - Promedio: {{avgQEmpaque}}</p>
+          <p>Total de Ventas:$ {{TotalVEmpaque}} -  Promedio:$ {{avgVEmpaque}}</p>
+          <bar-chart :chart-data="chartdemoPorEmpaque"></bar-chart>
+          <bar-chart :chart-data="chartventasPorEmpaque"></bar-chart>
            <v-data-table
              :headers="headers"
              :items="forms"
@@ -578,7 +505,8 @@
              <template v-slot:items="props">
                <td>{{props.item.Title}}</td>
                <td class="text-xs-right">{{props.item.Tienda}}</td>
-                <td class="text-xs-right">{{props.item.Pueblo}}</td>
+                <td class="text-xs-right">{{props.item.Product}}</td>
+                <td class="text-xs-right">{{props.item.familia}}</td>
                 <td class="text-xs-right">{{props.item.route}}</td>
                 <td class="text-xs-right">{{props.item.PrecioEspecial}}</td>
                 <td class="text-xs-right">{{props.item.UnidadesVendidas}}</td>
@@ -590,31 +518,41 @@
            </v-card>
            </v-tab-item>
 
+
            <v-tab-item>
-             <v-card flat>
-               <v-card-text>
-               <bar-chart :labels="tiendas" :data="ventas"></bar-chart>
-                <v-data-table
-                  :headers="headers"
-                  :items="forms"
-                  class="elevation-l"
-                  prev-icon="mdi-menu-left"
-                  next-icon="mdi-menu-right"
-                  sort-icon="mdi-menu-down"
-                  >
 
-                  <template v-slot:items="props">
-                    <td>{{props.item.Title}}</td>
-                    <td class="text-xs-right">{{props.item.Tienda}}</td>
-                     <td class="text-xs-right">{{props.item.Pueblo}}</td>
-                     <td class="text-xs-right">{{props.item.PrecioEspecial}}</td>
-                     <td class="text-xs-right">{{props.item.UnidadesVendidas}}</td>
-                   </template>
-                </v-data-table>
+<v-card>
+  <v-card-title>
+    Reporte por Demostradoras
+    <v-spacer></v-spacer>
+    <v-text-field
+      v-model="search"
+      append-icon="search"
+      label="Search"
+      single-line
+      hide-details
+    ></v-text-field>
+  </v-card-title>
+  <v-data-table
+    :headers="headersDemostradora"
+    :items="forms"
+    :search="search"
+  >
+    <template v-slot:items="props">
+       <td>{{props.item.Title}}</td>
+         <td class="text-xs-right">{{ props.item.Demostradora}}</td>
+      <td class="text-xs-right">{{ props.item.Fecha}}</td>
+      <td class="text-xs-right">{{ props.item.HoraLlegada}}</td>
+      <td class="text-xs-right">{{ props.item.Producto}}</td>
+      <td class="text-xs-right">{{ props.item.HorasTrabajadas}}</td>
+      <td class="text-xs-right">{{ props.item.UnidadesVendidas}}</td>
+    </template>
+    <v-alert v-slot:no-results :value="true" color="error" icon="warning">
+      Your search for "{{ search }}" found no results.
+    </v-alert>
+  </v-data-table>
+</v-card>
 
-                </v-card-text>
-
-                </v-card>
                 </v-tab-item>
 
                 <v-tab-item>
@@ -644,14 +582,22 @@
                      </v-card>
                      </v-tab-item>
     </v-tabs-items>
-           </div>
-           `,
-           created: function(){
+           </div>`
+           ,
+          // created: function(){
                  //this.getListFields();
-                 this.getListData();
+                // this.getListData();
                  //console.log(this.forms);
-             },
+            // },
            methods:{
+
+                    sumOf: function(arr){
+                      var sum=0;
+                      for(var i=0; i<arr.length; i++){
+                        sum += arr[i];
+                      }
+                      return sum;
+                    },
              getListData: function(){
               var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items";
               var endPointUrl1 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Routes')/items";
@@ -667,7 +613,16 @@
                  var sales=0;
                  var i=0,j=0;
                  var fecha;
-                 var m;
+
+
+                /*vm.ventasPorMes=[0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.demoPorMes=[0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.demoPorRoutes=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.ventasPorRoutes=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.demoPorEmpaque=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.ventasPorEmpaque=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.demoPorFamilia=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.ventasPorFamilia=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];*/
                  axios.get(endPointUrl1).then(response => {
                     console.log(response.data.value);
                     for(j=0; j< response.data.value.length; j++){
@@ -694,9 +649,10 @@
                  axios.get(endPointUrl).then(response => {
                     console.log(response.data.value);
                     vm.forms = response.data.value
-                    for(i=0; i< vm.forms.length; i++){
+                      size =vm.forms.length;
+                    for(i=0; i< size; i++){
                       fecha = new Date(vm.forms[i].Fecha);
-                      vm.tiendas.push(vm.forms[i].Tienda);
+                      //vm.tiendas.push(vm.forms[i].Tienda);
                       vm.ventasPorMes[fecha.getMonth()] += vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
                       vm.demoPorMes[fecha.getMonth()]++;
                       vm.demoPorRoutes[vm.rutas.indexOf(vm.forms[i].route)]++;
@@ -705,17 +661,134 @@
                       vm.ventasPorEmpaque[vm.empaque.indexOf(vm.forms[i].Producto)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
                       vm.demoPorFamilia[vm.familia.indexOf(vm.forms[i].familia)]++;
                       vm.ventasPorFamilia[vm.familia.indexOf(vm.forms[i].familia)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
-                      console.log(vm.ventasPorMes);
-                      console.log(vm.tiendas);
-                      sales = vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
-                      console.log(sales);
-                      vm.ventas.push(sales);
+                      //console.log(vm.ventasPorMes);
+                      //console.log(vm.tiendas);
+                      //sales = vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
+                      //vm.forms.push({key: "UnidadesVendidas",value: sales});
+                      //console.log(sales);
+                      //vm.ventas.push(sales);
+                      //console.log(sumOf(vm.demoPorMes));
+
                     }
+                    vm.TotalQMes=parseFloat(this.sumOf(vm.demoPorMes)).toFixed(2);
+                    vm.TotalVMes=parseFloat(this.sumOf(vm.ventasPorMes)).toFixed(2);
+                    vm.TotalQRuta=parseFloat(this.sumOf(vm.demoPorRoutes)).toFixed(2);
+                    vm.TotalVRuta=parseFloat(this.sumOf(vm.ventasPorRoutes)).toFixed(2);
+                    vm.TotalQEmpaque=parseFloat(this.sumOf(vm.demoPorEmpaque)).toFixed(2);
+                    vm.TotalVEmpaque=parseFloat(this.sumOf(vm.ventasPorEmpaque)).toFixed(2);
+                    vm.TotalQFamilia=parseFloat(this.sumOf(vm.demoPorFamilia)).toFixed(2);
+                    vm.TotalVFamilia=parseFloat(this.sumOf(vm.ventasPorFamilia)).toFixed(2);
+
+
+
+                    vm.AvgQMes=parseFloat(this.sumOf(vm.demoPorMes)/vm.demoPorMes.length).toFixed(2);
+                    vm.AvgVMes=parseFloat(this.sumOf(vm.ventasPorMes)/vm.ventasPorMes.length).toFixed(2);
+                    vm.AvgQRuta=parseFloat(this.sumOf(vm.demoPorRoutes)/vm.demoPorRoutes.length).toFixed(2);
+                    vm.AvgVRuta=parseFloat(this.sumOf(vm.ventasPorRoutes)/vm.ventasPorRoutes.length).toFixed(2);
+                    vm.AvgQEmpaque=parseFloat(this.sumOf(vm.demoPorEmpaque)/vm.demoPorEmpaque.length).toFixed(2);
+                    vm.AvgVEmpaque=parseFloat(this.sumOf(vm.ventasPorEmpaque)/vm.ventasPorEmpaque.length).toFixed(2);
+                    vm.AvgQFamilia=parseFloat(this.sumOf(vm.demoPorFamilia)/vm.demoPorFamilia.length).toFixed(2);
+                    vm.AvgVFamilia=parseFloat(this.sumOf(vm.ventasPorFamilia)/vm.ventasPorFamilia.length).toFixed(2);
 
                   });
-             }
+                  vm.chartdemoPorMes=
+                  {
+                    labels: vm.mes,
+                    datasets: [
+                      {
+                        lineTension: 0,
+                        label: 'Cantidad de Demos',
+                        backgroundColor: '#f87979',
+                        borderColor: '#f87979',
+                        fill: false,
+                        data: vm.demoPorMes
+                      }
+                    ]
+                  };
+                  vm.chartventasPorMes=
+                  {
+                    labels: this.mes,
+                    datasets: [
+                      {
+                        lineTension: 0,
+                        label: 'Ventas',
+                        backgroundColor: '#f87979',
+                        borderColor: '#f87979',
+                        fill: false,
+                        data: this.ventasPorMes
+                      }
+                    ]
+                  };
+               vm.chartDemosPorRutaData=
+                  {
+                    labels:vm.rutas,
+                    datasets: [
+                      {
+                        label: 'Cantidad de Demos',
+                        backgroundColor: '#f87979',
+                        data: vm.demoPorRoutes
+                      }
+                    ]
+                  };
+                  vm.chartventasPorRoutes=
+                     {
+                       labels:vm.familia,
+                       datasets: [
+                         {
+                           label: 'Ventas',
+                           backgroundColor: '#f87979',
+                           data: vm.ventasPorRoutes
+                         }
+                       ]
+                     };
+                     vm.chartdemoPorFamilia=
+                        {
+                          labels:vm.familia,
+                          datasets: [
+                            {
+                              label: 'Cantidad de Demos',
+                              backgroundColor: '#f87979',
+                              data: vm.demoPorFamilia
+                            }
+                          ]
+                        };
+                        vm.chartventasPorFamilia=
+                           {
+                             labels:vm.familia,
+                             datasets: [
+                               {
+                                 label: 'Ventas',
+                                 backgroundColor: '#f87979',
+                                 data: vm.ventasPorFamilia
+                               }
+                             ]
+                           };
+                           vm.chartdemoPorEmpaque=
+                              {
+                                labels:vm.empaque,
+                                datasets: [
+                                  {
+                                    label: 'Cantidad de Demos',
+                                    backgroundColor: '#f87979',
+                                    data: vm.demoPorEmpaque
+                                  }
+                                ]
+                              };
+                              vm.chartventasPorEmpaque=
+                                 {
+                                   labels:vm.empaque,
+                                   datasets: [
+                                     {
+                                       label: 'Ventas',
+                                       backgroundColor: '#f87979',
+                                       data: vm.ventasPorEmpaque
+                                     }
+                                   ]
+                                 };
            }
+         }
           });
+
       const routes = [
       //{ path: '/', component: Home},
          { path: '/Approvals', component: Approvals, name:'Home',icon:'home'},
@@ -765,6 +838,7 @@
             });
 
        },
+
        postListData: function(){
          $.ajax({
        url: "https://aguadillana.sharepoint.com/DDMS/_api/web/lists/getbyTitle('Test')/items",
