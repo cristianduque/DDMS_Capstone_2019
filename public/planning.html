@@ -15,7 +15,6 @@
             src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             crossorigin="anonymous"></script>
-    <!--<script src='https://unpkg.com/v-calendar'></script>-->
     <style>
         #app {
             font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -25,14 +24,14 @@
             color: #2c3e50;
             margin-top: 60px;
         }
-        body {
-            background-color: #EEEEEE;
-            font-family: 'Montserrat', sans-serif;
-            display: grid;
-            grid-template-rows: auto;
-            justify-items: center;
-            padding-top: 50px;
-        }
+        /*body {*/
+            /*background-color: #EEEEEE;*/
+            /*font-family: 'Montserrat', sans-serif;*/
+            /*display: grid;*/
+            /*grid-template-rows: auto;*/
+            /*justify-items: center;*/
+            /*padding-top: 50px;*/
+        /*}*/
         nav {
             padding: 20px 20px 20px 0;
         }
@@ -100,10 +99,10 @@
             margin-top: 100pt;
         }
 
-        /*.calendar {*/
-            /*alignment: center;*/
-            /*margin-top: 150pt;*/
-        /*}*/
+        .calendar {
+            alignment: center;
+            margin-top: 120pt;
+        }
 
         .buttons {
             text-align: center;
@@ -128,11 +127,6 @@
 <body>
 
 <div id="app">
-
-
-</div>
-
-<div id="home">
 
 
 </div>
@@ -174,6 +168,13 @@
                 events: [],
                 postData: [],
                 requestDigest: "",
+                errorMessages: '',
+                selectedClient: null,
+                selectedDemo: null,
+                selectedDate: new Date().toISOString().substr(0, 10),
+                menu: false,
+                menuTime: false,
+                selectedTime: null
             }
         },
         created: function(){
@@ -188,33 +189,119 @@
         </div>
 
         <div class="date-hour">
-            <h3> Seleccione la fecha y hora de la demostracion:</h3>
-                  <input id="date-selected" type="datetime-local" v-on:change="handlerAlerts">
+            <h3> Seleccione la fecha de la demostracion:</h3>
+                  <v-flex xs12 sm6 md4>
+                      <v-menu
+                        v-model="menu"
+                        :close-on-content-click="false"
+                        :nudge-right="40"
+                        lazy
+                        transition="scale-transition"
+                        offset-y
+                        full-width
+                        min-width="290px"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-text-field
+                            v-model="selectedDate"
+                            prepend-icon="event"
+                            readonly
+                            hint="MM/DD/YYYY format"
+                            v-on="on"
+                          ></v-text-field>
+                        </template>
+                        <v-date-picker v-model="selectedDate" @input="menu = false"></v-date-picker>
+                      </v-menu>
+                   </v-flex>
+             <h3> Seleccione la hora de la demostracion:</h3>
+
+             <template>
+                  <v-layout row wrap>
+                        <v-flex xs11 sm5>
+                          <v-menu
+                            ref="menu"
+                            v-model="menuTime"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            :return-value.sync="time"
+                            lazy
+                            transition="scale-transition"
+                            offset-y
+                            full-width
+                            max-width="290px"
+                            min-width="290px"
+                          >
+                            <template v-slot:activator="{ on }">
+                              <v-text-field
+                                v-model="selectedTime"
+                                prepend-icon="access_time"
+                                readonly
+                                v-on="on"
+                              ></v-text-field>
+                            </template>
+                            <v-time-picker
+                              v-if="menuTime"
+                              v-model="selectedTime"
+                              full-width
+                              @click:minute="$refs.menu.save(selectedTime)"
+                            ></v-time-picker>
+                          </v-menu>
+                        </v-flex>
+                    </v-layout>
+             </template>
         </div>
 
         <div class="client">
-            <h3>Seleccione el cliente:</h3>
-                <select id="clientList" v-on:change="checkClientConflict">
-                    <option disabled value="">Escoja uno</option>
-                    <option value="client" v-for="client in clients">{{client.Title}}</option>
-                </select>
+              <h3> Seleccione el cliente:</h3>
+
+                      <v-select
+                        id="clientList"
+                        v-model="selectedClient"
+                        :items="clients"
+                        item-text="Title"
+                        :error-messages="errorMessages"
+                        :rules="[(c) => !!c || 'Este campo es requerido',
+                        (c) => checkClientConflict(c) || 'Cliente tiene demostracion en la fecha escogida. Escoja otra fecha o otro cliente'
+                        ]"
+                        bottom
+                        clearable
+                        autocomplete
+                        >
+                      </v-select>
         </div>
 
         <div class="demonstrator">
-            <h3>Seleccione la demostradora:</h3>
-                <select id="demList" v-on:change="checkDemonstratorConflict">
-                    <option disabled value="">Escoja uno</option>
-                    <option value="demonstrator" v-for="item in demonstrators" v-if="item.bevs ==='DEMO'">{{item.vblv}}</option>
-                </select>
+              <h3> Seleccione la demostradora/demostrador:</h3>
+
+                <v-select
+                        id="demList"
+                        v-model="selectedDemo"
+                        :items="demonstrators"
+                        item-text="vblv"
+                        :error-messages="errorMessages"
+                        :rules="[(d) => !!d|| 'Este campo es requerido',
+                        (d) => checkDemonstratorConflict(d) || 'Demostradora tiene demostracion en la fecha escogida. Escoja otra fecha o otra demostradora'
+                        ]"
+                        bottom
+                        clearable
+                        autocomplete
+                        >
+                      </v-select>
         </div>
 
         <div class="products">
             <h3>Seleccione los productos:</h3>
-            <v-list>
-                <li v-for="product in products">
-                  <input name="checkProducts" type="checkbox" v-bind:value="product.e9lf"> {{product.e9lf}}
-                </li>
-            </v-list>
+
+            <v-select
+
+                        :items="products"
+                        multiple
+                        item-text="e9lf"
+                        bottom
+                        clearable
+                        autocomplete
+                        >
+                      </v-select>
         </div>
 
         <div class="multiplier">
@@ -225,21 +312,42 @@
         <div class="approval">
 
             <h3> Seleccione las personas que seran parte del proceso de aprobacion:</h3>
-                    <select id="first-employee"> 1.
-                        <option disabled value="">Escoja uno</option>
-                        <option v-for="item in employees" v-if="item.bevs ==='SUPERVISOR'"> {{item.vblv}} </option>
-                    </select>
+
+
+                    <v-select
+                        id="first-employee"
+                        :items="employees"
+                        label="Primera persona en aprobar"
+                        item-text="vblv"
+                        bottom
+                        clerable
+                        autocomplete
+                        >
+                      </v-select>
                 <br/>
-                    <select id="second-employee"> 2.
-                        <option disabled value="">Escoja uno</option>
-                        <option v-for="item in employees" v-if="item.bevs ==='SUPERVISOR'"> {{item.vblv}} </option>
-                    </select>
+
+                    <v-select
+                        id="second-employee"
+                        :items="employees"
+                        label="Segunda persona en aprobar"
+                        item-text="vblv"
+                        bottom
+                        clerable
+                        autocomplete
+                        >
+                      </v-select>
                 <br/>
-                    <select id="third-employee"> 3.
-                        <option disabled value="">Escoja uno</option>
-                        <option v-for="item in employees" v-if="item.bevs ==='SUPERVISOR'"> {{item.vblv}}</option>
-                    </select>
-            </h1>
+
+                    <v-select
+                        id="third-employee"
+                        :items="employees"
+                        label="Tercera persona en aprobar el reporte"
+                        item-text="vblv"
+                        bottom
+                        clerable
+                        autocomplete
+                        >
+                      </v-select>
         </div>
 
         <div class="buttons">
@@ -280,7 +388,7 @@
                 });
             },
             getDemonstratorListData: function () {
-                var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items";
+                var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items?$filter=bevs eq 'DEMO'";
                 console.log(endPointUrl);
                 var headers = {
                     "accept": "application/json;odata=verbose",
@@ -294,7 +402,7 @@
                 });
             },
             getApprovalListData: function () {
-                var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items";
+                var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items?$filter=bevs eq 'SUPERVISOR'";
                 console.log(endPointUrl);
                 var headers = {
                     "accept": "application/json;odata=verbose",
@@ -321,44 +429,43 @@
                     vm.events = response.data.value;
                 });
             },
-            checkClientConflict: function(){
+            checkClientConflict: function(client){
                 for (var j = 0; j < this.events.length; j++){
-                    var temp = document.getElementById("clientList");
-                    var eClient = temp.options[temp.selectedIndex].text;
 
-                    var temp1 = document.getElementById("date-selected").value;
-                    var temp2 = new Date(temp1);
-                    temp2.setHours(temp2.getHours() - 4);
-                    var eDate = temp2.toISOString();
+                    var eClient = client;
+                    console.log(eClient);
+                    console.log(this.events[j].event_client);
+
+                    var temp = this.selectedDate + " " + this.selectedTime;
+                    var eDate = new Date(temp);
+                    eDate.setHours(eDate.getHours() - 4);
+                    console.log(eDate.toISOString());
 
                     var date = new Date(this.events[j].event_date);
                     date.setHours(date.getHours() - 3);
 
                     // now you can get the string
                     var isodateList = date.toISOString();
-
                     console.log(isodateList);
-                    console.log(this.events[j].event_client);
 
-                    if(this.events[j].event_client == eClient && isodateList == eDate){
-                            alert("El cliente escogido tiene demostracion en la fecha escogida. Escoja otro cliente");
-                            return true;
+                    if(this.events[j].event_client === eClient && isodateList === eDate.toISOString()){
+                            return false;
                     }
 
                     else{
-                        return false;
+                        return true;
                     }
                 }
             },
-            checkDemonstratorConflict: function(){
+            checkDemonstratorConflict: function(demonstrator){
                 for (var j = 0; j < this.events.length; j++){
-                    var temp = document.getElementById("demList");
-                    var eDemonstrator = temp.options[temp.selectedIndex].text;
+                    var eDemonstrator = demonstrator;
 
-                    var temp1 = document.getElementById("date-selected").value;
-                    var temp2 = new Date(temp1);
-                    temp2.setHours(temp2.getHours() - 4);
-                    var eDate = temp2.toISOString();
+
+                    var temp = this.selectedDate + " " + this.selectedTime;
+                    var eDate = new Date(temp);
+                    eDate.setHours(eDate.getHours() - 4);
+                    console.log(eDate.toISOString());
 
                     var date = new Date(this.events[j].event_date);
                     date.setHours(date.getHours() - 3);
@@ -369,13 +476,12 @@
                     console.log(isodateList);
                     console.log(this.events[j].event_client);
 
-                    if(this.events[j].event_demonstrator == eDemonstrator && isodateList == eDate){
-                        alert("La demostradora escogida tiene demostracion en la fecha escogida. Escoja otra demostradora");
-                        return true;
+                    if(this.events[j].event_demonstrator === eDemonstrator && isodateList === eDate.toISOString()){
+                        return false;
                     }
 
                     else {
-                        return false;
+                        return true;
                     }
                 }
             },
@@ -601,8 +707,8 @@
                 var vm = this;
 
                 swal({
-                    title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this imaginary file!",
+                    title: "Esta seguro?",
+                    text: "Una vez eliminado, no podra ser recuperado!",
                     icon: "warning",
                     buttons: true,
                     dangerMode: true,
@@ -621,7 +727,7 @@
                                     "X-HTTP-Method": "DELETE",
                                 },
                                 success: function (data) {
-                                    swal("El evento ha sido eliminado", {
+                                    swal("El evento ha sido eliminado!", {
                                         icon: "success",
                                     });
                                 },
@@ -632,7 +738,7 @@
                                 }
                             });
                         } else {
-                            swal("Your imaginary file is safe!");
+                            swal("Su evento esta seguro!");
                         }
                     });
 
@@ -687,6 +793,7 @@
             <v-flex>
               <v-sheet height="500">
                 <v-calendar
+
                   color="primary"
                 >
                   <template v-slot:day="{ date }">
