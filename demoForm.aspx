@@ -114,7 +114,7 @@
 
                 <v-card-actions>
                   <div class="submit_button">
-                              <v-btn type="button" @click="postListData" href="https://aguadillana.sharepoint.com/sites/DDMS/SitePages/DemoOptions2.aspx">Submit</v-btn>
+                              <v-btn type="button" @click="getName();putListData(); linkfn()">Submit</v-btn>
                           </div>
                 </v-card-actions>
               </v-card>
@@ -160,7 +160,8 @@
            inputShow: true,
        total: "",
              RequestDigest:'',
-             users:[]
+             users:[],
+             id:''
 
       },
 
@@ -181,11 +182,15 @@
               }
         console.log(this.total)
           }
-    ,
+    ,linkfn(){
+        console.log(this.id);
+        location.href = "https://aguadillana.sharepoint.com/sites/DDMS/SitePages/DemoOptions2.aspx?id="+this.id+"";
+    },
 
       getListData: function(){
         this.getName();
         var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items('"+this.id+"')";
+        console.log(endPointUrl);
        var headers = {
            "accept": "application/json;odata=verbose",
             "content-type": "application/json;odata=verbose"
@@ -193,8 +198,8 @@
            this.status = "getting data...";
            var vm = this;
            axios.get(endPointUrl).then(response => {
-              console.log(response.data.value);
-              vm.users = response.data.value
+              console.log(response.data);
+              vm.users = response.data
             });
        },
 
@@ -253,6 +258,7 @@ getName: function () {
   //  header.innerHTML = id;
 },
 putListData: function(){
+  this.getName();
 					$.ajax({
 						async: true,
 						url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items("+this.id+")",
@@ -261,12 +267,7 @@ putListData: function(){
 							'__metadata': {
 								'type': 'SP.Data.DemoFormListItem' // it defines the ListEntityTypeName
 							},
-							"Attachments": true,
-							"receipt_product": this.fieldList[0].articulo,
-							"reciept_price": this.fieldList[0].precio,
-							"OData__x0073_mm7": this.total,
-							"oazj":this.fieldList[0].cantidad,
-							"Receipt_Status":this.Status,
+							"PrecioRegular": this.fieldList[0].PrecioRegular
 							//"receipt_picture": this.src,
 						}),
 						headers: {
