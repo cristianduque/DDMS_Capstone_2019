@@ -174,18 +174,31 @@
                 selectedDate: new Date().toISOString().substr(0, 10),
                 menu: false,
                 menuTime: false,
-                selectedTime: null
+                selectedTime: null,
+                selectedName: null,
+                selectedProducts: [],
+                selectedMultiplier: null,
+                selectedFirstApproval: null,
+                selectedSecondApproval: null,
+                selectedThirdApproval: null
             }
         },
         created: function(){
             this.handlerData();
             this.getRequestDigest();
         },
-        template: `<form class="planning-form">
-
+        template: `<v-form class="planning-form">
         <div class="name-demo">
             <h3> Seleccione nombre de la demostracion: </h3>
-                  <v-text-field id="name-demo-text" type="text"> </v-text-field>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field
+                  id="name-demo-text"
+                  v-model="selectedName"
+                  :rules="[(n) => !!n || 'Este campo es requerido']"
+                  required
+                  clearable
+                  > </v-text-field>
+                </v-flex>
         </div>
 
         <div class="date-hour">
@@ -205,7 +218,10 @@
                           <v-text-field
                             v-model="selectedDate"
                             prepend-icon="event"
+                            :rules="[(f) => !!f || 'Este campo es requerido']"
                             readonly
+                            required
+                            clearable
                             hint="MM/DD/YYYY format"
                             v-on="on"
                           ></v-text-field>
@@ -235,6 +251,8 @@
                               <v-text-field
                                 v-model="selectedTime"
                                 prepend-icon="access_time"
+                                :rules="[(h) => !!h || 'Este campo es requerido']"
+                                clearable
                                 readonly
                                 v-on="on"
                               ></v-text-field>
@@ -242,6 +260,8 @@
                             <v-time-picker
                               v-if="menuTime"
                               v-model="selectedTime"
+                              required
+                              clearable
                               full-width
                               @click:minute="$refs.menu.save(selectedTime)"
                             ></v-time-picker>
@@ -261,11 +281,10 @@
                         item-text="Title"
                         :error-messages="errorMessages"
                         :rules="[(c) => !!c || 'Este campo es requerido',
-                        (c) => checkClientConflict(c) || 'Cliente tiene demostracion en la fecha escogida. Escoja otra fecha o otro cliente'
+                        (c) => checkClientConflict() || 'Cliente tiene demostracion en la fecha escogida. Escoja otra fecha o otro cliente'
                         ]"
-                        bottom
+                        required
                         clearable
-                        autocomplete
                         >
                       </v-select>
         </div>
@@ -280,11 +299,10 @@
                         item-text="vblv"
                         :error-messages="errorMessages"
                         :rules="[(d) => !!d|| 'Este campo es requerido',
-                        (d) => checkDemonstratorConflict(d) || 'Demostradora tiene demostracion en la fecha escogida. Escoja otra fecha o otra demostradora'
+                        (d) => checkDemonstratorConflict() || 'Demostradora tiene demostracion en la fecha escogida. Escoja otra fecha o otra demostradora'
                         ]"
-                        bottom
+                        required
                         clearable
-                        autocomplete
                         >
                       </v-select>
         </div>
@@ -294,19 +312,28 @@
 
             <v-select
 
+                        v-model="selectedProducts"
                         :items="products"
                         multiple
-                        item-text="e9lf"
-                        bottom
+                        required
                         clearable
-                        autocomplete
+                        :rules="[(selectedProducts) =>  selectedProducts.length !== 0 || 'Este campo es requerido']"
+                        item-text="e9lf"
                         >
-                      </v-select>
+            </v-select>
         </div>
 
         <div class="multiplier">
             <h3> Seleccione el multiplicador: </h3>
-                    <v-text-field id="multiplier-num" type="number" v-bind:min="0"> </v-text-field>
+                    <v-text-field
+                    v-model="selectedMultiplier"
+                    id="multiplier-num"
+                    type="number"
+                    v-bind:min="0"
+                    :rules="[(m) => !!m || 'Este campo es requerido']"
+                    required
+                    clearable
+                    > </v-text-field>
         </div>
 
         <div class="approval">
@@ -315,10 +342,14 @@
 
 
                     <v-select
+                        v-model="selectedFirstApproval"
                         id="first-employee"
                         :items="employees"
                         label="Primera persona en aprobar"
                         item-text="vblv"
+                        :rules="[(e) => !!e || 'Este campo es requerido']"
+                        required
+                        clearable
                         bottom
                         clerable
                         autocomplete
@@ -327,24 +358,26 @@
                 <br/>
 
                     <v-select
+                        v-model="selectedSecondApproval"
                         id="second-employee"
                         :items="employees"
                         label="Segunda persona en aprobar"
                         item-text="vblv"
                         bottom
-                        clerable
+                        clearable
                         autocomplete
                         >
                       </v-select>
                 <br/>
 
                     <v-select
+                        v-model="selectedThirdApproval"
                         id="third-employee"
                         :items="employees"
                         label="Tercera persona en aprobar el reporte"
                         item-text="vblv"
                         bottom
-                        clerable
+                        clearable
                         autocomplete
                         >
                       </v-select>
@@ -354,8 +387,7 @@
             <v-btn color="teal" v-on:click="addEvent"> Add event</v-btn>
             <v-btn color="teal" href="/sites/DDMS/Shared%20Documents/planning.aspx#/"> Cancel event</v-btn>
         </div>
-
-    </form>
+    </v-form>
 
         `,
         methods:{
@@ -429,10 +461,10 @@
                     vm.events = response.data.value;
                 });
             },
-            checkClientConflict: function(client){
+            checkClientConflict: function(){
                 for (var j = 0; j < this.events.length; j++){
 
-                    var eClient = client;
+                    var eClient = this.selectedClient;
                     console.log(eClient);
                     console.log(this.events[j].event_client);
 
@@ -457,9 +489,9 @@
                     }
                 }
             },
-            checkDemonstratorConflict: function(demonstrator){
+            checkDemonstratorConflict: function(){
                 for (var j = 0; j < this.events.length; j++){
-                    var eDemonstrator = demonstrator;
+                    var eDemonstrator = this.selectedDemo;
 
 
                     var temp = this.selectedDate + " " + this.selectedTime;
@@ -486,104 +518,114 @@
                 }
             },
             addEvent: function(){
-                //FORM the Data to POST
-                var name = document.getElementById("name-demo-text").value;
-
-                //Date
-                var temp1 = document.getElementById("date-selected").value;
-                var temp2 = new Date(temp1);
-                temp2.setHours(temp2.getHours() - 1);
-                var date = temp2.toISOString();
-
-                //Client
-                var temp = document.getElementById("clientList");
-                var client = temp.options[temp.selectedIndex].text;
-
-                //Demonstrator
-                var temp3 = document.getElementById("demList");
-                var demonstrator = temp3.options[temp3.selectedIndex].text;
-
-                //Products
-                var checkboxes = document.getElementsByName("checkProducts");
-                var checkedProducts = "";
-
-                console.log(checkboxes);
-
-                for (var i = 0; i < checkboxes.length; i++) {
-                    if (checkboxes[i].type =='checkbox' && checkboxes[i].checked == true){
-                        checkedProducts+=checkboxes[i].value+",";
-                    }
-                }
-
-                console.log(checkedProducts);
-
-                //Muliplier
-                var multiplier = document.getElementById("multiplier-num").value;
-
-                //Event Approver 1
-                var tempApprover1 = document.getElementById("first-employee");
-                var approver1 = tempApprover1.options[tempApprover1.selectedIndex].text;
-
-                //Event Approver 2
-                var tempApprover2 = document.getElementById("second-employee");
-                var approver2 = tempApprover2.options[tempApprover2.selectedIndex].text;
-
-                //Event Approver 3
-                var tempApprover3 = document.getElementById("third-employee");
-                var approver3 = tempApprover3.options[tempApprover3.selectedIndex].text;
-
-                //Event Id
-                var event_id = this.events.length.toString();
-
-                if(name === null || date === null || client === null || demonstrator === null || checkedProducts === null || multiplier === null || approver1 === null || this.checkClientConflict() === true || this.checkDemonstratorConflict() === true) {
-                    alert("El formulario esta con campos vacios o hay conflictos. Verifique que todo campo este lleno y sin conflictos");
+                console.log(this.selectedProducts);
+                if(this.selectedName === null || this.selectedDate === null || this.selectedTime === null || this.selectedClient === undefined || this.selectedDemo === undefined || this.selectedProducts.toString() === '' || this.selectedMultiplier === null || this.selectedFirstApproval === undefined) {
+                    swal({
+                        title: "Campos vacios",
+                        text: "Usted tiene campos vacios en el formulario. Por favor verifique que cada campo este lleno",
+                        icon: "info",
+                        dangerMode: true,
+                    });
                     return;
                 }
+
+                else if(this.checkDemonstratorConflict() === false || this.checkClientConflict() === false){
+                    swal({
+                        title: "Alertas vigentes",
+                        text: "Usted tiene alertas pendientes en el formulario que no ha corregido. Por favor verifique que los campos de cliente y demostradora esten llenos sin alertas!",
+                        icon: "info",
+                        dangerMode: true,
+                    });
+                    return;
+                }
+
                 else {
 
-                    if (confirm("Esta seguro de la adicion de este evento?: ")) {
+                    //FORM the Data to POST
+                    var name = this.selectedName;
 
-                        $.ajax({
-                            async: true,
-                            url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items",
-                            method: "POST",
-                            data: JSON.stringify({
-                                '__metadata': {
-                                    'type': 'SP.Data.EventsListItem' // it defines the ListEntityTypeName
-                                },
-                                "Title": name,
-                                "event_id": event_id,
-                                "event_date": date,
-                                "event_client": client,
-                                "event_demonstrator": demonstrator,
-                                "products": checkedProducts,
-                                "event_mult": multiplier,
-                                "event_approver1": approver1,
-                                "event_approver2": approver2,
-                                "event_approver3": approver3,
-                                "Event_Status": 'AGENDA'
-                            }),
-                            headers: {
-                                "accept": "application/json;odata=verbose",
-                                "content-type": "application/json;odata=verbose",
-                                "X-RequestDigest": this.requestDigest
-                            },
-                            success: function (data) {
-                                console.log("Item created successfully");
-                                alert("Event was added succesfully");
-                            },
-                            error: function (error) {
-                                console.log(JSON.stringify(error));
+                    //Date
+                    var temp = this.selectedDate + " " + this.selectedTime;
+                    var eDate = new Date(temp);
+                    var date = eDate.toISOString();
+
+                    //Client
+                    var client = this.selectedClient;
+
+                    //Demonstrator
+                    var demonstrator = this.selectedDemo;
+
+                    //Products
+                    var checkedProducts = this.selectedProducts.toString();
+
+                    //Muliplier
+                    var multiplier = this.selectedMultiplier;
+
+                    //Event Approver 1
+                    var approver1 = this.selectedFirstApproval;
+
+                    //Event Approver 2
+                    var approver2 = this.selectedSecondApproval;
+
+
+                    //Event Approver 3
+                    var approver3 = this.selectedThirdApproval;
+
+                    //Event Id
+                    var event_id = this.events.length.toString();
+
+
+                    swal({
+                        title: "Esta seguro de la adicion de este evento?",
+                        icon: "info",
+                        buttons: true,
+                    })
+                        .then((willAdd) => {
+                            if (willAdd) {
+
+                                $.ajax({
+                                    async: true,
+                                    url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items",
+                                    method: "POST",
+                                    data: JSON.stringify({
+                                        '__metadata': {
+                                            'type': 'SP.Data.EventsListItem' // it defines the ListEntityTypeName
+                                        },
+                                        "Title": name,
+                                        "event_id": event_id,
+                                        "event_date": date,
+                                        "event_client": client,
+                                        "event_demonstrator": demonstrator,
+                                        "products": checkedProducts,
+                                        "event_mult": multiplier,
+                                        "event_approver1": approver1,
+                                        "event_approver2": approver2,
+                                        "event_approver3": approver3,
+                                        "Event_Status": 'AGENDA'
+                                    }),
+                                    headers: {
+                                        "accept": "application/json;odata=verbose",
+                                        "content-type": "application/json;odata=verbose",
+                                        "X-RequestDigest": this.requestDigest
+                                    },
+                                    success: function (data) {
+                                        console.log("Item created successfully");
+                                        alert("Event was added succesfully");
+                                    },
+                                    error: function (error) {
+                                        console.log(JSON.stringify(error));
+                                    }
+                                });
+
+                                swal("Evento en agenda exitosamente!", {
+                                    icon: "success",
+                                });
+                            } else {
+                                window.location.href = '/sites/DDMS/Shared%20Documents/planning.aspx#/CreateEvent';
                             }
                         });
-
-
-                    }
-
-                    else {
-                        window.location.href = '/sites/DDMS/Shared%20Documents/planning.aspx#/CreateEvent';
-                    }
                 }
+
             },
 
             getRequestDigest: function(){
