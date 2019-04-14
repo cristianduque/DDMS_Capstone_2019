@@ -199,82 +199,695 @@
       var ManageLists =  Vue.component('ManageLists', {
           data: function (){
             return{
-              count:0,
-              Product_Number:'',
-              Product_Name:'',
-              Product_Units:'' ,
-              Product_Family:'',
-              Product_Cost:0 ,
-              Goal: '',
-              Emp_FN:'',
-              Emp_LN:'',
-              Emp_Rt:0,
-              Emp_role: '',
-              Emp_Route: '',
-              Emp_email:''
+              Products:[],
+              Employees:[],
+              Clients:[],
+              ItemId: -1,
+              headersClients: [
+     {
+       text: 'Nombre',
+       align: 'left',
+       value: 'Title'
+     },
+     { text: 'Num. Cliente', align: 'left', value: 't1q7' },
+     { text: 'Cadena', align: 'left', value: 'zqlz' },
+     { text: 'Ciudad', align: 'left', value: 'q89x' },
+     { text: 'Ruta', align: 'left', value: 'nc7a' },
+     { text: 'Multiplicador', align: 'left', value: 'c9jm' },
+     { text: 'Email', align: 'left', value: 'OData__x0065_cv5' },
+     { text: 'Actions', align: 'left', value: 'name', sortable: false }
+   ],
+   headersEmployees: [
+{
+text: 'Nombre',
+align: 'left',
+value: 'vblv'
+},
+{ text: 'Apellido', align: 'left', value: 'cytw' },
+{ text: 'Rol', align: 'left', value: 'bevs' },
+{ text: 'Ruta', align: 'left', value: 'w3s7' },
+{ text: 'Email', align: 'left', value: 'OData__x0077_v79' },
+{ text: 'Salario', align: 'left', value: 'OData__x0079_ex6' },
+{ text: 'Actions', align: 'left', value: 'name', sortable: false }
+],
+headersProducts: [
+{
+text: 'NUM. Producto',
+align: 'left',
+value: 's2l1'
+},
+{ text: 'Descripcion', align: 'left', value: 'e9lf' },
+{ text: 'Unidades', align: 'left', value: 'a83e' },
+{ text: 'Familia', align: 'left', value: 'r0hu' },
+{ text: 'Costo/LB', align: 'left', value: 'qrdu' },
+{ text: 'Meta', align: 'left', value: 'se1v' },
+{ text: 'Actions', align: 'left', value: 'name', sortable: false }
+],
+   dialog: false,
+   editedIndex: -1,
+      editedItemProducts: {
+        name: '',
+        a83e: '',
+        qrdu: 0,
+        e9lf: '',
+        r0hu: '',
+        s2l1:'',
+        se1v:''
+      },
+      defaultItemProducts: {
+        name: '',
+        a83e: '',
+        qrdu: 0,
+        e9lf: '',
+        r0hu: '',
+        s2l1:'',
+        se1v:''
+      }
+      ,
+         editedItemClients: {
+           name: '',
+           Title: '',
+           t1q7: '',
+           zqlz: '',
+           q89x: '',
+           nc7a:'',
+           c9jm:'',
+           OData__x0065_cv5:''
+
+         },
+         defaultItemClients: {
+           name: '',
+           Title: '',
+           t1q7: '',
+           zqlz: '',
+           q89x: '',
+           nc7a:'',
+           c9jm:'',
+           OData__x0065_cv5:''
+         }
+         ,
+            editedItemEmployees: {
+              name: '',
+              vblv: '',
+              cytw: '',
+              w3s7: '',
+              bevs: '',
+              OData__x0079_ex6:0,
+              OData__x0077_v79:''
+            },
+            defaultItemEmployees: {
+              name: '',
+              vblv: '',
+              cytw: '',
+              w3s7: '',
+              bevs: '',
+              OData__x0079_ex6:0,
+              OData__x0077_v79:''
+            }
+
             }
           },
-        template: ` <div><v-form>
-              <v-card>
-                <v-card-title primary-title>
-                  <h4>Producto</h4>
-                </v-card-title>
-	                <v-card-text>
-											<v-text-field label="Product_Number"  type="text" v-model="Product_Number" ></v-text-field>
-											<v-text-field label="Product_Name"  type="text" v-model="Product_Name" ></v-text-field>
-											<v-text-field label="Product_Units"  type="text" v-model="Product_Units" ></v-text-field>
-	                    <v-text-field label="Product_Family" type="text"  v-model="Product_Family"></v-text-field>
-	                    <v-text-field label="Product_Cost"  type="number" v-model="Product_Cost"></v-text-field>
-	                    <v-text-field label="Goal"  type="text" v-model="Goal" ></v-text-field>
-	                </v-card-text>
+        template: `<div> <template>
+  <div>
+    <v-toolbar flat color="white">
+      <v-toolbar-title>Productos</v-toolbar-title>
+      <v-divider
+        class="mx-2"
+        inset
+        vertical
+      ></v-divider>
+      <v-spacer></v-spacer>
+      <v-dialog v-model="dialog" max-width="500px">
+        <template v-slot:activator="{ on }">
+          <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="headline">{{ formTitle }}</span>
+          </v-card-title>
 
-              </v-card>
-              <br>
-              <v-card>
-                <v-card-title>
-                  <h4>Crear Producto</h4>
-                </v-card-title>
-                <v-card-actions>
-										<div class="end_button">
-              				<v-btn  type="button" @click="postListDataProduct">Someter</v-btn >
-              			</div>
-                </v-card-actions>
-              </v-card>
-            </v-form>
+          <v-card-text>
+            <v-container grid-list-md>
+              <v-layout wrap>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItemProducts.s2l1" label="Num. producto"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItemProducts.e9lf" label="Descripcion"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItemProducts.a83e" label="Unidades"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItemProducts.r0hu" label="Familia"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItemProducts.qrdu" label="Costo/LB"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItemProducts.se1v" label="Meta"></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
 
-            <v-form>
-                  <v-card>
-                    <v-card-title primary-title>
-                      <h4>Demostradora</h4>
-                    </v-card-title>
-    	                <v-card-text>
-    											<v-text-field label="Name"  type="text" v-model="Emp_FN" ></v-text-field>
-    											<v-text-field label="Last name"  type="text" v-model="Emp_LN" ></v-text-field>
-    											<v-text-field label="rate"  type="text" v-model="Emp_Rt" ></v-text-field>
-    	                    <v-text-field label="route" type="text"  v-model="Emp_Route"></v-text-field>
-    	                    <v-text-field label="email"  type="text" v-model="Emp_email"></v-text-field>
-    	                    <v-text-field label="role"  type="text" v-model="Emp_role" ></v-text-field>
-    	                </v-card-text>
-    									<v-spacer></v-spacer>
-                  </v-card>
-                  <br>
-                  <v-card>
-                    <v-card-title>
-                      <h4>Crear Demostradora</h4>
-                    </v-card-title>
-                    <v-card-actions>
-    										<div class="end_button">
-                  				<v-btn  type="button" @click="postListDataEmployee">Someter</v-btn >
-                  			</div>
-                    </v-card-actions>
-                  </v-card>
-                </v-form>
-                </div>`,
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" flat @click="closeProduct">Cancel</v-btn>
+            <v-btn color="blue darken-1" flat @click="saveProduct">Save</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-toolbar>
+    <v-data-table
+      :headers="headersProducts"
+      :items="Products"
+      class="elevation-1"
+    >
+      <template v-slot:items="props">
+        <td>{{props.item.s2l1}}</td>
+        <td class="text-xs-right">{{ props.item.e9lf}}</td>
+        <td class="text-xs-right">{{ props.item.a83e}}</td>
+        <td class="text-xs-right">{{ props.item.r0hu}}</td>
+        <td class="text-xs-right">{{ props.item.qrdu}}</td>
+        <td class="text-xs-right">{{ props.item.se1v}}</td>
+        <td class="justify-center layout px-0">
+          <v-icon
+            small
+            class="mr-2"
+            @click="editItemProduct(props.item)"
+          >
+            edit
+          </v-icon>
+          <v-icon
+            small
+            @click="deleteItemProduct(props.item)"
+          >
+            delete
+          </v-icon>
+        </td>
+      </template>
+      <template v-slot:no-data>
+        <v-btn color="primary" @click="getListData">Reset</v-btn>
+      </template>
+    </v-data-table>
+  </div>
+</template>
+
+<template>
+<div>
+<v-toolbar flat color="white">
+<v-toolbar-title>Empleados</v-toolbar-title>
+<v-divider
+class="mx-2"
+inset
+vertical
+></v-divider>
+<v-spacer></v-spacer>
+<v-dialog v-model="dialog" max-width="500px">
+<template v-slot:activator="{ on }">
+  <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+</template>
+<v-card>
+  <v-card-title>
+    <span class="headline">{{ formTitle }}</span>
+  </v-card-title>
+
+  <v-card-text>
+    <v-container grid-list-md>
+      <v-layout wrap>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemEmployees.vblv" label="Nombre"></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemEmployees.cytw" label="Apellido"></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemEmployees.bevs" label="Rol"></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemEmployees.w3s7" label="Ruta"></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemEmployees.OData__x0077_v79" label="Email"></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemEmployees.OData__x0079_ex6" label="Salario"></v-text-field>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-card-text>
+
+  <v-card-actions>
+    <v-spacer></v-spacer>
+    <v-btn color="blue darken-1" flat @click="closeEmployee">Cancel</v-btn>
+    <v-btn color="blue darken-1" flat @click="saveEmployee">Save</v-btn>
+  </v-card-actions>
+</v-card>
+</v-dialog>
+</v-toolbar>
+<v-data-table
+:headers="headersEmployees"
+:items="Employees"
+class="elevation-1"
+>
+<template v-slot:items="props">
+<td>{{props.item.vblv}}</td>
+<td class="text-xs-right">{{ props.item.cytw}}</td>
+<td class="text-xs-right">{{ props.item.bevs}}</td>
+<td class="text-xs-right">{{ props.item.w3s7}}</td>
+<td class="text-xs-right">{{ props.item.OData__x0077_v79}}</td>
+<td class="text-xs-right">{{ props.item.OData__x0079_ex6}}</td>
+<td class="justify-center layout px-0">
+  <v-icon
+    small
+    class="mr-2"
+    @click="editItemEmployee(props.item)"
+  >
+    edit
+  </v-icon>
+  <v-icon
+    small
+    @click="deleteItemEmployee(props.item)"
+  >
+    delete
+  </v-icon>
+</td>
+</template>
+<template v-slot:no-data>
+<v-btn color="primary" @click="getListData">Reset</v-btn>
+</template>
+</v-data-table>
+</div>
+</template>
+
+<template>
+<div>
+<v-toolbar flat color="white">
+<v-toolbar-title>Clientes</v-toolbar-title>
+<v-divider
+class="mx-2"
+inset
+vertical
+></v-divider>
+<v-spacer></v-spacer>
+<v-dialog v-model="dialog" max-width="500px">
+<template v-slot:activator="{ on }">
+  <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+</template>
+<v-card>
+  <v-card-title>
+    <span class="headline">{{ formTitle }}</span>
+  </v-card-title>
+
+  <v-card-text>
+    <v-container grid-list-md>
+      <v-layout wrap>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemClients.Title" label="Nombre"></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemClients.t1q7" label="Num. Cliente"></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemClients.zqlz" label="Cadena"></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemClients.q89x" label="Ciudad"></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemClients.nc7a" label="Ruta"></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemClients.c9jm" label="Multiplicador"></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 md4>
+          <v-text-field v-model="editedItemClients.OData__x0065_cv5" label="Email"></v-text-field>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-card-text>
+
+  <v-card-actions>
+    <v-spacer></v-spacer>
+    <v-btn color="blue darken-1" flat @click="closeClient">Cancel</v-btn>
+    <v-btn color="blue darken-1" flat @click="saveClient">Save</v-btn>
+  </v-card-actions>
+</v-card>
+</v-dialog>
+</v-toolbar>
+<v-data-table
+:headers="headersClients"
+:items="Clients"
+class="elevation-1"
+>
+<template v-slot:items="props">
+<td>{{props.item.Title}}</td>
+<td class="text-xs-right">{{ props.item.t1q7}}</td>
+<td class="text-xs-right">{{ props.item.zqlz}}</td>
+<td class="text-xs-right">{{ props.item.q89x}}</td>
+<td class="text-xs-right">{{ props.item.nc7a}}</td>
+<td class="text-xs-right">{{ props.item.c9jm}}</td>
+<td class="text-xs-right">{{ props.item.OData__x0065_cv5}}</td>
+<td class="justify-center layout px-0">
+  <v-icon
+    small
+    class="mr-2"
+    @click="editItemClient(props.item)"
+  >
+    edit
+  </v-icon>
+  <v-icon
+    small
+    @click="deleteItemClient(props.item)"
+  >
+    delete
+  </v-icon>
+</td>
+</template>
+<template v-slot:no-data>
+<v-btn color="primary" @click="getListData">Reset</v-btn>
+</template>
+</v-data-table>
+</div>
+</template>
+
+</div>`,
+computed: {
+     formTitle () {
+       return this.editedIndex === -1 ? 'Nuevo' : 'Editar'
+     }
+   },
+
+   watch: {
+     dialog (val) {
+       val || this.closeProduct()
+       val || this.closeEmployee()
+       val || this.closeClient()
+     }
+   },
             created: function(){
               this.getRequestDigestValue();
+              this.getListData();
               //this.getListData();
             },
             methods:{
+              editItemProduct (item) {
+       this.editedIndex = this.Products.indexOf(item)
+       this.ItemId = item.Id
+       this.editedItemProducts = Object.assign({}, item)
+       this.dialog = true
+
+     },        editItemClient (item) {
+      this.editedIndex = this.Clients.indexOf(item)
+      this.ItemId = item.Id
+      this.editedItemClients = Object.assign({}, item)
+      this.dialog = true
+
+    },
+    editItemEmployee (item) {
+this.editedIndex = this.Employees.indexOf(item)
+this.ItemId = item.Id
+this.editedItemEmployees = Object.assign({}, item)
+this.dialog = true
+
+},
+
+     deleteItemProduct (item) {
+       const index = this.Products.indexOf(item)
+       confirm('Are you sure you want to delete this item?') && this.Products.splice(index, 1)
+       $.ajax({
+           async: true,
+           url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items('"+item.Id+"')",
+           method: "POST",
+           data: JSON.stringify({
+             '__metadata': {
+               'type': 'SP.Data.ProductListItem' // it defines the ListEntityTypeName
+             },
+            //  /*
+             "status": 'Discontinued'
+              //*/
+               //this.editedItem;
+           }),
+           headers: {
+             "accept": "application/json;odata=verbose",
+             "content-type": "application/json;odata=verbose",
+             "X-RequestDigest": this.RequestDigest,
+             "IF-MATCH": "*",
+             "X-HTTP-Method": "MERGE"
+           },
+           success: function(data) {
+             console.log("Item edited to discontinued successfully");
+             //swal("Info Succesfully Entered to List", {icon:"success"})
+             //this.getListData();
+           },
+           error: function(error) {
+             console.log(JSON.stringify(error));
+           }
+         });
+     },
+     deleteItemClient (item) {
+       const index = this.Clients.indexOf(item)
+       confirm('Are you sure you want to delete this item?') && this.Clients.splice(index, 1)
+       $.ajax({
+           async: true,
+           url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items('"+item.Id+"')",
+           method: "POST",
+           data: JSON.stringify({
+             '__metadata': {
+               'type': 'SP.Data.ClientsListItem' // it defines the ListEntityTypeName
+             },
+            //  /*
+             "status": 'Terminated'
+              //*/
+               //this.editedItem;
+           }),
+           headers: {
+             "accept": "application/json;odata=verbose",
+             "content-type": "application/json;odata=verbose",
+             "X-RequestDigest": this.RequestDigest,
+             "IF-MATCH": "*",
+             "X-HTTP-Method": "MERGE"
+           },
+           success: function(data) {
+             console.log("Item edited to terminated successfully");
+             //swal("Info Succesfully Entered to List", {icon:"success"})
+             //this.getListData();
+           },
+           error: function(error) {
+             console.log(JSON.stringify(error));
+           }
+         });
+     },
+     deleteItemEmployee (item) {
+       const index = this.Employees.indexOf(item)
+       confirm('Are you sure you want to delete this item?') && this.Employees.splice(index, 1)
+       $.ajax({
+           async: true,
+           url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items('"+item.Id+"')",
+           method: "POST",
+           data: JSON.stringify({
+             '__metadata': {
+               'type': 'SP.Data.EmployeeListItem' // it defines the ListEntityTypeName
+             },
+            //  /*
+             "status": 'Terminated'
+              //*/
+               //this.editedItem;
+           }),
+           headers: {
+             "accept": "application/json;odata=verbose",
+             "content-type": "application/json;odata=verbose",
+             "X-RequestDigest": this.RequestDigest,
+             "IF-MATCH": "*",
+             "X-HTTP-Method": "MERGE"
+           },
+           success: function(data) {
+             console.log("Item edited to terminated successfully");
+             //swal("Info Succesfully Entered to List", {icon:"success"})
+             //this.getListData();
+           },
+           error: function(error) {
+             console.log(JSON.stringify(error));
+           }
+         });
+     },
+
+     closeProduct () {
+       this.dialog = false
+       setTimeout(() => {
+         this.editedItemProducts = Object.assign({}, this.defaultItemProducts)
+         this.editedIndex = -1
+       }, 300)
+     },
+     closeEmployee () {
+       this.dialog = false
+       setTimeout(() => {
+         this.editedItemEmployees = Object.assign({}, this.defaultItemEmployees)
+         this.editedIndex = -1
+       }, 300)
+     },
+     closeClient () {
+       this.dialog = false
+       setTimeout(() => {
+         this.editedItemClients = Object.assign({}, this.defaultItemClients)
+         this.editedIndex = -1
+       }, 300)
+     },
+     saveEmployee () {
+       if (this.editedIndex > -1) {
+         Object.assign(this.Employees[this.editedIndex], this.editedItemEmployees);
+         $.ajax({
+             async: true,
+             url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items('"+this.ItemId+"')",
+             method: "POST",
+             data: JSON.stringify({
+               '__metadata': {
+                 'type': 'SP.Data.EmployeeListItem' // it defines the ListEntityTypeName
+               },
+              //  /*
+               "OData__x0079_ex6": this.editedItemEmployees.OData__x0079_ex6,
+               "OData__x0077_v79": this.editedItemEmployees.OData__x0077_v79,
+               "bevs": this.editedItemEmployees.bevs,
+               "cytw": this.editedItemEmployees.cytw,
+               "vblv": this.editedItemEmployees.vblv,
+                "w3s7": this.editedItemEmployees.w3s7
+                //*/
+                 //this.editedItem;
+             }),
+             headers: {
+               "accept": "application/json;odata=verbose",
+               "content-type": "application/json;odata=verbose",
+               "X-RequestDigest": this.RequestDigest,
+               "IF-MATCH": "*",
+               "X-HTTP-Method": "MERGE"
+             },
+             success: function(data) {
+               console.log("Item edited successfully");
+               //swal("Info Succesfully Entered to List", {icon:"success"})
+               //this.getListData();
+             },
+             error: function(error) {
+               console.log(JSON.stringify(error));
+             }
+           });
+       } else {
+         this.Employees.push(this.editedItemEmployees)
+         this.postListDataEmployee();
+       }
+       this.close()
+     },
+     saveClient () {
+       if (this.editedIndex > -1) {
+         Object.assign(this.Clients[this.editedIndex], this.editedItemClients);
+         $.ajax({
+             async: true,
+             url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items('"+this.ItemId+"')",
+             method: "POST",
+             data: JSON.stringify({
+               '__metadata': {
+                 'type': 'SP.Data.ClientsListItem' // it defines the ListEntityTypeName
+               },
+              //  /*
+               "Title": this.editedItemClients.Title,
+               "t1q7": this.editedItemClients.t1q7,
+               "zqlz": this.editedItemClients.zqlz,
+               "q89x": this.editedItemClients.q89x,
+               "nc7a": this.editedItemClients.nc7a,
+              "c9jm": this.editedItemClients.c9jm,
+              "OData__x0065_cv5": this.editedItemClients.OData__x0065_cv5
+                //*/
+                 //this.editedItem;
+             }),
+             headers: {
+               "accept": "application/json;odata=verbose",
+               "content-type": "application/json;odata=verbose",
+               "X-RequestDigest": this.RequestDigest,
+               "IF-MATCH": "*",
+               "X-HTTP-Method": "MERGE"
+             },
+             success: function(data) {
+               console.log("Item edited successfully");
+               //swal("Info Succesfully Entered to List", {icon:"success"})
+               //this.getListData();
+             },
+             error: function(error) {
+               console.log(JSON.stringify(error));
+             }
+           });
+       } else {
+         this.Clients.push(this.editedItemClients)
+         this.postListDataClient();
+       }
+       this.close()
+     },
+     saveProduct () {
+       if (this.editedIndex > -1) {
+         Object.assign(this.Products[this.editedIndex], this.editedItemProducts);
+         $.ajax({
+             async: true,
+             url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items('"+this.ItemId+"')",
+             method: "POST",
+             data: JSON.stringify({
+               '__metadata': {
+                 'type': 'SP.Data.ProductListItem' // it defines the ListEntityTypeName
+               },
+              //  /*
+               "a83e": this.editedItemProducts.a83e,
+               "e9lf": this.editedItemProducts.e9lf,
+               "qrdu": this.editedItemProducts.qrdu,
+               "r0hu": this.editedItemProducts.r0hu,
+               "s2l1": this.editedItemProducts.s2l1,
+                "se1v": this.editedItemProducts.se1v
+                //*/
+                 //this.editedItem;
+             }),
+             headers: {
+               "accept": "application/json;odata=verbose",
+               "content-type": "application/json;odata=verbose",
+               "X-RequestDigest": this.RequestDigest,
+               "IF-MATCH": "*",
+               "X-HTTP-Method": "MERGE"
+             },
+             success: function(data) {
+               console.log("Item edited successfully");
+               //swal("Info Succesfully Entered to List", {icon:"success"})
+               //this.getListData();
+             },
+             error: function(error) {
+               console.log(JSON.stringify(error));
+             }
+           });
+       } else {
+         this.Products.push(this.editedItemProducts)
+         this.postListDataProduct();
+       }
+       this.close()
+     },
+              getListData: function(){
+               var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items?$filter=status eq 'Active'";
+                var endPointUrl1 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items?$filter=status eq 'Active'";
+                 var endPointUrl2 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items?$filter=status eq 'Active'";
+               console.log(endPointUrl);
+              var headers = {
+                  "accept": "application/json;odata=verbose",
+                   "content-type": "application/json;odata=verbose"
+              };
+                  this.status = "getting data...";
+                  var vm = this;
+                  axios.get(endPointUrl).then(response => {
+                     vm.Products = response.data.value;
+                   });
+                   axios.get(endPointUrl1).then(response => {
+                      vm.Employees = response.data.value;
+                      console.log(vm.Employees);
+                    });
+                    axios.get(endPointUrl2).then(response => {
+                       vm.Clients = response.data.value;
+                       console.log(vm.Clients);
+                     });
+
+              },
               postListDataProduct: function(){
               $.ajax({
                    async: true,
@@ -284,12 +897,13 @@
                        '__metadata': {
                            'type': 'SP.Data.ProductListItem' // it defines the ListEntityTypeName
                        },
-                       "s2l1": this.Product_Number,
-                       "e9lf": this.Product_Name,
-                       "a83e": this.Product_Units,
-                       "r0hu": this.Product_Family,
-                       "qrdu": this.Product_Cost,
-                       "se1v": this.Goal
+                       "a83e": this.editedItemProducts.a83e,
+                       "e9lf": this.editedItemProducts.e9lf,
+                       "qrdu": this.editedItemProducts.qrdu,
+                       "r0hu": this.editedItemProducts.r0hu,
+                       "s2l1": this.editedItemProducts.s2l1,
+                       "se1v": this.editedItemProducts.se1v,
+                       "status": 'Active'
                    }),
 
                    headers: {
@@ -319,12 +933,12 @@
                        '__metadata': {
                            'type': 'SP.Data.EmployeeListItem' // it defines the ListEntityTypeName
                        },
-                       "vblv": this.Emp_FN,
-                       "cytw": this.Emp_LN,
-                       "OData__x0079_ex6": this.Emp_Rt,
-                       "w3s7": this.Emp_Route,
-                       "OData__x0077_v79": this.Emp_email,
-                       "bevs": this.Emp_role
+                       "OData__x0079_ex6": this.editedItemEmployees.OData__x0079_ex6,
+                       "OData__x0077_v79": this.editedItemEmployees.OData__x0077_v79,
+                       "bevs": this.editedItemEmployees.bevs,
+                       "cytw": this.editedItemEmployees.cytw,
+                       "vblv": this.editedItemEmployees.vblv,
+                        "w3s7": this.editedItemEmployees.w3s7
                    }),
 
                    headers: {
@@ -343,7 +957,42 @@
 
                    }
               });
-            }
+            },
+            postListDataClient: function(){
+            $.ajax({
+                 async: true,
+                 url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items",
+                 method: "POST",
+                 data: JSON.stringify({
+                     '__metadata': {
+                         'type': 'SP.Data.ClientsListItem' // it defines the ListEntityTypeName
+                     },
+                     "Title": this.editedItemClients.Title,
+                     "t1q7": this.editedItemClients.t1q7,
+                     "zqlz": this.editedItemClients.zqlz,
+                     "q89x": this.editedItemClients.q89x,
+                     "nc7a": this.editedItemClients.nc7a,
+                    "c9jm": this.editedItemClients.c9jm,
+                    "OData__x0065_cv5": this.editedItemClients.OData__x0065_cv5
+                 }),
+
+                 headers: {
+                     "accept": "application/json;odata=verbose",
+                     "content-type": "application/json;odata=verbose",
+                     "X-RequestDigest": this.RequestDigest
+                     //"Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
+                     //"Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
+                 },
+                 success: function(data) {
+                     console.log("Item created successfully");
+                     //this.getListData();
+                 },
+                 error: function(error) {
+                     console.log(JSON.stringify(error));
+
+                 }
+            });
+          }
 
               ,
               getRequestDigestValue: function(){
@@ -364,6 +1013,7 @@
                   console.log("failed");
                 });
           },
+
 
         }
 
