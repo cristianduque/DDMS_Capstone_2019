@@ -243,7 +243,9 @@ value: 's2l1'
 { text: 'Meta', align: 'left', value: 'se1v' },
 { text: 'Actions', align: 'left', value: 'name', sortable: false }
 ],
-   dialog: false,
+   dialogProduct: false,
+   dialogClient: false,
+   dialogEmployee: false,
    editedIndex: -1,
       editedItemProducts: {
         name: '',
@@ -307,7 +309,11 @@ value: 's2l1'
 
             }
           },
-        template: `<div> <template>
+        template: `<div>
+
+<v-spacer></v-spacer>
+
+        <template>
   <div>
     <v-toolbar flat color="white">
       <v-toolbar-title>Productos</v-toolbar-title>
@@ -317,9 +323,9 @@ value: 's2l1'
         vertical
       ></v-divider>
       <v-spacer></v-spacer>
-      <v-dialog v-model="dialog" max-width="500px">
+      <v-dialog v-model="dialogProduct" max-width="500px">
         <template v-slot:activator="{ on }">
-          <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+          <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo Producto</v-btn>
         </template>
         <v-card>
           <v-card-title>
@@ -394,6 +400,8 @@ value: 's2l1'
   </div>
 </template>
 
+<v-spacer></v-spacer>
+
 <template>
 <div>
 <v-toolbar flat color="white">
@@ -404,9 +412,9 @@ inset
 vertical
 ></v-divider>
 <v-spacer></v-spacer>
-<v-dialog v-model="dialog" max-width="500px">
+<v-dialog v-model="dialogEmployee" max-width="500px">
 <template v-slot:activator="{ on }">
-  <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+  <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo Empleado</v-btn>
 </template>
 <v-card>
   <v-card-title>
@@ -481,6 +489,8 @@ class="elevation-1"
 </div>
 </template>
 
+<v-spacer></v-spacer>
+
 <template>
 <div>
 <v-toolbar flat color="white">
@@ -491,9 +501,9 @@ inset
 vertical
 ></v-divider>
 <v-spacer></v-spacer>
-<v-dialog v-model="dialog" max-width="500px">
+<v-dialog v-model="dialogClient" max-width="500px">
 <template v-slot:activator="{ on }">
-  <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+  <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo Cliente</v-btn>
 </template>
 <v-card>
   <v-card-title>
@@ -572,6 +582,8 @@ class="elevation-1"
 </div>
 </template>
 
+<v-spacer></v-spacer>
+
 </div>`,
 computed: {
      formTitle () {
@@ -580,9 +592,13 @@ computed: {
    },
 
    watch: {
-     dialog (val) {
+     dialogProduct (val) {
        val || this.closeProduct()
+     },
+     dialogEmployee (val) {
        val || this.closeEmployee()
+     },
+     dialogClient (val) {
        val || this.closeClient()
      }
    },
@@ -596,20 +612,20 @@ computed: {
        this.editedIndex = this.Products.indexOf(item)
        this.ItemId = item.Id
        this.editedItemProducts = Object.assign({}, item)
-       this.dialog = true
+       this.dialogProduct = true
 
      },        editItemClient (item) {
       this.editedIndex = this.Clients.indexOf(item)
       this.ItemId = item.Id
       this.editedItemClients = Object.assign({}, item)
-      this.dialog = true
+      this.dialogClient = true
 
     },
     editItemEmployee (item) {
 this.editedIndex = this.Employees.indexOf(item)
 this.ItemId = item.Id
 this.editedItemEmployees = Object.assign({}, item)
-this.dialog = true
+this.dialogEmployee = true
 
 },
 
@@ -714,21 +730,21 @@ this.dialog = true
      },
 
      closeProduct () {
-       this.dialog = false
+       this.dialogProduct = false
        setTimeout(() => {
          this.editedItemProducts = Object.assign({}, this.defaultItemProducts)
          this.editedIndex = -1
        }, 300)
      },
      closeEmployee () {
-       this.dialog = false
+       this.dialogEmployee = false
        setTimeout(() => {
          this.editedItemEmployees = Object.assign({}, this.defaultItemEmployees)
          this.editedIndex = -1
        }, 300)
      },
      closeClient () {
-       this.dialog = false
+       this.dialogClient = false
        setTimeout(() => {
          this.editedItemClients = Object.assign({}, this.defaultItemClients)
          this.editedIndex = -1
@@ -775,7 +791,7 @@ this.dialog = true
          this.Employees.push(this.editedItemEmployees)
          this.postListDataEmployee();
        }
-       this.close()
+       this.closeEmployee()
      },
      saveClient () {
        if (this.editedIndex > -1) {
@@ -796,6 +812,7 @@ this.dialog = true
                "nc7a": this.editedItemClients.nc7a,
               "c9jm": this.editedItemClients.c9jm,
               "OData__x0065_cv5": this.editedItemClients.OData__x0065_cv5
+
                 //*/
                  //this.editedItem;
              }),
@@ -819,7 +836,7 @@ this.dialog = true
          this.Clients.push(this.editedItemClients)
          this.postListDataClient();
        }
-       this.close()
+       this.closeClient()
      },
      saveProduct () {
        if (this.editedIndex > -1) {
@@ -862,7 +879,7 @@ this.dialog = true
          this.Products.push(this.editedItemProducts)
          this.postListDataProduct();
        }
-       this.close()
+       this.closeProduct()
      },
               getListData: function(){
                var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items?$filter=status eq 'Active'";
@@ -938,7 +955,8 @@ this.dialog = true
                        "bevs": this.editedItemEmployees.bevs,
                        "cytw": this.editedItemEmployees.cytw,
                        "vblv": this.editedItemEmployees.vblv,
-                        "w3s7": this.editedItemEmployees.w3s7
+                        "w3s7": this.editedItemEmployees.w3s7,
+                        "status": 'Active'
                    }),
 
                    headers: {
@@ -973,7 +991,8 @@ this.dialog = true
                      "q89x": this.editedItemClients.q89x,
                      "nc7a": this.editedItemClients.nc7a,
                     "c9jm": this.editedItemClients.c9jm,
-                    "OData__x0065_cv5": this.editedItemClients.OData__x0065_cv5
+                    "OData__x0065_cv5": this.editedItemClients.OData__x0065_cv5,
+                    "status": 'Active'
                  }),
 
                  headers: {
