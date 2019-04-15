@@ -311,7 +311,7 @@ value: 's2l1'
           },
         template: `<div>
 
-<v-spacer></v-spacer>
+
 
         <template>
   <div>
@@ -400,7 +400,7 @@ value: 's2l1'
   </div>
 </template>
 
-<v-spacer></v-spacer>
+<br><v-spacer></v-spacer><br>
 
 <template>
 <div>
@@ -489,7 +489,7 @@ class="elevation-1"
 </div>
 </template>
 
-<v-spacer></v-spacer>
+<br><v-spacer></v-spacer><br>
 
 <template>
 <div>
@@ -582,7 +582,7 @@ class="elevation-1"
 </div>
 </template>
 
-<v-spacer></v-spacer>
+
 
 </div>`,
 computed: {
