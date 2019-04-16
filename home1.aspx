@@ -178,23 +178,327 @@
     var Planning =  Vue.component('Planning', {
         data: function (){
           return{
+            Events:[],
+            editedItemEvents: {
+              name: '',
+              Title: '',
+                      event_id: '',
+                      event_date: '',
+                      products: '',
+                      event_client: '',
+                      event_demonstrator:'',
+                      event_mult: 0,
+                      event_approver1: '',
+                      event_approver2: '',
+                      event_approver3: '',
+                      Event_Status: '',
+                      Event_Status_Text:''
+            },
+            defaultItemEvents: {
+              name: '',
+              Title: '',
+                      event_id: '',
+                      event_date: '',
+                      products: '',
+                      event_client: '',
+                      event_demonstrator:'',
+                      event_mult: 0,
+                      event_approver1: '',
+                      event_approver2: '',
+                      event_approver3: '',
+                      Event_Status: '',
+                      Event_Status_Text:''
+            },
+            headersEvents: [
+              {
+                      text: 'Nombre',
+                      align: 'left',
+                      value: 'Title'
+                      },
+                      { text: 'Fecha', align: 'left', value: 'event_date' },
+                      { text: 'Productos', align: 'left', value: 'products' },
+                      { text: 'Cliente', align: 'left', value: 'event_client' },
+                      { text: 'Demonstratora', align: 'left', value: 'event_demonstrator' },
+                      { text: 'Multiplicador', align: 'left', value: 'event_mult' },
+                      { text: 'Aprobador #1', align: 'left', value: 'event_approver1' },
+                      { text: 'Aprobador #2', align: 'left', value: 'event_approver2'},
+                      { text: 'Aprobador #3', align: 'left', value: 'event_approver3'},
+                      //{ text: 'Estado', align: 'left', value: 'Event_Status'},
+                      //{ text: 'Razon', align: 'left', value: 'Event_Status_Text'},
+                      { text: 'Actions', align: 'left', value: 'name', sortable: false }
+
+            ],
+               dialogEvent: false,
+                 ItemId: -1
 
     }
   },
-    computed: {
-      // convert the list of events into a map of lists keyed by date
-      eventsMap () {
-        const map = {}
-        this.events.forEach(e => (map[e.date] = map[e.date] || []).push(e))
-        return map
-      }
+  computed: {
+       formTitle () {
+         return this.editedIndex === -1 ? 'Nuevo Evento' : 'Editar Evento'
+       }
+     },
+
+     watch: {
+       dialogEvent (val) {
+         val || this.closeEvent()
+       },
     },
-    methods: {
-      open (event) {
-        alert(event.title)
-      }
+    created: function(){
+      this.getRequestDigestValue();
+      this.getListData();
+      //this.getListData();
     },
-        template: ``
+    methods:{
+      editItemEvent (item) {
+this.editedIndex = this.Events.indexOf(item)
+this.ItemId = item.Id
+this.editedItemEvents = Object.assign({}, item)
+this.dialogEvent = true
+
+},
+deleteItemEvent (item) {
+  const index = this.Events.indexOf(item)
+  confirm('Are you sure you want to delete this item?') && this.Events.splice(index, 1)
+  $.ajax({
+      async: true,
+      url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items('"+item.Id+"')",
+      method: "POST",
+      data: JSON.stringify({
+        '__metadata': {
+          'type': 'SP.Data.EventsListItem' // it defines the ListEntityTypeName
+        },
+       //  /*
+        "Event_Status": 'Canceled'
+         //*/
+          //this.editedItem;
+      }),
+      headers: {
+        "accept": "application/json;odata=verbose",
+        "content-type": "application/json;odata=verbose",
+        "X-RequestDigest": this.RequestDigest,
+        "IF-MATCH": "*",
+        "X-HTTP-Method": "MERGE"
+      },
+      success: function(data) {
+        console.log("Item edited to discontinued successfully");
+        //swal("Info Succesfully Entered to List", {icon:"success"})
+        //this.getListData();
+      },
+      error: function(error) {
+        console.log(JSON.stringify(error));
+      }
+    });
+},
+closeEvent () {
+  this.dialogEvent = false
+  setTimeout(() => {
+    this.editedItemEvents = Object.assign({}, this.defaultItemEvents)
+    this.editedIndex = -1
+  }, 300)
+},
+saveEvent () {
+  if (this.editedIndex > -1) {
+    Object.assign(this.Events[this.editedIndex], this.editedItemEvents);
+    $.ajax({
+        async: true,
+        url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items('"+this.ItemId+"')",
+        method: "POST",
+        data: JSON.stringify({
+          '__metadata': {
+            'type': 'SP.Data.EventsListItem' // it defines the ListEntityTypeName
+          },
+         //  /*
+          "Title": this.editedItemEvents.Title,
+          "event_date": this.editedItemEvents.event_date,
+          "event_id": this.editedItemEvents.Title +'&'+ this.editedItemEvents.event_date,
+          "products": this.editedItemEvents.products,
+          "event_client": this.editedItemEvents.event_client,
+           "event_demonstrator": this.editedItemEvents.event_demonstrator,
+           "event_mult": this.editedItemEvents.event_mult,
+           "event_approver1": this.editedItemEvents.event_approver1,
+           "event_approver2": this.editedItemEvents.event_approver2,
+           "event_approver3": this.editedItemEvents.event_approver3
+
+
+
+           //*/
+            //this.editedItem;
+        }),
+        headers: {
+          "accept": "application/json;odata=verbose",
+          "content-type": "application/json;odata=verbose",
+          "X-RequestDigest": this.RequestDigest,
+          "IF-MATCH": "*",
+          "X-HTTP-Method": "MERGE"
+        },
+        success: function(data) {
+          console.log("Item edited successfully");
+          //swal("Info Succesfully Entered to List", {icon:"success"})
+          //this.getListData();
+        },
+        error: function(error) {
+          console.log(JSON.stringify(error));
+        }
+      });
+  } else {
+    this.Events.push(this.editedItemEvents)
+    this.postListDataEvent();
+  }
+  this.closeEvent()
+},
+         getListData: function(){
+          var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items?$filter=Event_Status eq 'AGENDA'";
+          console.log(endPointUrl);
+         var headers = {
+             "accept": "application/json;odata=verbose",
+              "content-type": "application/json;odata=verbose"
+         };
+             this.status = "getting data...";
+             var vm = this;
+             axios.get(endPointUrl).then(response => {
+                vm.Events = response.data.value;
+              });
+         },
+         postListDataEvent: function(){
+         $.ajax({
+              async: true,
+              url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items",
+              method: "POST",
+              data: JSON.stringify({
+                  '__metadata': {
+                      'type': 'SP.Data.EventsListItem' // it defines the ListEntityTypeName
+                  },
+                  "Title": this.editedItemEvents.Title,
+                  "event_date": this.editedItemEvents.event_date,
+                  "event_id": this.editedItemEvents.Title +'&'+ this.editedItemEvents.event_date,
+                  "products": this.editedItemEvents.products,
+                  "event_client": this.editedItemEvents.event_client,
+                   "event_demonstrator": this.editedItemEvents.event_demonstrator,
+                   "event_mult": this.editedItemEvents.event_mult,
+                   "event_approver1": this.editedItemEvents.event_approver1,
+                   "event_approver2": this.editedItemEvents.event_approver2,
+                   "event_approver3": this.editedItemEvents.event_approver3,
+                  "Event_Status": 'AGENDA'
+              }),
+
+              headers: {
+                  "accept": "application/json;odata=verbose",
+                  "content-type": "application/json;odata=verbose",
+                  "X-RequestDigest": this.RequestDigest
+                  //"Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
+                  //"Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
+              },
+              success: function(data) {
+                  console.log("Item created successfully");
+                  //this.getListData();
+              },
+              error: function(error) {
+                  console.log(JSON.stringify(error));
+
+              }
+         });
+       }
+    },
+        template: `<div>  <template>
+    <div>
+      <v-toolbar flat color="white">
+        <v-toolbar-title>Eventos</v-toolbar-title>
+        <v-divider
+          class="mx-2"
+          inset
+          vertical
+        ></v-divider>
+        <v-spacer></v-spacer>
+        <v-dialog v-model="dialogEvent" max-width="500px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo Evento</v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="headline">{{ formTitle }}</span>
+            </v-card-title>
+
+            <v-card-text>
+              <v-container grid-list-md>
+                <v-layout wrap>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.Title" label="Nombre"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_date" label="Fecha"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.products" label="Productos"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_client" label="Cliente"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_demonstrator" label="Demonstradora"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_mult" label="Multiplicador"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_approver1" label="Approver 1"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_approver2" label="Approver 2"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_approver3" label="Approver 3"></v-text-field>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" flat @click="closeEvent">Cancel</v-btn>
+              <v-btn color="blue darken-1" flat @click="saveEvent">Save</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-toolbar>
+      <v-data-table
+        :headers="headersEvents"
+        :items="Events"
+        class="elevation-1"
+      >
+        <template v-slot:items="props">
+          <td>{{props.item.Title}}</td>
+          <td class="text-xs-right">{{ props.item.event_date}}</td>
+          <td class="text-xs-right">{{ props.item.products}}</td>
+          <td class="text-xs-right">{{ props.item.event_client}}</td>
+          <td class="text-xs-right">{{ props.item.event_demonstrator}}</td>
+          <td class="text-xs-right">{{ props.item.event_mult}}</td>
+          <td class="text-xs-right">{{ props.item.event_approver1}}</td>
+          <td class="text-xs-right">{{ props.item.event_approver2}}</td>
+          <td class="text-xs-right">{{ props.item.event_approver3}}</td>
+          <td class="justify-center layout px-0">
+            <v-icon
+              small
+              class="mr-2"
+              @click="editItemEvent(props.item)"
+            >
+              edit
+            </v-icon>
+            <v-icon
+              small
+              @click="deleteItemEvent(props.item)"
+            >
+              delete
+            </v-icon>
+          </td>
+        </template>
+        <template v-slot:no-data>
+          <v-btn color="primary" @click="getListData">Reset</v-btn>
+        </template>
+      </v-data-table>
+    </div>
+  </template>
+  </div>`
       });
       var ManageLists =  Vue.component('ManageLists', {
           data: function (){
