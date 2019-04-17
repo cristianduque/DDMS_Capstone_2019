@@ -246,6 +246,7 @@
                dialogEventCancel:false,
                  ItemId: -1,
                  editedIndex:-1,
+                 canceledIndex:-1,
                  type: 'month',
       start: '2019-01-01',
       end: '2019-01-06',
@@ -290,16 +291,17 @@ this.dialogEvent = true
 
 },
 deleteItemEvent (item) {
-this.editedIndex = this.Events.indexOf(item)
+this.canceledIndex = this.Events.indexOf(item)
 this.ItemId = item.Id
 this.editedItemEvents = Object.assign({}, item)
 this.dialogEventCancel = true
 
 },
 saveCancelEvent () {
-  if (this.editedIndex > -1) {
+  if (this.canceledIndex > -1) {
     //Object.assign(this.Events[this.editedIndex], this.editedItemEvents);
-    console.log(this.editedIndex);
+    console.log(this.canceledIndex);
+      this.Events.splice(this.canceledIndex, 1);
     if(this.editedItemEvents.event_reason === null && this.editedItemEvents.Event_Status_Text === null) {
         swal({
             title: "Campos vacios",
@@ -336,10 +338,11 @@ saveCancelEvent () {
       },
       success: function(data) {
         swal("Info Succesfully Deleted", {icon:"success"})
-        this.Events.splice(this.editedIndex, 1);
+
+
         console.log("Item edited to canceled successfully");
         //swal("Info Succesfully Entered to List", {icon:"success"})
-        //this.getListData();
+         //this.getListData();
       },
       error: function(error) {
         console.log(JSON.stringify(error));
@@ -361,7 +364,7 @@ closeEvent () {
   }, 300)
 },
 closeCancelEvent () {
-  this.dialogEventCancelEvent = false
+  this.dialogEventCancel = false
 
 },
 saveEvent () {
@@ -457,7 +460,7 @@ saveEvent () {
     }
   } else {
     this.postListDataEvent();
-  //  this.Events.push(this.editedItemEvents)
+    this.Events.push(this.editedItemEvents)
 
   }
 
@@ -493,6 +496,7 @@ saveEvent () {
                });
          },
          postListDataEvent: function(){
+
            if(this.editedItemEvents.Title === null || this.eventDate === null || this.eventTime === null || this.editedItemEvents.event_client === undefined || this.editedItemEvents.event_demonstrator === undefined || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === null || this.editedItemEvents.event_approver1 === undefined) {
                swal({
                    title: "Campos vacios",
@@ -557,7 +561,8 @@ saveEvent () {
                                success: function (data) {
                                    console.log("Item created successfully");
                                    //alert("Event was added succesfully");
-                                  this.Events.push(this.editedItemEvents)
+                                  //this.Events.push(this.editedItemEvents)
+                                  //this.getListData();
 
                                },
                                error: function (error) {
@@ -815,34 +820,6 @@ saveEvent () {
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout wrap>
-                  <!--<v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.Title" label="Nombre"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_date" label="Fecha"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.products" label="Productos"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_client" label="Cliente"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_demonstrator" label="Demonstradora"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_mult" label="Multiplicador"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_approver1" label="Approver 1"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_approver2" label="Approver 2"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_approver3" label="Approver 3"></v-text-field>
-                  </v-flex>-->
-
                   <v-form ref="form" class="planning-form">
                   <div class="name-demo">
                       <h3> Seleccione nombre de la demostracion: </h3>
@@ -1006,9 +983,6 @@ saveEvent () {
                                   :rules="[(e) => !!e || 'Este campo es requerido']"
                                   required
                                   clearable
-                                  bottom
-                                  clerable
-                                  autocomplete
                                   >
                                 </v-select>
                           <br/>
@@ -1019,9 +993,7 @@ saveEvent () {
                                   :items="employees"
                                   label="Segunda persona en aprobar"
                                   item-text="vblv"
-                                  bottom
                                   clearable
-                                  autocomplete
                                   >
                                 </v-select>
                           <br/>
@@ -1032,9 +1004,7 @@ saveEvent () {
                                   :items="employees"
                                   label="Tercera persona en aprobar el reporte"
                                   item-text="vblv"
-                                  bottom
                                   clearable
-                                  autocomplete
                                   >
                                 </v-select>
                   </div>
@@ -1060,42 +1030,13 @@ saveEvent () {
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout wrap>
-                  <!--<v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.Title" label="Nombre"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_date" label="Fecha"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.products" label="Productos"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_client" label="Cliente"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_demonstrator" label="Demonstradora"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_mult" label="Multiplicador"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_approver1" label="Approver 1"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_approver2" label="Approver 2"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItemEvents.event_approver3" label="Approver 3"></v-text-field>
-                  </v-flex>-->
 
-                  <v-form ref="formdelete" class="planning-form">
+                  <v-form ref="formdelete">
                   <h3>Seleccione Razon de Cancelacion</h3>
                   <v-select
                       v-model="editedItemEvents.event_reason"
                       :items="Reasons"
-                      label="Razon"
                       item-text="Title"
-                      bottom
                       clearable
                       required
                       :rules="[(r) => !!r || 'Este campo es requerido']"
