@@ -15,6 +15,7 @@
   <script type="text/javascript" src="https://cdn.rawgit.com/highcharts/highcharts-vue/1ce7e656/dist/script-tag/highcharts-vue.min.js"></script>
   <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-google-maps/0.1.21/vue-google-maps.js"></script>-->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -179,12 +180,22 @@
         data: function (){
           return{
             Events:[],
+            eventDate:new Date().toISOString().substr(0, 10),
+            eventTime:'',
+            clients:[],
+            products: [],
+            demonstrators: [],
+            employees: [],
+            eventList: [],
+  errorMessages: '',
+    menu: false,
+            menuTime: false,
             editedItemEvents: {
               name: '',
               Title: '',
                       event_id: '',
                       event_date: '',
-                      products: '',
+                      products: [],
                       event_client: '',
                       event_demonstrator:'',
                       event_mult: 0,
@@ -192,14 +203,15 @@
                       event_approver2: '',
                       event_approver3: '',
                       Event_Status: '',
-                      Event_Status_Text:''
+                      Event_Status_Text:'',
+                      event_reason:''
             },
             defaultItemEvents: {
               name: '',
               Title: '',
                       event_id: '',
                       event_date: '',
-                      products: '',
+                      products: [],
                       event_client: '',
                       event_demonstrator:'',
                       event_mult: 0,
@@ -207,7 +219,9 @@
                       event_approver2: '',
                       event_approver3: '',
                       Event_Status: '',
-                      Event_Status_Text:''
+                      Event_Status_Text:'',
+                      event_reason:''
+
             },
             headersEvents: [
               {
@@ -229,7 +243,21 @@
 
             ],
                dialogEvent: false,
-                 ItemId: -1
+               dialogEventCancel:false,
+                 ItemId: -1,
+                 editedIndex:-1,
+                 type: 'month',
+      start: '2019-01-01',
+      end: '2019-01-06',
+      typeOptions: [
+        { text: 'Day', value: 'day' },
+        { text: '4 Day', value: '4day' },
+        { text: 'Week', value: 'week' },
+        { text: 'Month', value: 'month' },
+        { text: 'Custom Daily', value: 'custom-daily' },
+        { text: 'Custom Weekly', value: 'custom-weekly' }
+      ],
+      Reasons:[]
 
     }
   },
@@ -243,10 +271,14 @@
        dialogEvent (val) {
          val || this.closeEvent()
        },
+       dialogEventCancel (val) {
+         val || this.closeCancelEvent()
+       }
     },
     created: function(){
       this.getRequestDigestValue();
       this.getListData();
+      this.handlerData();
       //this.getListData();
     },
     methods:{
@@ -258,18 +290,40 @@ this.dialogEvent = true
 
 },
 deleteItemEvent (item) {
-  const index = this.Events.indexOf(item)
-  confirm('Are you sure you want to delete this item?') && this.Events.splice(index, 1)
+this.editedIndex = this.Events.indexOf(item)
+this.ItemId = item.Id
+this.editedItemEvents = Object.assign({}, item)
+this.dialogEventCancel = true
+
+},
+saveCancelEvent () {
+  if (this.editedIndex > -1) {
+    //Object.assign(this.Events[this.editedIndex], this.editedItemEvents);
+    console.log(this.editedIndex);
+    if(this.editedItemEvents.event_reason === null && this.editedItemEvents.Event_Status_Text === null) {
+        swal({
+            title: "Campos vacios",
+            text: "Usted tiene campos vacios en el formulario. Por favor verifique que cada campo este lleno",
+            icon: "info",
+            dangerMode: true,
+        });
+        this.$refs.formdelete.validate();
+        return;
+    }
+  //confirm('Are you sure you want to delete this item?') && this.Events.splice(index, 1)
+  else{
   $.ajax({
       async: true,
-      url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items('"+item.Id+"')",
+      url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items('"+this.ItemId+"')",
       method: "POST",
       data: JSON.stringify({
         '__metadata': {
           'type': 'SP.Data.EventsListItem' // it defines the ListEntityTypeName
         },
        //  /*
-        "Event_Status": 'Canceled'
+        "Event_Status": 'CANCELED',
+        "event_reason": this.editedItemEvents.event_reason,
+        "Event_Status_Text": this.editedItemEvents.Event_Status_Text
          //*/
           //this.editedItem;
       }),
@@ -281,7 +335,9 @@ deleteItemEvent (item) {
         "X-HTTP-Method": "MERGE"
       },
       success: function(data) {
-        console.log("Item edited to discontinued successfully");
+        swal("Info Succesfully Deleted", {icon:"success"})
+        this.Events.splice(this.editedIndex, 1);
+        console.log("Item edited to canceled successfully");
         //swal("Info Succesfully Entered to List", {icon:"success"})
         //this.getListData();
       },
@@ -289,6 +345,13 @@ deleteItemEvent (item) {
         console.log(JSON.stringify(error));
       }
     });
+    this.closeCancelEvent()
+  /*  this.closeEvent()
+    swal("Evento en agenda exitosamente!", {
+        icon: "success",
+    });*/
+  }
+}
 },
 closeEvent () {
   this.dialogEvent = false
@@ -297,9 +360,49 @@ closeEvent () {
     this.editedIndex = -1
   }, 300)
 },
+closeCancelEvent () {
+  this.dialogEventCancelEvent = false
+
+},
 saveEvent () {
   if (this.editedIndex > -1) {
     Object.assign(this.Events[this.editedIndex], this.editedItemEvents);
+    if(this.editedItemEvents.Title === null || this.eventDate === null || this.eventTime === null || this.editedItemEvents.event_client === undefined || this.editedItemEvents.event_demonstrator === undefined || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === null || this.editedItemEvents.event_approver1 === undefined) {
+        swal({
+            title: "Campos vacios",
+            text: "Usted tiene campos vacios en el formulario. Por favor verifique que cada campo este lleno",
+            icon: "info",
+            dangerMode: true,
+        });
+        this.$refs.form.validate();
+        return;
+    }
+
+    else if(this.checkDemonstratorConflict() === false || this.checkClientConflict() === false){
+        swal({
+            title: "Alertas vigentes",
+            text: "Usted tiene alertas pendientes en el formulario que no ha corregido. Por favor verifique que los campos de cliente y demostradora esten llenos sin alertas!",
+            icon: "info",
+            dangerMode: true,
+        });
+        return;
+    }
+
+    else {
+
+      var temp = this.eventDate + " " + this.eventTime;
+      var eDate = new Date(temp);
+      eDate.setHours(eDate.getHours() - 3);
+      this.editedItemEvents.event_date = eDate.toISOString();
+      swal({
+          title: "Esta seguro de la adicion de este evento?",
+          icon: "info",
+          buttons: true,
+      })
+          .then((willAdd) => {
+              if (willAdd) {
+
+
     $.ajax({
         async: true,
         url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items('"+this.ItemId+"')",
@@ -312,7 +415,7 @@ saveEvent () {
           "Title": this.editedItemEvents.Title,
           "event_date": this.editedItemEvents.event_date,
           "event_id": this.editedItemEvents.Title +'&'+ this.editedItemEvents.event_date,
-          "products": this.editedItemEvents.products,
+          "products": this.editedItemEvents.products.toString(),
           "event_client": this.editedItemEvents.event_client,
            "event_demonstrator": this.editedItemEvents.event_demonstrator,
            "event_mult": this.editedItemEvents.event_mult,
@@ -336,19 +439,32 @@ saveEvent () {
           console.log("Item edited successfully");
           //swal("Info Succesfully Entered to List", {icon:"success"})
           //this.getListData();
+
         },
         error: function(error) {
           console.log(JSON.stringify(error));
         }
       });
+    this.closeEvent()
+    swal("Evento en agenda exitosamente!", {
+        icon: "success",
+    });
+} else {
+    window.location.href = '/sites/DDMS/Shared%20Documents/planning.aspx#/CreateEvent';
+}
+});
+
+    }
   } else {
-    this.Events.push(this.editedItemEvents)
     this.postListDataEvent();
+  //  this.Events.push(this.editedItemEvents)
+
   }
-  this.closeEvent()
+
 },
          getListData: function(){
           var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items?$filter=Event_Status eq 'AGENDA'";
+          var endPointUrl1 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('ReasonsToCancel')/items?$select=Title";
           console.log(endPointUrl);
          var headers = {
              "accept": "application/json;odata=verbose",
@@ -356,51 +472,328 @@ saveEvent () {
          };
              this.status = "getting data...";
              var vm = this;
+             var j=0;
              axios.get(endPointUrl).then(response => {
+              //response.data.value.products = response.data.value.products.split();
+               //console.log(response.data.value.products);
+               for(j=0; j< response.data.value.length; j++){
+                 //console.log(response.data.value[j].Title);
+                 if(response.data.value[j].products !== null){
+                   response.data.value[j].products = response.data.value[j].products.split(",");
+                   //console.log(response.data.value[j].products);
+               }
+                 //vm.rutas[j] = response.data.value[j].Title;
+               }
                 vm.Events = response.data.value;
+                //console.log(vm.Events);
               });
+              axios.get(endPointUrl1).then(response => {
+                 vm.Reasons = response.data.value;
+
+               });
          },
          postListDataEvent: function(){
-         $.ajax({
-              async: true,
-              url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items",
-              method: "POST",
-              data: JSON.stringify({
-                  '__metadata': {
-                      'type': 'SP.Data.EventsListItem' // it defines the ListEntityTypeName
-                  },
-                  "Title": this.editedItemEvents.Title,
-                  "event_date": this.editedItemEvents.event_date,
-                  "event_id": this.editedItemEvents.Title +'&'+ this.editedItemEvents.event_date,
-                  "products": this.editedItemEvents.products,
-                  "event_client": this.editedItemEvents.event_client,
-                   "event_demonstrator": this.editedItemEvents.event_demonstrator,
-                   "event_mult": this.editedItemEvents.event_mult,
-                   "event_approver1": this.editedItemEvents.event_approver1,
-                   "event_approver2": this.editedItemEvents.event_approver2,
-                   "event_approver3": this.editedItemEvents.event_approver3,
-                  "Event_Status": 'AGENDA'
-              }),
+           if(this.editedItemEvents.Title === null || this.eventDate === null || this.eventTime === null || this.editedItemEvents.event_client === undefined || this.editedItemEvents.event_demonstrator === undefined || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === null || this.editedItemEvents.event_approver1 === undefined) {
+               swal({
+                   title: "Campos vacios",
+                   text: "Usted tiene campos vacios en el formulario. Por favor verifique que cada campo este lleno",
+                   icon: "info",
+                   dangerMode: true,
+               });
+               this.$refs.form.validate();
+               return;
+           }
 
-              headers: {
-                  "accept": "application/json;odata=verbose",
-                  "content-type": "application/json;odata=verbose",
-                  "X-RequestDigest": this.RequestDigest
-                  //"Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
-                  //"Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
-              },
-              success: function(data) {
-                  console.log("Item created successfully");
-                  //this.getListData();
-              },
-              error: function(error) {
-                  console.log(JSON.stringify(error));
+           else if(this.checkDemonstratorConflict() === false || this.checkClientConflict() === false){
+               swal({
+                   title: "Alertas vigentes",
+                   text: "Usted tiene alertas pendientes en el formulario que no ha corregido. Por favor verifique que los campos de cliente y demostradora esten llenos sin alertas!",
+                   icon: "info",
+                   dangerMode: true,
+               });
+               return;
+           }
 
-              }
+           else {
+
+             var temp = this.eventDate + " " + this.eventTime;
+             var eDate = new Date(temp);
+             eDate.setHours(eDate.getHours() - 3);
+             this.editedItemEvents.event_date = eDate.toISOString();
+
+               swal({
+                   title: "Esta seguro de la adicion de este evento?",
+                   icon: "info",
+                   buttons: true,
+               })
+                   .then((willAdd) => {
+                       if (willAdd) {
+
+                           $.ajax({
+                               async: true,
+                               url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items",
+                               method: "POST",
+                               data: JSON.stringify({
+                                   '__metadata': {
+                                       'type': 'SP.Data.EventsListItem' // it defines the ListEntityTypeName
+                                   },
+                                   "Title": this.editedItemEvents.Title,
+                                   "event_date": this.editedItemEvents.event_date,
+                                   "event_id": this.editedItemEvents.Title +'&'+ this.editedItemEvents.event_date,
+                                   "products": this.editedItemEvents.products.toString(),
+                                   "event_client": this.editedItemEvents.event_client,
+                                    "event_demonstrator": this.editedItemEvents.event_demonstrator,
+                                    "event_mult": this.editedItemEvents.event_mult,
+                                    "event_approver1": this.editedItemEvents.event_approver1,
+                                    "event_approver2": this.editedItemEvents.event_approver2,
+                                    "event_approver3": this.editedItemEvents.event_approver3,
+                                   "Event_Status": 'AGENDA'
+                               }),
+                               headers: {
+                                   "accept": "application/json;odata=verbose",
+                                   "content-type": "application/json;odata=verbose",
+                                   "X-RequestDigest":  this.RequestDigest
+                               },
+                               success: function (data) {
+                                   console.log("Item created successfully");
+                                   //alert("Event was added succesfully");
+                                  this.Events.push(this.editedItemEvents)
+
+                               },
+                               error: function (error) {
+                                   console.log(JSON.stringify(error));
+                               }
+                           });
+                           this.closeEvent()
+                           swal("Evento en agenda exitosamente!", {
+                               icon: "success",
+                           });
+                       } else {
+                           window.location.href = '/sites/DDMS/Shared%20Documents/planning.aspx#/CreateEvent';
+                       }
+                   });
+           }
+},
+       getRequestDigestValue: function(){
+
+         var headers ={
+           "Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
+           "Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
+         };
+
+         var vm = this;
+         axios.post("https://aguadillana.sharepoint.com/sites/DDMS/_api/contextinfo",headers)
+         .then(response => {
+           console.log(response);
+           vm.RequestDigest = response.data.FormDigestValue
+         })
+         .catch(function (error) {
+           console.log(error);
+           console.log("failed");
          });
+   },
+   getClientListData: function () {
+       var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items";
+       console.log(endPointUrl);
+       var headers = {
+           "accept": "application/json;odata=verbose",
+           "content-type": "application/json;odata=verbose"
+       };
+       this.status = "getting data...";
+       var vm = this;
+       axios.get(endPointUrl).then(response => {
+           console.log(response.data.value);
+           vm.clients = response.data.value;
+       });
+   },
+   getProductListData: function () {
+       var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items";
+       console.log(endPointUrl);
+       var headers = {
+           "accept": "application/json;odata=verbose",
+           "content-type": "application/json;odata=verbose"
+       };
+       this.status = "getting data...";
+       var vm = this;
+       axios.get(endPointUrl).then(response => {
+           console.log(response.data.value);
+           vm.products = response.data.value;
+       });
+   },
+   getDemonstratorListData: function () {
+       var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items?$filter=bevs eq 'DEMO'";
+       console.log(endPointUrl);
+       var headers = {
+           "accept": "application/json;odata=verbose",
+           "content-type": "application/json;odata=verbose"
+       };
+       this.status = "getting data...";
+       var vm = this;
+       axios.get(endPointUrl).then(response => {
+           console.log(response.data.value);
+           vm.demonstrators = response.data.value;
+       });
+   },
+   getApprovalListData: function () {
+       var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items?$filter=bevs eq 'SUPERVISOR'";
+       console.log(endPointUrl);
+       var headers = {
+           "accept": "application/json;odata=verbose",
+           "content-type": "application/json;odata=verbose"
+       };
+       this.status = "getting data...";
+       var vm = this;
+       axios.get(endPointUrl).then(response => {
+           console.log(response.data.value);
+           vm.employees = response.data.value;
+       });
+   },
+   getEventListData: function () {
+       var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items";
+       console.log(endPointUrl);
+       var headers = {
+           "accept": "application/json;odata=verbose",
+           "content-type": "application/json;odata=verbose"
+       };
+       this.status = "getting data...";
+       var vm = this;
+       axios.get(endPointUrl).then(response => {
+           vm.eventList = response.data.value;
+           console.log(vm.eventList);
+       });
+   },
+   checkClientConflict: function(){
+       for (var j = 0; j < this.eventList.length; j++){
+
+           var eClient = this.editedItemEvents.event_client;
+           console.log(eClient);
+           console.log(this.eventList[j].event_client);
+
+           var temp = this.eventDate + " " + this.eventTime;
+           var eDate = new Date(temp);
+           eDate.setHours(eDate.getHours() - 4);
+           console.log(eDate.toISOString());
+
+           var date = new Date(this.eventList[j].event_date);
+           date.setHours(date.getHours() - 3);
+
+           // now you can get the string
+           var isodateList = date.toISOString();
+           console.log(isodateList);
+
+           if(this.eventList[j].event_client === eClient && isodateList === eDate.toISOString()){
+                   return false;
+           }
+
+           else{
+               return true;
+           }
        }
+   },
+   checkDemonstratorConflict: function(){
+       for (var j = 0; j < this.eventList.length; j++){
+           var eDemonstrator = this.editedItemEvents.event_demonstrator;
+
+
+           var temp = this.eventDate + " " + this.eventTime;
+           var eDate = new Date(temp);
+           eDate.setHours(eDate.getHours() - 4);
+           console.log(eDate.toISOString());
+
+           var date = new Date(this.eventList[j].event_date);
+           date.setHours(date.getHours() - 3);
+
+           // now you can get the string
+           var isodateList = date.toISOString();
+
+           console.log(isodateList);
+           console.log(this.eventList[j].event_client);
+
+           if(this.eventList[j].event_demonstrator === eDemonstrator && isodateList === eDate.toISOString()){
+               return false;
+           }
+
+           else {
+               return true;
+           }
+       }
+   },
+   handlerAlerts: function(){
+       this.checkDemonstratorConflict();
+       this.checkClientConflict();
+   },
+   handlerData: function () {
+       this.getProductListData();
+       this.getClientListData();
+       this.getDemonstratorListData();
+       this.getApprovalListData();
+       this.getEventListData();
+   }
     },
-        template: `<div>  <template>
+        template: `<div>
+
+        <template>
+  <v-layout wrap>
+    <v-flex
+      xs12
+      class="mb-3"
+    >
+      <v-sheet height="500">
+        <v-calendar
+          ref="calendar"
+          v-model="start"
+          :type="type"
+          :end="end"
+          color="primary"
+        ></v-calendar>
+      </v-sheet>
+    </v-flex>
+
+    <v-flex
+      sm4
+      xs12
+      class="text-sm-left text-xs-center"
+    >
+      <v-btn @click="$refs.calendar.prev()">
+        <v-icon
+          dark
+          left
+        >
+          keyboard_arrow_left
+        </v-icon>
+        Prev
+      </v-btn>
+    </v-flex>
+    <v-flex
+      sm4
+      xs12
+      class="text-xs-center"
+    >
+      <v-select
+        v-model="type"
+        :items="typeOptions"
+        label="Type"
+      ></v-select>
+    </v-flex>
+    <v-flex
+      sm4
+      xs12
+      class="text-sm-right text-xs-center"
+    >
+      <v-btn @click="$refs.calendar.next()">
+        Next
+        <v-icon
+          right
+          dark
+        >
+          keyboard_arrow_right
+        </v-icon>
+      </v-btn>
+    </v-flex>
+  </v-layout>
+</template>
+
+         <template>
     <div>
       <v-toolbar flat color="white">
         <v-toolbar-title>Eventos</v-toolbar-title>
@@ -422,7 +815,7 @@ saveEvent () {
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout wrap>
-                  <v-flex xs12 sm6 md4>
+                  <!--<v-flex xs12 sm6 md4>
                     <v-text-field v-model="editedItemEvents.Title" label="Nombre"></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm6 md4>
@@ -448,7 +841,204 @@ saveEvent () {
                   </v-flex>
                   <v-flex xs12 sm6 md4>
                     <v-text-field v-model="editedItemEvents.event_approver3" label="Approver 3"></v-text-field>
-                  </v-flex>
+                  </v-flex>-->
+
+                  <v-form ref="form" class="planning-form">
+                  <div class="name-demo">
+                      <h3> Seleccione nombre de la demostracion: </h3>
+
+                            <v-text-field
+                            id="name-demo-text"
+                            v-model="editedItemEvents.Title"
+                            :rules="[(n) => !!n || 'Este campo es requerido']"
+                            required
+                            clearable
+                            > </v-text-field>
+
+                  </div>
+
+                  <div class="date-hour">
+                      <h3> Seleccione la fecha de la demostracion:</h3>
+
+                                <v-menu
+                                  v-model="menu"
+                                  :close-on-content-click="false"
+                                  :nudge-right="40"
+                                  lazy
+                                  transition="scale-transition"
+                                  offset-y
+                                  full-width
+                                  min-width="290px"
+                                >
+                                  <template v-slot:activator="{ on }">
+                                    <v-text-field
+                                      v-model="eventDate"
+                                      prepend-icon="event"
+                                      :rules="[(f) => !!f || 'Este campo es requerido']"
+                                      readonly
+                                      required
+                                      clearable
+                                      hint="MM/DD/YYYY format"
+                                      v-on="on"
+                                    ></v-text-field>
+                                  </template>
+                                  <v-date-picker v-model="eventDate" @input="menu = false"></v-date-picker>
+                                </v-menu>
+
+                       <h3> Seleccione la hora de la demostracion:</h3>
+
+                       <template>
+                            <v-layout row wrap>
+
+                                    <v-menu
+                                      ref="menu"
+                                      v-model="menuTime"
+                                      :close-on-content-click="false"
+                                      :nudge-right="40"
+                                      :return-value.sync="time"
+                                      lazy
+                                      transition="scale-transition"
+                                      offset-y
+                                      full-width
+                                      max-width="290px"
+                                      min-width="290px"
+                                    >
+                                      <template v-slot:activator="{ on }">
+                                        <v-text-field
+                                          v-model="eventTime"
+                                          prepend-icon="access_time"
+                                          :rules="[(h) => !!h || 'Este campo es requerido']"
+                                          clearable
+                                          readonly
+                                          v-on="on"
+                                        ></v-text-field>
+                                      </template>
+                                      <v-time-picker
+                                        v-if="menuTime"
+                                        v-model="eventTime"
+                                        required
+                                        clearable
+                                        full-width
+                                        @click:minute="$refs.menu.save(eventTime)"
+                                      ></v-time-picker>
+                                    </v-menu>
+
+                              </v-layout>
+                       </template>
+                  </div>
+
+                  <div class="client">
+                        <h3> Seleccione el cliente:</h3>
+
+                                <v-select
+                                  id="clientList"
+                                  v-model="editedItemEvents.event_client"
+                                  :items="clients"
+                                  item-text="Title"
+                                  :error-messages="errorMessages"
+                                  :rules="[(c) => !!c || 'Este campo es requerido',
+                                  (c) => checkClientConflict() || 'Cliente tiene demostracion en la fecha escogida. Escoja otra fecha o otro cliente'
+                                  ]"
+                                  required
+                                  clearable
+                                  >
+                                </v-select>
+                  </div>
+
+                  <div class="demonstrator">
+                        <h3> Seleccione la demostradora/demostrador:</h3>
+
+                          <v-select
+                                  id="demList"
+                                  v-model="editedItemEvents.event_demonstrator"
+                                  :items="demonstrators"
+                                  item-text="vblv"
+                                  :error-messages="errorMessages"
+                                  :rules="[(d) => !!d|| 'Este campo es requerido',
+                                  (d) => checkDemonstratorConflict() || 'Demostradora tiene demostracion en la fecha escogida. Escoja otra fecha o otra demostradora'
+                                  ]"
+                                  required
+                                  clearable
+                                  >
+                                </v-select>
+                  </div>
+
+                  <div class="products">
+                      <h3>Seleccione los productos:</h3>
+
+                      <v-select
+
+                                  v-model="editedItemEvents.products"
+                                  :items="products"
+                                  multiple
+                                  required
+                                  clearable
+                                  :rules="[(selectedProducts) =>  selectedProducts.length !== 0 || 'Este campo es requerido']"
+                                  item-text="e9lf"
+                                  >
+                      </v-select>
+                  </div>
+
+                  <div class="multiplier">
+                      <h3> Seleccione el multiplicador: </h3>
+                              <v-text-field
+                              v-model="editedItemEvents.event_mult"
+                              id="multiplier-num"
+                              type="number"
+                              v-bind:min="0"
+                              :rules="[(m) => !!m || 'Este campo es requerido']"
+                              required
+                              clearable
+                              > </v-text-field>
+                  </div>
+
+                  <div class="approval">
+
+                      <h3> Seleccione las personas que seran parte del proceso de aprobacion:</h3>
+
+
+                              <v-select
+                                  v-model="editedItemEvents.event_approver1"
+                                  id="first-employee"
+                                  :items="employees"
+                                  label="Primera persona en aprobar"
+                                  item-text="vblv"
+                                  :rules="[(e) => !!e || 'Este campo es requerido']"
+                                  required
+                                  clearable
+                                  bottom
+                                  clerable
+                                  autocomplete
+                                  >
+                                </v-select>
+                          <br/>
+
+                              <v-select
+                                  v-model="editedItemEvents.event_approver2"
+                                  id="second-employee"
+                                  :items="employees"
+                                  label="Segunda persona en aprobar"
+                                  item-text="vblv"
+                                  bottom
+                                  clearable
+                                  autocomplete
+                                  >
+                                </v-select>
+                          <br/>
+
+                              <v-select
+                                  v-model="editedItemEvents.event_approver3"
+                                  id="third-employee"
+                                  :items="employees"
+                                  label="Tercera persona en aprobar el reporte"
+                                  item-text="vblv"
+                                  bottom
+                                  clearable
+                                  autocomplete
+                                  >
+                                </v-select>
+                  </div>
+</v-form>
                 </v-layout>
               </v-container>
             </v-card-text>
@@ -457,6 +1047,72 @@ saveEvent () {
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" flat @click="closeEvent">Cancel</v-btn>
               <v-btn color="blue darken-1" flat @click="saveEvent">Save</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="dialogEventCancel" max-width="500px">
+          <v-card>
+            <v-card-title>
+              <span class="headline">Cancelar Evento</span>
+            </v-card-title>
+
+            <v-card-text>
+              <v-container grid-list-md>
+                <v-layout wrap>
+                  <!--<v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.Title" label="Nombre"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_date" label="Fecha"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.products" label="Productos"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_client" label="Cliente"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_demonstrator" label="Demonstradora"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_mult" label="Multiplicador"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_approver1" label="Approver 1"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_approver2" label="Approver 2"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItemEvents.event_approver3" label="Approver 3"></v-text-field>
+                  </v-flex>-->
+
+                  <v-form ref="formdelete" class="planning-form">
+                  <h3>Seleccione Razon de Cancelacion</h3>
+                  <v-select
+                      v-model="editedItemEvents.event_reason"
+                      :items="Reasons"
+                      label="Razon"
+                      item-text="Title"
+                      bottom
+                      clearable
+                      required
+                      :rules="[(r) => !!r || 'Este campo es requerido']"
+                      >
+                    </v-select>
+                    <h3>Comentario</h3>
+                    <v-text-field v-model="editedItemEvents.Event_Status_Text" required :rules="[(c) => !!c || 'Este campo es requerido']"></v-text-field>
+
+</v-form>
+                </v-layout>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" flat @click="closeCancelEvent">Cancel</v-btn>
+              <v-btn color="blue darken-1" flat @click="saveCancelEvent">Save</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
