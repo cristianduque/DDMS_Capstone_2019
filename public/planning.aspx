@@ -241,8 +241,7 @@
                  editedIndex:-1,
                  canceledIndex:-1,
                  type: 'month',
-      start: '2019-01-01',
-      end: '2019-01-06',
+      start: new Date().toISOString().substring(0,10),
       typeOptions: [
         { text: 'Day', value: 'day' },
         { text: '4 Day', value: '4day' },
@@ -257,6 +256,12 @@
   computed: {
        formTitle () {
          return this.editedIndex === -1 ? 'Nuevo Evento' : 'Editar Evento'
+       },
+       eventsMap () {
+           const map = {};
+           this.eventList.forEach(e => (map[e.event_date.substring(0,10)] = map[e.event_date.substring(0,10)] || []).push(e));
+           console.log(map);
+           return map;
        }
      },
      watch: {
@@ -683,21 +688,73 @@ saveEvent () {
    }
     },
         template: `<div>
-        <template>
   <v-layout wrap>
     <v-flex
       xs12
-      class="mb-3"
-    >
+      class="mb-3">
+
       <v-sheet height="500">
-        <v-calendar
-          ref="calendar"
-          v-model="start"
-          :type="type"
-          :end="end"
-          color="primary"
-        ></v-calendar>
-      </v-sheet>
+                      <v-calendar
+                        ref="calendar"
+                        type="month"
+                        v-model="start"
+                        color="primary"
+                      >
+                        <template v-slot:day="{ date }">
+                          <template v-for="event in eventsMap[date]">
+                            <v-menu
+                              :key="event.Title"
+                              full-width
+                              offset-x
+                            >
+                              <template v-slot:activator="{ on }">
+                                <div
+                                  class="my-event"
+                                  style="
+                                      overflow: hidden;
+                                      text-overflow: ellipsis;
+                                      white-space: nowrap;
+                                      border-radius: 2px;
+                                      background-color: #1867c0;
+                                      color: #ffffff;
+                                      border: 1px solid #1867c0;
+                                      width: 100%;
+                                      font-size: 12px;
+                                      padding: 3px;
+                                      cursor: pointer;
+                                      margin-bottom: 1px;
+                                  "
+                                  v-on="on"
+                                  v-html="event.Title"
+                                ></div>
+                              </template>
+                              <v-card
+                                color="grey lighten-4"
+                                min-width="350px"
+                                flat
+                              >
+                                <v-toolbar
+                                  color="primary"
+                                  dark
+                                >
+                                  <v-toolbar-title v-html="event.Title"></v-toolbar-title>
+                                  <v-spacer></v-spacer>
+                                </v-toolbar>
+
+                                <v-card-actions>
+                                  <v-btn
+                                    flat
+                                    color="secondary"
+                                  >
+                                    Cancel
+                                  </v-btn>
+                                </v-card-actions>
+                              </v-card>
+                            </v-menu>
+                          </template>
+                        </template>
+                      </v-calendar>
+                    </v-sheet>
     </v-flex>
     <v-flex
       sm4
@@ -717,17 +774,6 @@ saveEvent () {
     <v-flex
       sm4
       xs12
-      class="text-xs-center"
-    >
-      <v-select
-        v-model="type"
-        :items="typeOptions"
-        label="Type"
-      ></v-select>
-    </v-flex>
-    <v-flex
-      sm4
-      xs12
       class="text-sm-right text-xs-center"
     >
       <v-btn @click="$refs.calendar.next()">
@@ -741,11 +787,12 @@ saveEvent () {
       </v-btn>
     </v-flex>
   </v-layout>
+
 </template>
          <template>
     <div>
       <v-toolbar flat color="white">
-        <v-toolbar-title>Eventos</v-toolbar-title>
+        <v-toolbar-title>Eventos en Agenda</v-toolbar-title>
         <v-divider
           class="mx-2"
           inset
@@ -1009,7 +1056,6 @@ saveEvent () {
         </template>
       </v-data-table>
     </div>
-  </template>
   </div>`
       });
       var ManageLists =  Vue.component('ManageLists', {
