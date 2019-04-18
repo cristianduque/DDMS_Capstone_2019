@@ -648,10 +648,8 @@ saveEvent () {
            if(this.eventList[j].event_client === eClient && isodateList === eDate.toISOString()){
                    return false;
            }
-           else{
-               return true;
-           }
        }
+       return true;
    },
    checkDemonstratorConflict: function(){
        for (var j = 0; j < this.eventList.length; j++){
@@ -669,10 +667,8 @@ saveEvent () {
            if(this.eventList[j].event_demonstrator === eDemonstrator && isodateList === eDate.toISOString()){
                return false;
            }
-           else {
-               return true;
-           }
        }
+       return true;
    },
    handlerAlerts: function(){
        this.checkDemonstratorConflict();
