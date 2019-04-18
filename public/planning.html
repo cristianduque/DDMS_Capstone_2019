@@ -180,14 +180,15 @@
                 selectedMultiplier: null,
                 selectedFirstApproval: null,
                 selectedSecondApproval: null,
-                selectedThirdApproval: null
+                selectedThirdApproval: null,
+                valid: true
             }
         },
         created: function(){
             this.handlerData();
             this.getRequestDigest();
         },
-        template: `<v-form class="planning-form">
+        template: `<v-form ref="form" v-model="valid">
         <div class="name-demo">
             <h3> Seleccione nombre de la demostracion: </h3>
                 <v-flex xs12 sm6 md4>
@@ -311,14 +312,15 @@
             <h3>Seleccione los productos:</h3>
 
             <v-select
-
+                        id="productList"
                         v-model="selectedProducts"
                         :items="products"
-                        multiple
+                        item-text="e9lf"
+                        :error-messages="errorMessages"
+                        :rules="[(selectedProducts) =>  selectedProducts.length !== 0 || 'Este campo es requerido']"
                         required
                         clearable
-                        :rules="[(selectedProducts) =>  selectedProducts.length !== 0 || 'Este campo es requerido']"
-                        item-text="e9lf"
+                        multiple
                         >
             </v-select>
         </div>
@@ -329,7 +331,7 @@
                     v-model="selectedMultiplier"
                     id="multiplier-num"
                     type="number"
-                    v-bind:min="0"
+                    min="0"
                     :rules="[(m) => !!m || 'Este campo es requerido']"
                     required
                     clearable
@@ -384,7 +386,7 @@
         </div>
 
         <div class="buttons">
-            <v-btn color="teal" v-on:click="addEvent"> Add event</v-btn>
+            <v-btn color="teal" @click="addEvent"> Add event</v-btn>
             <v-btn color="teal" href="/sites/DDMS/Shared%20Documents/planning.aspx#/"> Cancel event</v-btn>
         </div>
     </v-form>
@@ -471,7 +473,6 @@
                     var temp = this.selectedDate + " " + this.selectedTime;
                     var eDate = new Date(temp);
                     eDate.setHours(eDate.getHours() - 4);
-                    console.log(eDate.toISOString());
 
                     var date = new Date(this.events[j].event_date);
                     date.setHours(date.getHours() - 3);
@@ -518,7 +519,7 @@
                 }
             },
             addEvent: function(){
-                console.log(this.selectedProducts);
+
                 if(this.selectedName === null || this.selectedDate === null || this.selectedTime === null || this.selectedClient === undefined || this.selectedDemo === undefined || this.selectedProducts.toString() === '' || this.selectedMultiplier === null || this.selectedFirstApproval === undefined) {
                     swal({
                         title: "Campos vacios",
@@ -526,6 +527,7 @@
                         icon: "info",
                         dangerMode: true,
                     });
+                    this.$refs.form.validate();
                     return;
                 }
 
@@ -610,7 +612,6 @@
                                     },
                                     success: function (data) {
                                         console.log("Item created successfully");
-                                        alert("Event was added succesfully");
                                     },
                                     error: function (error) {
                                         console.log(JSON.stringify(error));
@@ -620,6 +621,8 @@
                                 swal("Evento en agenda exitosamente!", {
                                     icon: "success",
                                 });
+
+                                window.reload();
                             } else {
                                 window.location.href = '/sites/DDMS/Shared%20Documents/planning.aspx#/CreateEvent';
                             }
@@ -676,23 +679,23 @@
         components:{
             CreateEvent
         },
-        template: `
-        <div class="events">
-
-            <v-btn color="teal" id="edit-btn" v-on:click="getEventEditData"> Edit Demo </v-btn>
-            <v-btn color="teal" id="del-btn" v-on:click="deleteEvent"> Delete Demo </v-btn>
-
-            <form class="event-list">
-                <h3>Demostraciones en agenda: </h3>
-
-                <ul>
-                    <li v-for="item in eventList">
-                      <input type="radio" id="demos" name="demos" v-bind:value="item.Title" v-on:change="getEventEditTitle"> {{item.Title}}
-                    </li>
-                </ul>
-            </form>
-        </div>
-        `,
+        // template: `
+        // <div class="events">
+        //
+        //     <v-btn color="teal" id="edit-btn" v-on:click="getEventEditData"> Edit Demo </v-btn>
+        //     <v-btn color="teal" id="del-btn" v-on:click="deleteEvent"> Delete Demo </v-btn>
+        //
+        //     <form class="event-list">
+        //         <h3>Demostraciones en agenda: </h3>
+        //
+        //         <ul>
+        //             <li v-for="item in eventList">
+        //               <input type="radio" id="demos" name="demos" v-bind:value="item.Title" v-on:change="getEventEditTitle"> {{item.Title}}
+        //             </li>
+        //         </ul>
+        //     </form>
+        // </div>
+        // `,
         methods:{
             getEventListData: function () {
                 var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items";
@@ -824,18 +827,68 @@
     var Calendar =  Vue.component('Calendar',{
         data: function(){
             return{
-                eventsScheduled:[]
+                eventsScheduled:[],
+                start: new Date().toISOString().substring(0,10)
+
             }
         },
         created: function(){
             this.getEventListDataCalendar();
         },
         template: `
-          <v-layout class="calendar">
-            <v-flex>
+          <v-layout class="calendar" wrap>
+          <v-flex
+                  sm4
+                  xs12
+                  class="text-sm-left text-xs-center"
+                >
+                  <v-btn v-on:click="$refs.calendar.prev()">
+                    <v-icon
+                      dark
+                      left
+                    >
+                      keyboard_arrow_left
+                    </v-icon>
+                    Prev
+                  </v-btn>
+                </v-flex>
+
+                <v-flex
+                  sm4
+                  xs12
+                  class="text-xs-center"
+                >
+                  <v-text-field
+                    readonly
+                    value="April 2019"
+                  ></v-text-field>
+                </v-flex>
+
+                <v-flex
+                  sm4
+                  xs12
+                  class="text-sm-right text-xs-center"
+                >
+                  <v-btn v-on:click="$refs.calendar.next()">
+                    Next
+                    <v-icon
+                      right
+                      dark
+                    >
+                      keyboard_arrow_right
+                    </v-icon>
+                  </v-btn>
+                </v-flex>
+
+            <v-flex
+            xs12
+            class="mb-3">
+
               <v-sheet height="500">
                 <v-calendar
-
+                  ref="calendar"
+                  type="month"
+                  v-model="start"
                   color="primary"
                 >
                   <template v-slot:day="{ date }">
@@ -847,8 +900,6 @@
                       >
                         <template v-slot:activator="{ on }">
                           <div
-                            v-if="!event.time"
-                            v-ripple
                             class="my-event"
                             v-on="on"
                             v-html="event.Title"
@@ -863,14 +914,8 @@
                             color="primary"
                             dark
                           >
-                            <v-btn icon>
-                              <v-icon>edit</v-icon>
-                            </v-btn>
                             <v-toolbar-title v-html="event.Title"></v-toolbar-title>
                             <v-spacer></v-spacer>
-                            <v-btn icon>
-                              <v-icon>more_vert</v-icon>
-                            </v-btn>
                           </v-toolbar>
 
                           <v-card-actions>
@@ -888,6 +933,8 @@
                 </v-calendar>
               </v-sheet>
             </v-flex>
+
+
           </v-layout>
         `,
         computed:{
