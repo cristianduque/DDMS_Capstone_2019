@@ -19,7 +19,6 @@
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
-  <script> src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"> </script>
   <!--Vuetify-->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
@@ -465,7 +464,12 @@ saveEvent () {
                    response.data.value[j].products = response.data.value[j].products.split(",");
                    //console.log(response.data.value[j].products);
                }
-                 //vm.rutas[j] = response.data.value[j].Title;
+
+               var dateConversion = new Date(response.data.value[j].event_date);
+               dateConversion.setHours(dateConversion.getHours() - 3);
+               response.data.value[j].event_date = dateConversion.toDateString() + " " + this.ConvertNumberToTwoDigitString(dateConversion.getUTCHours()) +
+           ":" + this.ConvertNumberToTwoDigitString(dateConversion.getUTCMinutes());
+
                }
                 vm.Events = response.data.value;
                 //console.log(vm.Events);
@@ -474,6 +478,9 @@ saveEvent () {
                  vm.Reasons = response.data.value;
                });
          },
+         ConvertNumberToTwoDigitString: function(n) {
+                return n > 9 ? "" + n : "0" + n;
+        },
          postListDataEvent: function(){
            if(this.editedItemEvents.Title === null || this.eventDate === null || this.eventTime === null || this.editedItemEvents.event_client === undefined || this.editedItemEvents.event_demonstrator === undefined || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === null || this.editedItemEvents.event_approver1 === undefined) {
                swal({
@@ -790,7 +797,7 @@ saveEvent () {
   </v-layout>
 
 </template>
-         <template>
+
     <div>
       <v-toolbar flat color="white">
         <v-toolbar-title>Eventos en Agenda</v-toolbar-title>
