@@ -19,6 +19,7 @@
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
+  <script> src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"> </script>
   <!--Vuetify-->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
@@ -768,7 +769,7 @@ saveEvent () {
         >
           keyboard_arrow_left
         </v-icon>
-        Prev
+        Mes Anterior
       </v-btn>
     </v-flex>
     <v-flex
@@ -777,7 +778,7 @@ saveEvent () {
       class="text-sm-right text-xs-center"
     >
       <v-btn @click="$refs.calendar.next()">
-        Next
+        Proximo Mes
         <v-icon
           right
           dark
@@ -982,8 +983,8 @@ saveEvent () {
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" flat @click="closeEvent">Cancel</v-btn>
-              <v-btn color="blue darken-1" flat @click="saveEvent">Save</v-btn>
+              <v-btn color="blue darken-1" flat @click="closeEvent">Cancelar</v-btn>
+              <v-btn color="blue darken-1" flat @click="saveEvent">Guardar</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -1014,8 +1015,8 @@ saveEvent () {
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" flat @click="closeCancelEvent">Cancel</v-btn>
-              <v-btn color="blue darken-1" flat @click="saveCancelEvent">Save</v-btn>
+              <v-btn color="blue darken-1" flat @click="closeCancelEvent">Cancelar</v-btn>
+              <v-btn color="blue darken-1" flat @click="saveCancelEvent">Guardar</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
