@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    
-    <title>Perfil</title>
-    
+    <title>Profile</title>
 
-    
     <!-- VueJs -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
@@ -36,7 +33,7 @@
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
     </script>
-
+    
     <!-- Page settings -->
     <meta name="viewport" content="initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -44,7 +41,8 @@
     
     <!-- Link to profile CSS -->
 <!--    <link rel="stylesheet" type="text/css" href="profile.css">-->
-    <style>
+
+<style scoped>
         /* use # for id and . for class*/
 
 /* Optional: Makes the sample page fill the window. */
@@ -52,56 +50,57 @@ html, body {
         height: 100%;
         padding: 0;
         background-color: #fafafa;
-      } 
-
-/* Avoid links to change color and etc. */
-a:link {
-  color: black;
-  background-color: transparent;
-  text-decoration: none;
-}
-a:visited {
-  color: black;
-  background-color: transparent;
-  text-decoration: none;
-}
-a:hover {
-  color: black;
-  background-color: transparent;
-  text-decoration: none;
-}
-a:active {
-  color: black;
-  background-color: transparent;
-  text-decoration: none;
-}
+      }
 
 /* Adjust Menu vertical height problem */
 #menu{
-   
+
     height: 10%;
 }
 
 #btn1{
     height: 5%;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
 }
 
-#btn2{
-    height: 5%;
-}
+#data_table{
+    
+    min-height: 10%!important;
+    border-style: dotted;
+    border-color: #fafafa;
+    
+    margin-top: 2%;
+    margin-left: 3%;
+    margin-right: 3%;
+    
+    
+    }
+    
+#table{
+/*
+    border-style: dotted;  
+    border-color: blue;
+    background-color: aqua;
+    
+*/
+    min-height: inherit;
+    
+          }
+
+
 
 #list{
     padding: 3%;
 }
 
 /* Set-up map container position relative*/
+/* Set-up map container position relative*/
 .map_container{
     position: relative;
     padding: 50%;
     padding-bottom: 100%; 
-    height: 0;
     overflow: auto;
-    margin: auto;  
     
 }
 
@@ -114,14 +113,17 @@ a:active {
         height:500px;
         margin-left: auto;
         margin-right: auto;
-        
-        
-      }      
+        border-radius: 15px;
+
+      }
+          
 #demos{
-    
+
     padding: 3%;
     height: 0;
     margin-bottom: 10%;
+    border-style: solid;
+    border: red;
 }
 
 
@@ -146,317 +148,265 @@ a:active {
         background-color: white;
         color:black;
         border-radius: 12px;
+
+      }
     
-      }      
+.custom-tr:before {
+    background-color: transparent;
+}
+          
+.custom-tr:hover:before {
+    background-color: transparent;
+}
+.custom-tr:hover {
+    background-color: transparent;
+}
+
+.custom-tr:focus:before {
+    background-color: transparent;
+}
+          
+.custom-tr:active {
+    background-color: transparent;
+}
+
+#button{
+/*
+              border-style: dotted;  
+              border-color: red;
+*/
+              height: 4rem;
+          }
 
     </style>
-    
 
-
-</head>
-    
+</head> 
 <body>
-
-<v-container grid-list-xs text-xs-center>
-    <!--  Toolbar -->
-     <v-layout row wrap>
-        <v-flex xs12>
-            <div id="menu">
-                      <v-app id="inspire">
-                        <v-navigation-drawer
-                          v-model="drawer"
-                          fixed
-                          app
-                        >
-                          <v-list dense>
-                            <v-list-tile @click="">
-                              <a href="https://aguadillana.sharepoint.com/sites/DDMS/perfil/SitePages/profile.aspx"><v-list-tile-action>
-                                <v-icon>home</v-icon>
-                              </v-list-tile-action></a>
-                              <v-list-tile-content>
-                                <v-list-tile-title>Perfil</v-list-tile-title>
-                              </v-list-tile-content>
-                            </v-list-tile>
-                            <v-list-tile @click="">
-
-                             <a href="https://aguadillana.sharepoint.com/sites/DDMS/perfil/SitePages/history.aspx"> <v-list-tile-action>
-                                <v-icon>list</v-icon>
-                              </v-list-tile-action> </a>
-                              <v-list-tile-content>
-                                  <v-list-tile-title>Historial</v-list-tile-title>
-                              </v-list-tile-content>
-                            </v-list-tile>
-                          </v-list>
-                        </v-navigation-drawer>
-                        <v-toolbar color="red" dark fixed app>
-                          <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-                          <v-toolbar-title>Profile</v-toolbar-title>
-                        </v-toolbar>
-                        <v-content>
-                          <v-container fluid fill-height>
-                            <v-layout
-                              justify-center
-                              align-center
-                            >
-                              <v-flex text-xs-center>
-                              </v-flex>
-                            </v-layout>
-                          </v-container>
-                        </v-content>
-                      </v-app>
-        </div>
-            <script>
-                  var vm = new Vue({
-                  el: '#menu',
-                data: () => ({
-                  drawer: false
-                }),
-                props: {
-                  source: String
-                }
-              })
-            </script>
-        </v-flex>
-    </v-layout> 
     
-   <!--     Alert of upcoming demo -->
-   
-<!--    <h2 id="AH!" >Alertas</h2>-->
-    <div id="alerts">
-<!--
-    <ul>
-        <li v-for="alert in alerts">
-          {{ alert.text }}
-        </li>
-    </ul>
--->
+    <!-- Toolbar -->
+    <div id="menu">
+        <v-app id="inspire">
+            
+            <v-navigation-drawer v-model="drawer" fixed app>
+                <v-list dense>
+                    
+                    <v-list-tile @click=""><a style="text-decorations:none; background-color: transparent; color:transparent;" href="https://aguadillana.sharepoint.com/sites/DDMS/perfil/SitePages/profile.aspx">
+                        <v-list-tile-action>
+                            <v-icon>home</v-icon>
+                        </v-list-tile-action></a>
+                        
+                        <v-list-tile-content>
+                            <v-list-tile-title>Perfil</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    
+                    <v-list-tile @click=""><a style="text-decorations:none;  background-color: transparent; color:transparent;" href="https://aguadillana.sharepoint.com/sites/DDMS/perfil/SitePages/history.aspx"> 
+                        <v-list-tile-action>
+                            <v-icon>list</v-icon>
+                        </v-list-tile-action></a>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Historial</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list>
+            </v-navigation-drawer>
+            
+            <v-toolbar color="red" dark fixed app>
+                <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+                <v-toolbar-title>Profile</v-toolbar-title>
+            </v-toolbar>
+            
+                <v-content>
+                    <v-container fluid fill-height>
+                        <v-layout justify-center align-center>
+                        <v-flex text-xs-center></v-flex>
+                        </v-layout>
+                    </v-container>
+                </v-content>
+            
+        </v-app>        
     </div>
-    <script type="text/javascript" src=alerts.js></script>
 
-
-    <!-- Column Chart -->
-    <v-layout row wrap >
-       <v-flex xs12 shrink pa-1>
-           <div class="chart_container">
-                <div id="chart_div"></div>  
-           </div>
-           
-<!--            <h3>Click on Chart to change view</h3>-->
-       </v-flex>
-    </v-layout>
-    
-    <!-- Buttons   -->
-    
-    <v-layout row> 
-        <v-flex xs12 >
-           <div id="btn1">
-              <v-app id="inspire">
-                <div class="text-xs-center">
-                  <v-btn id="option">
-                   Cambiar
-                  </v-btn>
+    <div id="app">
+      <v-app id="inspire">
+        <v-container grid-list-md text-xs-center>
+          <v-layout row wrap>
+              
+            <!-- Column Chart -->
+            <v-flex xs12>
+              <v-card id="chart_card">
+                <div class="chart_container">
+                  <div id="chart_div"></div>  
                 </div>
-              </v-app>       
-            </div>  
-          </v-flex>
-           
-           
-    </v-layout> 
-    <script>
-        new Vue({
-            el: '#btn1',
-        })
-    </script>
-    
-    
-    <!-- Table -->
-    <v-layout row wrap>
-        <v-flex xs-12>
-            <div id="table">
-                <v-app>
-                  <v-content>
-                    <v-container>
-                      <template>
-                          <v-card-title>
-                          Reportes
-                          <v-spacer></v-spacer>
-
-                    </v-card-title>
-
-                     <v-data-table :headers="headers" :items="reports"  :hide-actions="true"  item-key="name" class="elevation-1">
+              </v-card>
+            </v-flex>
+              
+            <!-- Button -->
+            <v-flex xs12 >
+               <div id="btn1">
+                  <v-app id="button">
+                    <div class="text-xs-center">
+                      <v-btn id="option"> Embutidos</v-btn>
+                    </div>
+                  </v-app>       
+                </div>
+            </v-flex>
+               
+            <!-- Table Header -->
+            <div class="flex display-1 font-weight-thin" style="margin-left: 1rem"> Tabla de Reportes:</div>
+              
+            <!-- Table -->
+            <v-flex xs12 >
+              <v-card >
+                <div id="data_table">
+                 <v-app id="table" >
+                    <template>
+                     <v-data-table 
+                    
+                    :headers="headers" :items="reports" 
+                     :hide-actions="true"  item-key="name" class="elevation-1"  >
                           <template slot="items" slot-scope="props">
-                            <tr @click="rowClick(props.item.name)">
+                            <tr class="custom-tr" >
                               <td>{{ props.item.title }}</td>
                               <td class="text-xs-center">{{ props.item.family }}</td>
                               <td class="text-xs-center">{{ props.item.sale1 }}</td>
                               <td class="text-xs-center">{{ props.item.ince1 }}</td>
-<!--                              <td class="text-xs-center">{{props.item.total}}</td>-->
                             </tr>
-<!--
-                            <tr>
-                              <td class="text-xs-center">Empanados</td>
-                              <td class="text-xs-center">{{ props.item.sale2 }}</td>
-                              <td class="text-xs-center">{{ props.item.ince2 }}</td>
-                            </tr>
--->
                           </template>
 
-                        <div class="text-xs-center pt-2">
-                          
-                        </div>
-                        <!-- Detects if there isn't any data and display accordingly -->
-                         <template v-slot:no-data>
-                                <v-alert :value="true" color="error" icon="warning">Sorry, no data found :(</v-alert>
+                       
+                          <div class="text-xs-center pt-2"></div>
+                        <!-- Detects if there isn't any data -->
+                        <template v-slot:no-data>
+                            <v-alert :value="true" color="error" icon="warning"> No data </v-alert>
                         </template>
-
-                        <!-- Alert if nothing found -->
-<!--
-                        <template v-slot:no-results >
-                            <v-alert :value="true" color="error" icon="warning">
-                            Your search for "{{ search }}" found no results.
-                            </v-alert>
-                        </template>
--->
                         </v-data-table>
                       </template>
-                    </v-container>
+                 </v-app>
+                </div>
+              </v-card>
+            </v-flex>
+              
+            <!-- Miscellaneous Costs Header -->
+            <div class="flex display-1 font-weight-thin" style="margin-left: 1rem"> Gastos Pasados:</div>  
+              
+            <!-- Gastos -->
+            <v-flex xs-12 >
+                <div id="list">
+                    <v-app id="gastos">
+                        <v-card>
+                            <v-list two-line>
+                            <template v-for="(item, index) in items">
+                                  <v-list-tile
+                                    :key="item.title"
+                                    avatar
+                                    ripple
+                                    @click="toggle(index),linkfn(item.id)"
+                                  >
+                                    <v-list-tile-content>
+                                        <v-list-tile-title v-html="item.title"></v-list-tile-title>
+                                        <v-list-tile-sub-title v-html="item.subtitle"></v-list-tile-sub-title>
+                                        <v-list-tile-sub-title style="color:red;"v-html="item.status" v-if="item.status == 'Denied' "></v-list-tile-sub-title>
+                                        <v-list-tile-sub-title v-html="item.status" v-else></v-list-tile-sub-title>
+                                    </v-list-tile-content>
 
-                  </v-content>
-                </v-app>
-            </div>
-        </v-flex>    
-    </v-layout>
-    <script type="text/javascript" src=table_profile.js></script>
-
-    
-    <!-- Miscellaneous Costs of past 10 -->
-    <h2> Gastos Pasados:</h2>
-    <!--
-       <div id="misc">
-    <ul>
-        <li v-for="cost in costs">
-          {{ cost.text }}
-        </li>
-    </ul>
-    </div>
-    <script type="text/javascript" src=misc.js></script>
--->
-    
-    <!-- Gastos -->
-    <v-layout row wrap >
-        <v-flex xs-12 >
-            <div id="list">
-                <div id="app">
-  <v-app id="inspire">
-    <v-layout row>
-      <v-flex xs12 sm6 offset-sm3>
-        <v-card>
-  
-          <v-list two-line>
-            <template v-for="(item, index) in items">
-              <v-list-tile
-                :key="item.title"
-                avatar
-                ripple
-                @click="toggle(index)"
-              >
-                <v-list-tile-content>
-                    <v-list-tile-title v-html="item.title"></v-list-tile-title>
-                <v-list-tile-sub-title v-html="item.subtitle"></v-list-tile-sub-title>
-<!--
-                  <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                  <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
-                  <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
--->
-                </v-list-tile-content>
-  
-              </v-list-tile>
-              <v-divider
-                v-if="index + 1 < items.length"
-                :key="index"
-              ></v-divider>
-            </template>
-          </v-list>
-        </v-card>
-      </v-flex>
-    </v-layout>
-  </v-app>
-</div>
+                                  </v-list-tile>
+                                  <v-divider
+                                    v-if="index + 1 < items.length"
+                                    :key="index"
+                                  ></v-divider>
+                            </template>
+                            </v-list>
+                        </v-card>
+                  </v-app>
             </div>
         </v-flex>
-    </v-layout>
-    <script type="text/javascript" src=receipts.js></script>
+   
+            <!-- Upcoming Header -->
+            <div class="flex display-1 font-weight-thin" style="margin-left: 1rem"> Proximas demostraciones:</div>
+              
+            <!-- Google Map -->
+            <v-flex xs-12>
+                <div class ="map_container">
+                    <div id="map"></div>
+                </div>    
+             </v-flex>
+              
+            <!-- Upcoming -->
+            <v-flex xs-12>
+             <div id="demos">
+                 <div id="app">
+                  <v-app id="up">
+                    <v-layout row>
+                      <v-flex xs12 sm6 offset-sm3>
+                        <v-card>
 
+                          <v-list two-line>
+                            <template v-for="(item, index) in items">
+                              <v-list-tile
+                                :key="item.title"
+                                avatar
+                                ripple
+                                @click= "toggle(index),linkfn(item.id)"
+                               
+                              >
+                                <v-list-tile-content>
+                                  <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                  <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
+                                  <v-list-tile-sub-title style="color:red;">{{ item.subtitle }}</v-list-tile-sub-title>
+                                </v-list-tile-content>
+
+                              </v-list-tile>
+                                
+                              <v-divider
+                                v-if="index + 1 < items.length"
+                                :key="index"
+                              ></v-divider>
+                                
+                            </template>
+                          </v-list>
+                            
+                        </v-card>
+                      </v-flex>
+                    </v-layout>
+                  </v-app>
+                </div>
+             </div>
+            </v-flex>
     
-    <h2>Proximas demonstraciones:</h2>
-    <!-- Google Map -->
-    <v-layout row wrap>
-        <v-flex xs-12>
-            <div class ="map_container">
-                <div id="map"></div>
-            </div>    
-         </v-flex>
-    </v-layout>
-    <!--     Script order matters  -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDg71kA9ufXlx4ZdpQEvlii-nrKoDx-jlM&callback=initMap"
-    async defer></script> 
-    
-<!--
-    <div id="demos">
-    <ul>
-        <li v-for="demo in demos">
-          {{ demo.text }}
-        </li>
-    </ul>
-    </div>
-    <script type="text/javascript" src=demos.js></script>
--->
-    
-    <!-- Upcoming Demos   -->
-    <v-layout row wrap>
-        <v-flex xs-12>
-         <div id="demos">
-             <div id="app">
-      <v-app id="inspire">
-        <v-layout row>
-          <v-flex xs12 sm6 offset-sm3>
-            <v-card>
-
-              <v-list two-line>
-                <template v-for="(item, index) in items">
-                  <v-list-tile
-                    :key="item.title"
-                    avatar
-                    ripple
-                    @click= "toggle(index)"
-                  >
-                    <v-list-tile-content>
-
-                      <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                      <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
-                      <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
-                    </v-list-tile-content>
-
-                  </v-list-tile>
-                  <v-divider
-                    v-if="index + 1 < items.length"
-                    :key="index"
-                  ></v-divider>
-                </template>
-              </v-list>
-            </v-card>
-          </v-flex>
-        </v-layout>
+          </v-layout>
+        </v-container>
       </v-app>
     </div>
-        </div>
-        </v-flex>
-    </v-layout>
-    <script type="text/javascript" src=upcoming_list.js></script>
     
-          
-    </v-container>  
+    <!--     Alert of upcoming demo -->
+    <div id="alerts"></div>
     
+<script type="text/javascript" src=alerts.js></script>
+<script type="text/javascript" src=table_profile.js></script>
+<script type="text/javascript" src=receipts.js></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDg71kA9ufXlx4ZdpQEvlii-nrKoDx-jlM&callback=initMap" async defer></script>
+<script type="text/javascript" src=upcoming_list.js></script>
+<script>
+  var vm = new Vue({
+      el: '#menu',
+      data: () => ({
+      drawer: false
+      }),
+      props: {
+      source: String
+      }
+   })
+</script>
+<script>
+new Vue({
+  el: '#app',
+  el: '#btn1',
+  
+})
+</script>
+    
+   
 </body>
     
 </html>

@@ -37,26 +37,7 @@ html, body {
         background-color: #fafafa;
       }
 
-    a:link {
-      color: white;
-      background-color: transparent;
-      text-decoration: none;
-    }
-    a:visited {
-      color: white;
-      background-color: transparent;
-      text-decoration: none;
-    }
-    a:hover {
-      color: white;
-      background-color: transparent;
-      text-decoration: none;
-    }
-    a:active {
-      color: white;
-      background-color: transparent;
-      text-decoration: none;
-    }
+   
     .v-progress-circular{ 
         margin: 1rem;
     }
@@ -98,13 +79,15 @@ html, body {
         margin-right: auto;
 }
 /* Set-up map container position relative*/
+/* Set-up map container position relative*/
 .map_container{
     position: relative;
     padding: 50%;
-    padding-bottom: 100%; 
+    padding-bottom: 95%; 
     height: 0;
     overflow: auto;
     margin: auto;  
+    
     
 }
 
@@ -117,9 +100,9 @@ html, body {
         height:500px;
         margin-left: auto;
         margin-right: auto;
-        
-        
-      }   
+        border-radius: 15px;
+
+      } 
 
 #hours{
     height: 40%;
@@ -151,7 +134,7 @@ html, body {
           <v-app id="inspire">
             <v-toolbar color="red" dark fixed>
 
-                  <v-toolbar-side-icon><a href="https://aguadillana.sharepoint.com/sites/DDMS/perfil/SitePages/history.aspx"><v-icon>arrow_back</v-icon></a></v-toolbar-side-icon>
+                  <v-toolbar-side-icon><a style="text-decorations:none; background-color: transparent; color:transparent;"href="https://aguadillana.sharepoint.com/sites/DDMS/perfil/SitePages/history.aspx"><v-icon>arrow_back</v-icon></a></v-toolbar-side-icon>
                   <v-toolbar-title >Reseña</v-toolbar-title>
                   <v-spacer></v-spacer>
                   <v-toolbar-items class="hidden-sm-and-down">
@@ -177,27 +160,25 @@ html, body {
     
     <!-- Get Report Title -->
     <v-layout row>  
-        <v-flex xs12>  
-            <h2 id="reporte">Reporte</h2>
+        <v-flex xs12> 
+            <div id = "reporte" class="flex display-1 font-weight-thin" style="margin-left: 1rem"> Reporte</div>
+<!--            <h2 id="reporte">Reporte</h2>-->
             <div id = "report"></div>
         </v-flex>  
     </v-layout>  
     <script>
         var report= new Vue({
           el: '#report',
-          methods: {
-            // Get Report Name
-            getName: function () {
-                var id = window.location.href.split('=').pop()
-                //console.log(id);
-                var header = document.getElementById("reporte");
-                header.innerHTML = id;
-            },
-      },
-      
       // Run functions @ page-load
-      beforeMount(){
-      this.getName();
+      mounted(){
+          var id = window.location.href.split('=').pop()
+          console.log(id);
+          var header = document.getElementById("reporte");
+                
+          var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=event_id eq '"+ id +"'&$select=*";
+        var headers = {"async": false,"accept": "application/json;odata=verbose","content-type": "application/json;odata=verbose"};
+         axios.get(endPointUrl).then(response =>  {header.innerHTML = response.data.value[0].Title;});
+      
    
  },
 })</script>
@@ -255,7 +236,7 @@ html, body {
     <script type="text/javascript" src="empanados_chart.js"></script>
     
         
-    <h2>Localización:</h2>
+    <div class="flex display-1 font-weight-thin" style="margin-left: 1rem"> Localización:</div>
     <!-- Google Map w/ Marker -->
     <v-layout row wrap>
         <v-flex xs12>
@@ -349,7 +330,7 @@ html, body {
         <v-container>
           <template>
               <v-card-title>
-              Personas Attendida
+              Personas Atendida
               </v-card-title>
             <v-spacer></v-spacer>
             <v-data-table :headers="headers" :items="reports" :hide-actions="true"  >
@@ -377,15 +358,42 @@ html, body {
     <script type="text/javascript" src="people_table.js"></script>
     
     <!-- Miscellaneous -->
+
+        
     <v-layout row wrap>
         <v-flex xs12>
-            <div id="add">
-      <v-app id="inspire">
+            <div id="add">          
+        <v-app id="inspire">
         <div class="text-xs-center">
-          <v-btn fab dark color="green">
+            <v-card id="misc2">
+              <v-list two-line>
+                <template v-for="(item, index) in items">
+                  <v-list-tile
+                    :key="item.title"
+                    avatar
+                    ripple
+                    @click= "toggle(index)"
+                  >
+                    <v-list-tile-content>
+
+                      <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                      <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
+                      <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
+                    </v-list-tile-content>
+
+                  </v-list-tile>
+                  <v-divider
+                    v-if="index + 1 < items.length"
+                    :key="index"
+                  ></v-divider>
+                </template>
+              </v-list>
+            </v-card>
+          <v-btn fab dark color="green" id="misc" @click = linkfn()>
             <v-icon dark>add</v-icon>
+              <div  class="flex title" style="margin-left: 1rem"> Añadir Recibo</div>
           </v-btn>
-          <p>Add Miscellaneous</p>
+          
         </div>
       </v-app>       
     </div>

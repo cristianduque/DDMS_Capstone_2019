@@ -6,9 +6,9 @@
         rowClick(name) {
           this.selectedItem = name;
         },
-        linkfn(title){
+        linkfn(id){
             //console.log(title);
-            location.href = "https://aguadillana.sharepoint.com/sites/DDMS/perfil/SitePages/review.aspx?title="+title+"";
+            location.href = "https://aguadillana.sharepoint.com/sites/DDMS/perfil/SitePages/review.aspx?title="+id+"";
         }
       },
       data: function () {
@@ -29,7 +29,7 @@
             { text: 'Año', value: 'year', width: '15%' },
             { text: 'Pueblo', value: 'pueblo', width: '16%' },
             { text: 'Cadena', value: 'chain', width: '16%' },
-            //{ text: 'Aprobado', value: 'approve', width: '16%' }
+            { text: 'Estatus de Gastos', value: 'status', width: '16%' }
           ],
           reports: [
 //            {
@@ -82,13 +82,12 @@
                     user_email = response.data.Email; 
                     //console.log(user_email);
             // Get user Reports
-            var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=email eq '"+ user_email +"'&$orderby=Fecha asc &$select=Tienda,Fecha,Pueblo,Title";
+            var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=email eq '"+ user_email +"'&$orderby=Fecha asc &$select=event_id,Tienda,Fecha,Pueblo,Title";
             var headers = {
                         "async": false,
                         "accept": "application/json;odata=verbose",
                         "content-type": "application/json;odata=verbose"
                     };
-            this.title = "getting data..."; 
             axios.get(endPointUrl).then(response =>  {
                         // returns user email
                         form = response.data.value; 
@@ -106,7 +105,7 @@
                             let tienda     = form[i].Tienda;  // Client's identifier number
                             let date       = form[i].Fecha;   
                             let pueblo     = form[i].Pueblo;  
-                            let title       = form[i].Title;
+                            let event_id   = form[i].event_id;
                             //console.log(tienda);
                             
                             // Get Clients supermarket name and chain
@@ -116,25 +115,31 @@
                                         "accept": "application/json;odata=verbose",
                                         "content-type": "application/json;odata=verbose"
                                     };
-                            this.title = "getting data..."; 
+                            
                             axios.get(endPointUrl).then(response =>  {
                                         // returns user email
                                         //console.log(response.data);
                                         municipio = response.data.value[0].q89x;
                                         chain = response.data.value[0].zqlz;
-                                        var day = date.substring(0,2);
-                                        var mo = date.substring(3,5);
-                                        var year = date.substring(6,10);
-                                        //console.log(chain+"|"+municipio);
-                                        
-                                        //console.log(Number(day));
-                                        //console.log(months[Number(mo)-1]);
-                                        //console.log(year);
-                                var dic = { value: false,name:'', month:'',day:0,year:0,pueblo:'',chain:'',link: ""};
+                                        //console.log(date);
+                                        date = date.split("-");
+                                        var day = date[2];
+                                        var mo = date[1];
+                                        var year = date[0];
+                                       
+                                var dic = { value: false,name:'', month:'',day:0,year:0,pueblo:'',chain:'',link: "",status:""};
+                                
+                                // Get Product family by searching in Products the specified product and returning family type
+                                var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Receipt')/items?$filter=event_id eq '" + event_id + "' &$select=event_id,OData__x0073_mm7,title0,Receipt_Status";
+                                var headers = {"async": false,"accept": "application/json;odata=verbose","content-type": "application/json;odata=verbose"};
+                                axios.get(endPointUrl).then(response =>  { 
+                                            
+                                                dic.status = response.data.value[0].Receipt_Status;
+                                });
                                 
                                 dic.name = chain+" | "+municipio; dic.month = months[Number(mo)-1];
                                 dic.day = Number(day); dic.year = year; dic.pueblo = municipio; dic.chain = chain;
-                                dic.link = title;
+                                dic.link = event_id;
                                 
                                 this.reports.push(dic);
                             }); //Third

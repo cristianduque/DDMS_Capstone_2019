@@ -19,25 +19,8 @@ var table_profile = new Vue({
 //            { text: 'Total de Ventas', value: 'total', width: '16%' , sortable: false, align: 'center',},
         
           ],
-          reports: [
-//            {
-//              value: false,
-//              title: 'Reporte 1',
-//              sale1: 23,
-//              sale2: "-",
-//              ince1: 1,
-//              ince2: "-",
-//              total: 45,
-//            },
-            
-          ],
-        titles: [],
-        sales1: [],
-        sales2: [],
-        inces1: [],
-        inces2: [],
-        totals: [],
-        family: [],
+          reports: [ ],
+
         }
       }, // END OF DATA
     created: function(){   
@@ -55,7 +38,7 @@ var table_profile = new Vue({
         var form2 = "";
         var form3 ="";
         var date  = "";
-        var title = "";
+        var event_id = "";
         var units   = 0;
         var units2 = 0;
         var product = "";
@@ -68,20 +51,21 @@ var table_profile = new Vue({
         var tot = "";
 
         
-        // Fetch User in order to know which Employee information to extract (｡◕‿‿◕｡)
+        // Fetch User in order to know which Employee information to extract 
         var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/currentuser";
         var headers = {
                     "async": false,
                     "accept": "application/json;odata=verbose",
                     "content-type": "application/json;odata=verbose"
                 };
-        this.title = "getting data..."; 
         axios.get(endPointUrl).then(response =>  {
                     // returns user email
                     user_email = response.data.Email; 
-                    //console.log("Fetch Reports"); // debug
+                    
+           
                     // Get Reports by user email, order by date asc (last first), get top 10 and get only sales and product
-                    var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=email eq '"+ user_email +"'&$orderby=Fecha asc &$select=UnidadesVendidas,Producto,Title,Fecha,event_id";
+                    var endPointUrl =
+                "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$top=10&$filter=email eq '"+user_email+"'&$orderby=Fecha desc ";
                     var headers = {
                                 "async": false,
                                 "accept": "application/json;odata=verbose",
@@ -104,7 +88,7 @@ var table_profile = new Vue({
                                          
                                          let form2       = form[i];         // Use for looping forms and get their details
                                          let product     = form[i].Producto;// Product demosntrated
-                                         let title       = form[i].Title;   // CAN CHANGE TO (event_id), Use to identify extra products sold if
+                                         let event_id    = form[i].event_id;   // CAN CHANGE TO (event_id), Use to identify extra products sold if
                                         
                                         //console.log(form2.Title) //debug
                                         let tit = form2.Title;
@@ -126,7 +110,7 @@ var table_profile = new Vue({
                                             let units       = Number(form2.UnidadesVendidas);
                                             
                                          // Get Product family by searching in Products the specified product and returning family type
-                                         var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('ExtraProdsDemo')/items?$filter=Title eq '"+ title +"'&$select=Title,UnidadesVendidas"
+                                         var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('ExtraProdsDemo')/items?$filter=event_id eq '"+ event_id+"'&$select=Title,UnidadesVendidas"
                                          var headers = {
                                                     "async": false,
                                                     "accept": "application/json;odata=verbose",
@@ -160,7 +144,7 @@ var table_profile = new Vue({
                                                             "accept": "application/json;odata=verbose",
                                                             "content-type": "application/json;odata=verbose"
                                                         };
-                                                this.title = "getting data..."; 
+                                                
                                                 
                                                    
                                                 axios.get(endPointUrl).then(response =>  {
@@ -170,8 +154,9 @@ var table_profile = new Vue({
                                                         if( (units >= response.data.value[2].xery) && (units < response.data.value[3].xery)){ i1 = Number(response.data.value[2].tr7c);}
                                                         if( (units >= response.data.value[3].xery)){ i1 = Number(response.data.value[3].tr7c);}
                                                     
-                                                        dic.title = tit; dic.family = "Empanados"; dic.sale1 = units; dic.sale2 = units; dic.ince1 = i1; dic.ince2 = i1; dic.total = units; this.reports.push(dic);
-                                                                                                    
+                                                        dic.title = tit; dic.family = "Empanados"; dic.sale1 = units; dic.sale2 = units; dic.ince1 = i1; dic.ince2 = i1; dic.total = units; dic.date = date; this.reports.push(dic);
+                                                        
+                                                         this.reports.sort(function(a, b) {var dateA = new Date(a['date']), dateB = new Date(b['date']);return dateB - dateA;});
                                                
                                                     });
  
@@ -187,24 +172,29 @@ var table_profile = new Vue({
                                                             "accept": "application/json;odata=verbose",
                                                             "content-type": "application/json;odata=verbose"
                                                         };
-                                                this.title = "getting data..."; 
+                                               
                                                 axios.get(endPointUrl).then(response =>  {
                                                 
-                                                var dic = { value: false,title: ' ',sale1: 0, sale2: " ", ince1: 0, ince2: " ",total: 0,};  
+                                                var dic = { value: false,title: ' ',sale1: 0, sale2: " ", ince1: 0, ince2: " ",total: 0, date:""};  
+                                                    
                                                     if(units <= response.data.value[0].xery ){i1 = Number(response.data.value[0].tr7c); }
                                                     if( (units >= response.data.value[1].xery) && (units < response.data.value[2].xery)){i1 = Number(response.data.value[1].tr7c); }
                                                     if( (units >= response.data.value[2].xery) && (units < response.data.value[3].xery)){i1 = Number(response.data.value[2].tr7c); }
                                                     if( (units >= response.data.value[3].xery)){i1 = Number(response.data.value[3].tr7c); }
                                                     
-                                                    dic.title = tit; dic.family = "Embutidos"; dic.sale1 = units; dic.sale2 = units; dic.ince1 = i1; dic.ince2 = i1; dic.total = units; this.reports.push(dic);
+                                                    dic.title = tit; dic.family = "Embutidos"; dic.sale1 = units; dic.sale2 = units; dic.ince1 = i1; dic.ince2 = i1; dic.total = units; dic.date = date; this.reports.push(dic);
                                                     
+                                                    this.reports.sort(function(a, b) {var dateA = new Date(a['date']), dateB = new Date(b['date']);return dateB - dateA;});
                                                     
+                                                    //console.log(this.reports);
                                                 }); //EMBUTIDOS
 
                                                
                                         }
                                                 
-                                     // else Embutido            
+                                     // else Embutido
+                                            
+                                            
                                             
                     }); //Fourth
                                 

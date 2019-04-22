@@ -28,7 +28,7 @@ var embutidos = new Vue({
         var id = window.location.href.split('=').pop();
             
         // Get Report by title
-        var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=Title eq '"+ id +"'&$select=*";
+        var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=event_id eq '"+ id +"'&$select=*";
         var headers = {
                                 "async": false,
                                 "accept": "application/json;odata=verbose",
@@ -63,7 +63,7 @@ var embutidos = new Vue({
                                           //console.log(units);         //debug
                                             
               // Get Product family by searching in Products the specified product and returning family type
-              var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('ExtraProdsDemo')/items?$filter=Title eq '"+ title +"'&$select=Title,UnidadesVendidas"
+              var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('ExtraProdsDemo')/items?$filter=event_id eq '"+ id +"'&$select=Title,UnidadesVendidas"
               var headers = {
                              "async": false,
                              "accept": "application/json;odata=verbose",

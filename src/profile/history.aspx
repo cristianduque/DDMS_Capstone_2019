@@ -150,8 +150,8 @@
                   <td class="text-xs-center">{{ props.item.year }}</td>
                   <td class="text-xs-center">{{ props.item.pueblo }}</td>
                   <td class="text-xs-center">{{ props.item.chain }}</td>
-<!--                  <td class="text-xs-center">{{ props.item.approve }}</td>-->
-                  
+                  <td style="color:red;" v-html="props.item.status" v-if="props.item.status == 'Denied' " ></td>
+                  <td v-html="props.item.status" v-else></td>
                 </tr>
               </template>
                 
