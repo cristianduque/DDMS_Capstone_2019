@@ -176,6 +176,7 @@
           return{
             Events:[],
             eventDate:new Date().toISOString().substr(0, 10),
+            datePermitted: '',
             eventTime:'',
             clients:[],
             products: [],
@@ -276,6 +277,7 @@
       this.getRequestDigestValue();
       this.getListData();
       this.handlerData();
+      this.getDates();
       //this.getListData();
     },
     methods:{
@@ -383,8 +385,9 @@ saveEvent () {
     else {
       var temp = this.eventDate + " " + this.eventTime;
       var eDate = new Date(temp);
-      eDate.setHours(eDate.getHours() - 3);
+      eDate.setHours(eDate.getHours() - 1);
       this.editedItemEvents.event_date = eDate.toISOString();
+      this.editedItemEvents.event_id = this.editedItemEvents.Title +'&'+ eDate.toISOString();
       swal({
           title: "Esta seguro de la adicion de este evento?",
           icon: "info",
@@ -403,7 +406,7 @@ saveEvent () {
          //  /*
           "Title": this.editedItemEvents.Title,
           "event_date": this.editedItemEvents.event_date,
-          "event_id": this.editedItemEvents.Title +'&'+ this.editedItemEvents.event_date,
+          "event_id": this.editedItemEvents.event_id,
           "products": this.editedItemEvents.products.toString(),
           "event_client": this.editedItemEvents.event_client,
            "event_demonstrator": this.editedItemEvents.event_demonstrator,
@@ -504,8 +507,9 @@ saveEvent () {
            else {
              var temp = this.eventDate + " " + this.eventTime;
              var eDate = new Date(temp);
-             eDate.setHours(eDate.getHours() - 3);
+             eDate.setHours(eDate.getHours() - 1);
              this.editedItemEvents.event_date = eDate.toISOString();
+             this.editedItemEvents.event_id = this.editedItemEvents.Title +'&'+ this.editedItemEvents.event_date;
                swal({
                    title: "Esta seguro de la adicion de este evento?",
                    icon: "info",
@@ -523,7 +527,7 @@ saveEvent () {
                                    },
                                    "Title": this.editedItemEvents.Title,
                                    "event_date": this.editedItemEvents.event_date,
-                                   "event_id": this.editedItemEvents.Title +'&'+ this.editedItemEvents.event_date,
+                                   "event_id": this.editedItemEvents.event_id,
                                    "products": this.editedItemEvents.products.toString(),
                                    "event_client": this.editedItemEvents.event_client,
                                     "event_demonstrator": this.editedItemEvents.event_demonstrator,
@@ -682,6 +686,26 @@ saveEvent () {
            }
        }
        return true;
+   },
+   getDates: function(){
+
+      var today = new Date();
+      var yesterday = new Date(today.getTime());
+      yesterday.setDate(today.getDate() - 1);
+
+      var dd = String(yesterday.getDate()).padStart(2, '0');
+      var mm = String(yesterday.getMonth() + 1).padStart(2, '0'); //January is 0!
+      var yyyy = yesterday.getFullYear();
+
+      this.datePermitted = new Date(yyyy + '-' + mm + '-' + dd).toISOString();
+      console.log(this.datePermitted);
+   },
+   getProductLimit: function(){
+     if (this.editedItemEvents.products.length > 5) {
+       this.editedItemEvents.products.pop();
+       return false;
+     }
+     else return true;
    },
    handlerAlerts: function(){
        this.checkDemonstratorConflict();
@@ -853,7 +877,7 @@ saveEvent () {
                                       v-on="on"
                                     ></v-text-field>
                                   </template>
-                                  <v-date-picker v-model="eventDate" @input="menu = false"></v-date-picker>
+                                  <v-date-picker v-model="eventDate" :min="datePermitted" @input="menu = false"></v-date-picker>
                                 </v-menu>
                        <h3> Seleccione la hora de la demostracion:</h3>
                        <template>
@@ -932,8 +956,10 @@ saveEvent () {
                                   :items="products"
                                   multiple
                                   required
+                                  v-on:input="getProductLimit"
                                   clearable
-                                  :rules="[(selectedProducts) =>  selectedProducts.length !== 0 || 'Este campo es requerido']"
+                                  :rules="[(selectedProducts) =>  selectedProducts.length !== 0 || 'Este campo es requerido',
+                                  (selectedProducts) => selectedProducts.length < 6 || 'Numero maximo de productos a demostrar es 5']"
                                   item-text="e9lf"
                                   >
                       </v-select>
