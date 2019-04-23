@@ -19,12 +19,16 @@
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/v-calendar"></script>
+
   <!--Vuetify-->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   </head>
   <body>
+
     <div id="app">
         <v-app>
           <img alt="La Aguadillana logo" src="https://aguadillana.sharepoint.com/sites/DDMS/Shared%20Documents/DDMSLogo.png">
@@ -182,6 +186,7 @@
             products: [],
             demonstrators: [],
             employees: [],
+            currentDate: '',
             eventList: [],
   errorMessages: '',
     menu: false,
@@ -263,8 +268,35 @@
            this.eventList.forEach(e => (map[e.event_date.substring(0,10)] = map[e.event_date.substring(0,10)] || []).push(e));
            console.log(map);
            return map;
-       }
-     },
+       },
+       getYearAndMonth: {
+         get(){
+             //this function will determine what is displayed in the input
+            var dateString  = this.start;
+            var year        = dateString.substring(0,4);
+            var month       = dateString.substring(5,7);
+            var day         = dateString.substring(8,10);
+            var date        = new Date(year, month-1, day);
+
+            var month = new Array();
+            month[0] = "Enero";
+            month[1] = "Febrero";
+            month[2] = "Marzo";
+            month[3] = "Abril";
+            month[4] = "Mayo";
+            month[5] = "Junio";
+            month[6] = "Julio";
+            month[7] = "Agosto";
+            month[8] = "Septiembre";
+            month[9] = "Octubre";
+            month[10] = "Noviembre";
+            month[11] = "Diciembre";
+
+            var n = month[date.getMonth()];
+            return n + " " + date.getFullYear();
+         }
+     }
+       },
      watch: {
        dialogEvent (val) {
          val || this.closeEvent()
@@ -278,6 +310,7 @@
       this.getListData();
       this.handlerData();
       this.getDates();
+      this.getMonthAndYearView();
       //this.getListData();
     },
     methods:{
@@ -720,11 +753,10 @@ saveEvent () {
    }
     },
         template: `<div>
-  <v-layout wrap>
+        <v-layout wrap>
     <v-flex
       xs12
       class="mb-3">
-
       <v-sheet height="500">
                       <v-calendar
                         ref="calendar"
@@ -773,7 +805,7 @@ saveEvent () {
                                   <v-spacer></v-spacer>
                                 </v-toolbar>
                                 <v-card-title primary-title>
-                                    <span v-html="event.event_date + event.Title"></span>
+                                    <span v-html="event.event_date + ' ' + event.Title"></span>
                                 </v-card-title>
                                 <v-card-actions>
                                   <v-btn
@@ -805,14 +837,16 @@ saveEvent () {
         Mes Anterior
       </v-btn>
     </v-flex>
+
     <v-flex
       sm4
       xs12
       class="text-xs-center"
     >
       <v-text-field
+        v-model="getYearAndMonth"
+        label="Month/Year"
         readonly
-
       ></v-text-field>
     </v-flex>
 
@@ -832,8 +866,8 @@ saveEvent () {
       </v-btn>
     </v-flex>
   </v-layout>
-
 </template>
+
 
     <div>
       <v-toolbar flat color="white">
