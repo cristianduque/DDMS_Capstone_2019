@@ -635,7 +635,7 @@ saveEvent () {
        });
    },
    getEventListData: function () {
-       var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items";
+       var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items?$filter=Event_Status eq 'AGENDA'";
        console.log(endPointUrl);
        var headers = {
            "accept": "application/json;odata=verbose",
@@ -772,7 +772,9 @@ saveEvent () {
                                   <v-toolbar-title v-html="event.Title"></v-toolbar-title>
                                   <v-spacer></v-spacer>
                                 </v-toolbar>
-
+                                <v-card-title primary-title>
+                                    <span v-html="event.event_date + event.Title"></span>
+                                </v-card-title>
                                 <v-card-actions>
                                   <v-btn
                                     flat
@@ -803,6 +805,17 @@ saveEvent () {
         Mes Anterior
       </v-btn>
     </v-flex>
+    <v-flex
+      sm4
+      xs12
+      class="text-xs-center"
+    >
+      <v-text-field
+        readonly
+
+      ></v-text-field>
+    </v-flex>
+
     <v-flex
       sm4
       xs12
