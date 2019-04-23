@@ -20,8 +20,6 @@
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
 
-  <script src="https://unpkg.com/v-calendar"></script>
-
   <!--Vuetify-->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
@@ -310,7 +308,6 @@
       this.getListData();
       this.handlerData();
       this.getDates();
-      this.getMonthAndYearView();
       //this.getListData();
     },
     methods:{
@@ -471,7 +468,7 @@ saveEvent () {
         icon: "success",
     });
 } else {
-    window.location.href = '/sites/DDMS/Shared%20Documents/planning.aspx#/CreateEvent';
+    window.location.href = '/sites/DDMS/Shared%20Documents/planning.aspx#/Planning';
 }
 });
     }
@@ -805,7 +802,7 @@ saveEvent () {
                                   <v-spacer></v-spacer>
                                 </v-toolbar>
                                 <v-card-title primary-title>
-                                    <span v-html="event.event_date + ' ' + event.Title"></span>
+                                  <span v-html="event.event_details"></span>
                                 </v-card-title>
                                 <v-card-actions>
                                   <v-btn
@@ -845,7 +842,6 @@ saveEvent () {
     >
       <v-text-field
         v-model="getYearAndMonth"
-        label="Month/Year"
         readonly
       ></v-text-field>
     </v-flex>
