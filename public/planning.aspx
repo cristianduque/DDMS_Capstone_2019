@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html>
   <head>
-    <meta charset="utf-8">
+    <meta  http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title></title>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.18"></script>
   <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
@@ -235,17 +235,17 @@
                       align: 'left',
                       value: 'Title'
                       },
-                      { text: 'Fecha', align: 'left', value: 'event_date' },
-                      { text: 'Productos', align: 'left', value: 'products' },
-                      { text: 'Cliente', align: 'left', value: 'event_client' },
-                      { text: 'Demonstratora', align: 'left', value: 'event_demonstrator' },
-                      { text: 'Multiplicador', align: 'left', value: 'event_mult' },
-                      { text: 'Aprobador #1', align: 'left', value: 'event_approver1' },
-                      { text: 'Aprobador #2', align: 'left', value: 'event_approver2'},
-                      { text: 'Aprobador #3', align: 'left', value: 'event_approver3'},
+                      { text: 'Fecha', align: 'center', value: 'event_date' },
+                      { text: 'Productos', align: 'center', value: 'products' },
+                      { text: 'Cliente', align: 'center', value: 'event_client' },
+                      { text: 'Demonstradora', align: 'center', value: 'event_demonstrator' },
+                      { text: 'Multiplicador', align: 'center', value: 'event_mult' },
+                      { text: 'Aprobador #1', align: 'center', value: 'event_approver1' },
+                      { text: 'Aprobador #2', align: 'center', value: 'event_approver2'},
+                      { text: 'Aprobador #3', align: 'center', value: 'event_approver3'},
                       //{ text: 'Estado', align: 'left', value: 'Event_Status'},
                       //{ text: 'Razon', align: 'left', value: 'Event_Status_Text'},
-                      { text: 'Actions', align: 'left', value: 'name', sortable: false }
+                      { text: 'Acciones', align: 'left', value: 'name', sortable: false }
             ],
                dialogEvent: false,
                dialogEventCancel:false,
@@ -338,8 +338,8 @@ saveCancelEvent () {
       this.Events.splice(this.canceledIndex, 1);
     if(this.editedItemEvents.event_reason === null && this.editedItemEvents.Event_Status_Text === null) {
         swal({
-            title: "Campos vacios",
-            text: "Usted tiene campos vacios en el formulario. Por favor verifique que cada campo este lleno",
+            title: "Campos vacíos",
+            text: "Usted tiene campos vacíos en el formulario. Por favor verifique que cada campo este lleno",
             icon: "info",
             dangerMode: true,
         });
@@ -371,8 +371,8 @@ saveCancelEvent () {
         "X-HTTP-Method": "MERGE"
       },
       success: function(data) {
-        swal("Info Succesfully Deleted", {icon:"success"})
-        console.log("Item edited to canceled successfully");
+        swal("Evento ", {icon:"success"})
+        console.log("Evento cancelado exitosamente");
         //swal("Info Succesfully Entered to List", {icon:"success"})
          //this.getListData();
       },
@@ -403,8 +403,8 @@ saveEvent: function() {
     Object.assign(this.Events[this.editedIndex], this.editedItemEvents);
     if(this.editedItemEvents.Title === '' || this.eventDate === '' || this.eventTime === '' || this.editedItemEvents.event_client === '' || this.editedItemEvents.event_demonstrator === '' || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === '' || this.editedItemEvents.event_approver1 === '') {
         swal({
-            title: "Campos vacios",
-            text: "Usted tiene campos vacios en el formulario. Por favor verifique que cada campo este lleno",
+            title: "Campos vacíos",
+            text: "Usted tiene campos vacíos en el formulario. Por favor verifique que cada campo este lleno",
             icon: "info",
             dangerMode: true,
         });
@@ -427,7 +427,7 @@ saveEvent: function() {
       this.editedItemEvents.event_date = eDate.toISOString();
       this.editedItemEvents.event_id = this.editedItemEvents.Title +'&'+ eDate.toISOString();
       swal({
-          title: "Esta seguro de la adicion de este evento?",
+          title: "¿Está seguro de la adición de este evento?",
           icon: "info",
           buttons: true,
       })
@@ -472,7 +472,7 @@ saveEvent: function() {
         }
       });
     this.closeEvent()
-    swal("Evento en agenda exitosamente!", {
+    swal("Evento añadido exitosamente!", {
         icon: "success",
     });
 } else {
@@ -519,8 +519,6 @@ saveEvent: function() {
 
                response.data.value[j].event_date = dateConversion.toDateString() + " " + realTime;
 
-
-
                }
                 vm.Events = response.data.value;
                 //console.log(vm.Events);
@@ -529,14 +527,11 @@ saveEvent: function() {
                  vm.Reasons = response.data.value;
                });
          },
-         ConvertNumberToTwoDigitString: function(n) {
-                return n > 9 ? "" + n : "0" + n;
-        },
          postListDataEvent: function(){
            if(this.editedItemEvents.Title === '' || this.eventDate === '' || this.eventTime === '' || this.editedItemEvents.event_client === '' || this.editedItemEvents.event_demonstrator === '' || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === '' || this.editedItemEvents.event_approver1 === '') {
                swal({
-                   title: "Campos vacios",
-                   text: "Usted tiene campos vacios en el formulario. Por favor verifique que cada campo este lleno",
+                   title: "Campos vacíos",
+                   text: "Usted tiene campos vacíos en el formulario. Por favor verifique que cada campo este lleno",
                    icon: "info",
                    dangerMode: true,
                });
@@ -546,7 +541,7 @@ saveEvent: function() {
            else if(this.checkDemonstratorConflict() === false || this.checkClientConflict() === false){
                swal({
                    title: "Alertas vigentes",
-                   text: "Usted tiene alertas pendientes en el formulario que no ha corregido. Por favor verifique que los campos de cliente y demostradora esten llenos sin alertas!",
+                   text: "Usted tiene alertas pendientes en el formulario que no ha corregido. Por favor verifique que los campos de Cliente y Demostradora estén llenos sin alertas",
                    icon: "info",
                    dangerMode: true,
                });
@@ -559,7 +554,7 @@ saveEvent: function() {
              this.editedItemEvents.event_date = eDate.toISOString();
              this.editedItemEvents.event_id = this.editedItemEvents.Title +'&'+ this.editedItemEvents.event_date;
                swal({
-                   title: "Esta seguro de la adicion de este evento?",
+                   title: "¿Está seguro de la adición de este evento?",
                    icon: "info",
                    buttons: true,
                })
@@ -601,7 +596,7 @@ saveEvent: function() {
                                }
                            });
                            this.closeEvent()
-                           swal("Evento creado exitosamente!", {
+                           swal("Evento creado exitosamente", {
                                icon: "success",
                            });
                        } else {
@@ -807,7 +802,7 @@ saveEvent: function() {
           class="text-sm-right text-xs-center"
         >
           <v-btn @click="$refs.calendar.next()">
-            Proximo Mes
+            Próximo Mes
             <v-icon
               right
               dark
@@ -825,7 +820,7 @@ saveEvent: function() {
                         ref="calendar"
                         type="month"
                         v-model="start"
-                        color="primary"
+                        color="teal"
                       >
                         <template v-slot:day="{ date }">
                           <template v-for="event in eventsMap[date]">
@@ -842,7 +837,7 @@ saveEvent: function() {
                                       text-overflow: ellipsis;
                                       white-space: nowrap;
                                       border-radius: 2px;
-                                      background-color: #1867c0;
+                                      background-color: teal;
                                       color: #ffffff;
                                       border: 1px solid #1867c0;
                                       width: 100%;
@@ -861,7 +856,7 @@ saveEvent: function() {
                                 flat
                               >
                                 <v-toolbar
-                                  color="primary"
+                                  color="teal"
                                   dark
                                 >
                                   <v-toolbar-title v-html="event.Title"></v-toolbar-title>
@@ -873,7 +868,7 @@ saveEvent: function() {
                                 <v-card-actions>
                                   <v-btn
                                     flat
-                                    color="secondary"
+                                    color="teal"
                                   >
                                     Cancel
                                   </v-btn>
@@ -913,7 +908,7 @@ saveEvent: function() {
                 <v-layout wrap>
                   <v-form ref="form" class="planning-form">
                   <div class="name-demo">
-                      <h3> Seleccione nombre de la demostracion: </h3>
+                      <h3> Seleccione nombre de la demostración: </h3>
                             <v-text-field
                             id="name-demo-text"
                             v-model="editedItemEvents.Title"
@@ -923,7 +918,7 @@ saveEvent: function() {
                             > </v-text-field>
                   </div>
                   <div class="date-hour">
-                      <h3> Seleccione la fecha de la demostracion:</h3>
+                      <h3> Seleccione la fecha de la demostración:</h3>
                                 <v-menu
                                   v-model="menu"
                                   :close-on-content-click="false"
@@ -948,7 +943,7 @@ saveEvent: function() {
                                   </template>
                                   <v-date-picker v-model="eventDate" :min="datePermitted" @input="menu = false"></v-date-picker>
                                 </v-menu>
-                       <h3> Seleccione la hora de la demostracion:</h3>
+                       <h3> Seleccione la hora de la demostración:</h3>
                        <template>
                             <v-layout row wrap>
                                     <v-menu
@@ -995,7 +990,7 @@ saveEvent: function() {
                                   item-text="Title"
                                   :error-messages="errorMessages"
                                   :rules="[(c) => !!c || 'Este campo es requerido',
-                                  (c) => checkClientConflict() || 'Cliente tiene demostracion en la fecha escogida. Escoja otra fecha o otro cliente'
+                                  (c) => checkClientConflict() || 'Cliente tiene demostración en la fecha escogida. Escoja otra fecha o otro cliente'
                                   ]"
                                   required
                                   clearable
@@ -1011,7 +1006,7 @@ saveEvent: function() {
                                   item-text="vblv"
                                   :error-messages="errorMessages"
                                   :rules="[(d) => !!d|| 'Este campo es requerido',
-                                  (d) => checkDemonstratorConflict() || 'Demostradora tiene demostracion en la fecha escogida. Escoja otra fecha o otra demostradora'
+                                  (d) => checkDemonstratorConflict() || 'Demostradora tiene demostración en la fecha escogida. Escoja otra fecha o otra demostradora'
                                   ]"
                                   required
                                   clearable
@@ -1028,7 +1023,7 @@ saveEvent: function() {
                                   v-on:input="getProductLimit"
                                   clearable
                                   :rules="[(selectedProducts) =>  selectedProducts.length !== 0 || 'Este campo es requerido',
-                                  (selectedProducts) => selectedProducts.length < 6 || 'Numero maximo de productos a demostrar es 5']"
+                                  (selectedProducts) => selectedProducts.length < 6 || 'Numero máximo de productos a demostrar es 5']"
                                   item-text="e9lf"
                                   >
                       </v-select>
@@ -1046,7 +1041,7 @@ saveEvent: function() {
                               > </v-text-field>
                   </div>
                   <div class="approval">
-                      <h3> Seleccione las personas que seran parte del proceso de aprobacion:</h3>
+                      <h3> Seleccione las personas que serán parte del proceso de aprobación:</h3>
                               <v-select
                                   v-model="editedItemEvents.event_approver1"
                                   id="first-employee"
@@ -1099,7 +1094,7 @@ saveEvent: function() {
               <v-container grid-list-md>
                 <v-layout wrap>
                   <v-form ref="formdelete">
-                  <h3>Seleccione Razon de Cancelacion</h3>
+                  <h3>Seleccione Razón de Cancelación</h3>
                   <v-select
                       v-model="editedItemEvents.event_reason"
                       :items="Reasons"
@@ -1130,14 +1125,14 @@ saveEvent: function() {
       >
         <template v-slot:items="props">
           <td>{{props.item.Title}}</td>
-          <td class="text-xs-right">{{ props.item.event_date}}</td>
-          <td class="text-xs-right">{{ props.item.products}}</td>
-          <td class="text-xs-right">{{ props.item.event_client}}</td>
-          <td class="text-xs-right">{{ props.item.event_demonstrator}}</td>
-          <td class="text-xs-right">{{ props.item.event_mult}}</td>
-          <td class="text-xs-right">{{ props.item.event_approver1}}</td>
-          <td class="text-xs-right">{{ props.item.event_approver2}}</td>
-          <td class="text-xs-right">{{ props.item.event_approver3}}</td>
+          <td class="text-xs-center">{{ props.item.event_date}}</td>
+          <td class="text-xs-center">{{ props.item.products}}</td>
+          <td class="text-xs-center">{{ props.item.event_client}}</td>
+          <td class="text-xs-center">{{ props.item.event_demonstrator}}</td>
+          <td class="text-xs-center">{{ props.item.event_mult}}</td>
+          <td class="text-xs-center">{{ props.item.event_approver1}}</td>
+          <td class="text-xs-center">{{ props.item.event_approver2}}</td>
+          <td class="text-xs-center">{{ props.item.event_approver3}}</td>
           <td class="justify-center layout px-0">
             <v-icon
               small
