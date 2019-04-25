@@ -49,7 +49,15 @@
     <!--Vuetify-->
      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+    <style>
 
+          .centered-input input {
+        text-align: center;
+        border-style: 0;
+        border: 0;
+      }
+
+    </style>
     <script type="text/javascript">
      Vue.use(Vuetify);
      Vue.use(VueRouter);
@@ -197,7 +205,7 @@
                       products: [],
                       event_client: '',
                       event_demonstrator:'',
-                      event_mult: 0,
+                      event_mult: '',
                       event_approver1: '',
                       event_approver2: '',
                       event_approver3: '',
@@ -213,7 +221,7 @@
                       products: [],
                       event_client: '',
                       event_demonstrator:'',
-                      event_mult: 0,
+                      event_mult: '',
                       event_approver1: '',
                       event_approver2: '',
                       event_approver3: '',
@@ -390,10 +398,10 @@ closeEvent () {
 closeCancelEvent () {
   this.dialogEventCancel = false
 },
-saveEvent () {
+saveEvent: function() {
   if (this.editedIndex > -1) {
     Object.assign(this.Events[this.editedIndex], this.editedItemEvents);
-    if(this.editedItemEvents.Title === null || this.eventDate === null || this.eventTime === null || this.editedItemEvents.event_client === undefined || this.editedItemEvents.event_demonstrator === undefined || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === null || this.editedItemEvents.event_approver1 === undefined) {
+    if(this.editedItemEvents.Title === '' || this.eventDate === '' || this.eventTime === '' || this.editedItemEvents.event_client === '' || this.editedItemEvents.event_demonstrator === '' || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === '' || this.editedItemEvents.event_approver1 === '') {
         swal({
             title: "Campos vacios",
             text: "Usted tiene campos vacios en el formulario. Por favor verifique que cada campo este lleno",
@@ -499,9 +507,19 @@ saveEvent () {
                }
 
                var dateConversion = new Date(response.data.value[j].event_date);
-               dateConversion.setHours(dateConversion.getHours() - 3);
-               response.data.value[j].event_date = dateConversion.toDateString() + " " + this.ConvertNumberToTwoDigitString(dateConversion.getUTCHours()) +
-           ":" + this.ConvertNumberToTwoDigitString(dateConversion.getUTCMinutes());
+               //dateConversion.setHours(dateConversion.getHours() - 3);
+               var timestamp = ''
+
+               if(dateConversion.getMinutes() < 10){
+                    timestamp = (dateConversion.getHours() + 1) + ":" + "0" + (dateConversion.getMinutes());
+              }
+              else timestamp = (dateConversion.getHours() + 1) + ":" + (dateConversion.getMinutes());
+              console.log(timestamp);
+              var realTime = this.tConvert(timestamp);
+
+               response.data.value[j].event_date = dateConversion.toDateString() + " " + realTime;
+
+
 
                }
                 vm.Events = response.data.value;
@@ -515,7 +533,7 @@ saveEvent () {
                 return n > 9 ? "" + n : "0" + n;
         },
          postListDataEvent: function(){
-           if(this.editedItemEvents.Title === null || this.eventDate === null || this.eventTime === null || this.editedItemEvents.event_client === undefined || this.editedItemEvents.event_demonstrator === undefined || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === null || this.editedItemEvents.event_approver1 === undefined) {
+           if(this.editedItemEvents.Title === '' || this.eventDate === '' || this.eventTime === '' || this.editedItemEvents.event_client === '' || this.editedItemEvents.event_demonstrator === '' || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === '' || this.editedItemEvents.event_approver1 === '') {
                swal({
                    title: "Campos vacios",
                    text: "Usted tiene campos vacios en el formulario. Por favor verifique que cada campo este lleno",
@@ -583,11 +601,11 @@ saveEvent () {
                                }
                            });
                            this.closeEvent()
-                           swal("Evento en agenda exitosamente!", {
+                           swal("Evento creado exitosamente!", {
                                icon: "success",
                            });
                        } else {
-                           window.location.href = '/sites/DDMS/Shared%20Documents/planning.aspx#/CreateEvent';
+                           window.location.href = '/sites/DDMS/Shared%20Documents/planning.aspx#/Planning';
                        }
                    });
            }
@@ -681,17 +699,13 @@ saveEvent () {
    checkClientConflict: function(){
        for (var j = 0; j < this.eventList.length; j++){
            var eClient = this.editedItemEvents.event_client;
-           console.log(eClient);
-           console.log(this.eventList[j].event_client);
            var temp = this.eventDate + " " + this.eventTime;
            var eDate = new Date(temp);
            eDate.setHours(eDate.getHours() - 4);
-           console.log(eDate.toISOString());
            var date = new Date(this.eventList[j].event_date);
            date.setHours(date.getHours() - 3);
            // now you can get the string
            var isodateList = date.toISOString();
-           console.log(isodateList);
            if(this.eventList[j].event_client === eClient && isodateList === eDate.toISOString()){
                    return false;
            }
@@ -704,13 +718,11 @@ saveEvent () {
            var temp = this.eventDate + " " + this.eventTime;
            var eDate = new Date(temp);
            eDate.setHours(eDate.getHours() - 4);
-           console.log(eDate.toISOString());
            var date = new Date(this.eventList[j].event_date);
            date.setHours(date.getHours() - 3);
            // now you can get the string
            var isodateList = date.toISOString();
-           console.log(isodateList);
-           console.log(this.eventList[j].event_client);
+
            if(this.eventList[j].event_demonstrator === eDemonstrator && isodateList === eDate.toISOString()){
                return false;
            }
@@ -737,6 +749,16 @@ saveEvent () {
      }
      else return true;
    },
+   tConvert: function (time) {
+      // Check correct time format and split into components
+      var timeString = time.toString();
+      var hourEnd = timeString.indexOf(":");
+      var H = +timeString.substr(0, hourEnd);
+      var h = H % 12 || 12;
+      var ampm = (H < 12 || H === 24) ? "AM" : "PM";
+      timeString = h + timeString.substr(hourEnd, 3) + ampm;
+      return timeString;
+    },
    handlerAlerts: function(){
        this.checkDemonstratorConflict();
        this.checkClientConflict();
@@ -749,8 +771,52 @@ saveEvent () {
        this.getEventListData();
    }
     },
-        template: `<div>
-        <v-layout wrap>
+        template: `<div class="text-xs-center">
+        <v-container>
+        <v-layout row wrap justify-center>
+        <v-flex
+          sm4
+          xs12
+          class="text-sm-left text-xs-center"
+        >
+          <v-btn @click="$refs.calendar.prev()">
+            <v-icon
+              dark
+              left
+            >
+              keyboard_arrow_left
+            </v-icon>
+            Mes Anterior
+          </v-btn>
+        </v-flex>
+
+        <v-flex
+          shrink
+          class="text-xs-center"
+        >
+          <v-text-field
+            v-model="getYearAndMonth"
+            class="centered-input"
+            readonly
+          ></v-text-field>
+        </v-flex>
+
+        <v-flex
+          sm4
+          xs12
+          class="text-sm-right text-xs-center"
+        >
+          <v-btn @click="$refs.calendar.next()">
+            Proximo Mes
+            <v-icon
+              right
+              dark
+            >
+              keyboard_arrow_right
+            </v-icon>
+          </v-btn>
+        </v-flex>
+
     <v-flex
       xs12
       class="mb-3">
@@ -802,7 +868,7 @@ saveEvent () {
                                   <v-spacer></v-spacer>
                                 </v-toolbar>
                                 <v-card-title primary-title>
-                                  <span v-html="event.event_details"></span>
+                                  <v-textarea readonly auto-grow style="white-space: pre-wrap;" v-html="event.event_details"></v-textarea>
                                 </v-card-title>
                                 <v-card-actions>
                                   <v-btn
@@ -819,49 +885,9 @@ saveEvent () {
                       </v-calendar>
                     </v-sheet>
     </v-flex>
-    <v-flex
-      sm4
-      xs12
-      class="text-sm-left text-xs-center"
-    >
-      <v-btn @click="$refs.calendar.prev()">
-        <v-icon
-          dark
-          left
-        >
-          keyboard_arrow_left
-        </v-icon>
-        Mes Anterior
-      </v-btn>
-    </v-flex>
 
-    <v-flex
-      sm4
-      xs12
-      class="text-xs-center"
-    >
-      <v-text-field
-        v-model="getYearAndMonth"
-        readonly
-      ></v-text-field>
-    </v-flex>
-
-    <v-flex
-      sm4
-      xs12
-      class="text-sm-right text-xs-center"
-    >
-      <v-btn @click="$refs.calendar.next()">
-        Proximo Mes
-        <v-icon
-          right
-          dark
-        >
-          keyboard_arrow_right
-        </v-icon>
-      </v-btn>
-    </v-flex>
   </v-layout>
+  </v-container>
 </template>
 
 
