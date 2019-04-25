@@ -49,15 +49,6 @@
     <!--Vuetify-->
      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
-    <style>
-
-          .centered-input input {
-        text-align: center;
-        border-style: 0;
-        border: 0;
-      }
-
-    </style>
     <script type="text/javascript">
      Vue.use(Vuetify);
      Vue.use(VueRouter);
@@ -238,14 +229,14 @@
                       { text: 'Fecha', align: 'center', value: 'event_date' },
                       { text: 'Productos', align: 'center', value: 'products' },
                       { text: 'Cliente', align: 'center', value: 'event_client' },
-                      { text: 'Demonstradora', align: 'center', value: 'event_demonstrator' },
+                      { text: 'Demonstrador/a', align: 'center', value: 'event_demonstrator' },
                       { text: 'Multiplicador', align: 'center', value: 'event_mult' },
                       { text: 'Aprobador #1', align: 'center', value: 'event_approver1' },
                       { text: 'Aprobador #2', align: 'center', value: 'event_approver2'},
                       { text: 'Aprobador #3', align: 'center', value: 'event_approver3'},
                       //{ text: 'Estado', align: 'left', value: 'Event_Status'},
                       //{ text: 'Razon', align: 'left', value: 'Event_Status_Text'},
-                      { text: 'Acciones', align: 'left', value: 'name', sortable: false }
+                      { text: 'Acciones', align: 'center', value: 'name', sortable: false }
             ],
                dialogEvent: false,
                dialogEventCancel:false,
@@ -269,9 +260,13 @@
        formTitle () {
          return this.editedIndex === -1 ? 'Nuevo Evento' : 'Editar Evento'
        },
+       computedDateFormatted () {
+        return this.formatDate(this.eventDate);
+      },
        eventsMap () {
            const map = {};
-           this.eventList.forEach(e => (map[e.event_date.substring(0,10)] = map[e.event_date.substring(0,10)] || []).push(e));
+           var list = this.eventList;
+           list.forEach(e => (map[e.event_date.substring(0,10)] = map[e.event_date.substring(0,10)] || []).push(e));
            console.log(map);
            return map;
        },
@@ -357,7 +352,7 @@ saveCancelEvent () {
           'type': 'SP.Data.EventsListItem' // it defines the ListEntityTypeName
         },
        //  /*
-        "Event_Status": 'CANCELED',
+        "Event_Status": 'Canceled',
         "event_reason": this.editedItemEvents.event_reason,
         "Event_Status_Text": this.editedItemEvents.Event_Status_Text
          //*/
@@ -482,7 +477,12 @@ saveEvent: function() {
     }
   } else {
     this.postListDataEvent();
-    this.Events.push(this.editedItemEvents)
+    if(this.editedItemEvents.Title === '' || this.eventDate === '' || this.eventTime === '' || this.editedItemEvents.event_client === '' || this.editedItemEvents.event_demonstrator === '' || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === '' || this.editedItemEvents.event_approver1 === '')
+        return;
+    if (this.checkDemonstratorConflict() === false || this.checkClientConflict() === false)
+        return;
+    this.Events.push(this.editedItemEvents);
+
   }
 },
          getListData: function(){
@@ -517,7 +517,7 @@ saveEvent: function() {
               console.log(timestamp);
               var realTime = this.tConvert(timestamp);
 
-               response.data.value[j].event_date = dateConversion.toDateString() + " " + realTime;
+               response.data.value[j].event_date = dateConversion.toLocaleDateString('en-GB') + " " + realTime;
 
                }
                 vm.Events = response.data.value;
@@ -589,7 +589,7 @@ saveEvent: function() {
                                    console.log("Item created successfully");
                                    //alert("Event was added succesfully");
                                   //this.Events.push(this.editedItemEvents)
-                                  //this.getListData();
+                                  this.getListData();
                                },
                                error: function (error) {
                                    console.log(JSON.stringify(error));
@@ -754,6 +754,12 @@ saveEvent: function() {
       timeString = h + timeString.substr(hourEnd, 3) + ampm;
       return timeString;
     },
+    formatDate:function(date) {
+       //if (!date) return null
+
+       const [year, month, day] = date.split('-')
+       return `${day}/${month}/${year}`
+   },
    handlerAlerts: function(){
        this.checkDemonstratorConflict();
        this.checkClientConflict();
@@ -789,11 +795,7 @@ saveEvent: function() {
           shrink
           class="text-xs-center"
         >
-          <v-text-field
-            v-model="getYearAndMonth"
-            class="centered-input"
-            readonly
-          ></v-text-field>
+      <h1>  {{getYearAndMonth}} </h1>
         </v-flex>
 
         <v-flex
@@ -816,11 +818,15 @@ saveEvent: function() {
       xs12
       class="mb-3">
       <v-sheet height="500">
+
                       <v-calendar
                         ref="calendar"
                         type="month"
                         v-model="start"
-                        color="teal"
+                        color="#135973"
+                        style="
+                            border-style: outset;
+                        "
                       >
                         <template v-slot:day="{ date }">
                           <template v-for="event in eventsMap[date]">
@@ -837,7 +843,7 @@ saveEvent: function() {
                                       text-overflow: ellipsis;
                                       white-space: nowrap;
                                       border-radius: 2px;
-                                      background-color: teal;
+                                      background-color: #2095C0;
                                       color: #ffffff;
                                       border: 1px solid #1867c0;
                                       width: 100%;
@@ -856,7 +862,7 @@ saveEvent: function() {
                                 flat
                               >
                                 <v-toolbar
-                                  color="teal"
+                                  color="#2095C0"
                                   dark
                                 >
                                   <v-toolbar-title v-html="event.Title"></v-toolbar-title>
@@ -868,7 +874,7 @@ saveEvent: function() {
                                 <v-card-actions>
                                   <v-btn
                                     flat
-                                    color="teal"
+                                    color="#2095C0"
                                   >
                                     Cancel
                                   </v-btn>
@@ -897,7 +903,7 @@ saveEvent: function() {
         <v-spacer></v-spacer>
         <v-dialog v-model="dialogEvent" max-width="500px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo Evento</v-btn>
+            <v-btn color="#2095C0" dark class="mb-2" v-on="on">Nuevo Evento</v-btn>
           </template>
           <v-card>
             <v-card-title>
@@ -931,17 +937,16 @@ saveEvent: function() {
                                 >
                                   <template v-slot:activator="{ on }">
                                     <v-text-field
-                                      v-model="eventDate"
+                                      v-model="computedDateFormatted"
                                       prepend-icon="event"
                                       :rules="[(f) => !!f || 'Este campo es requerido']"
                                       readonly
                                       required
                                       clearable
-                                      hint="MM/DD/YYYY format"
                                       v-on="on"
                                     ></v-text-field>
                                   </template>
-                                  <v-date-picker v-model="eventDate" :min="datePermitted" @input="menu = false"></v-date-picker>
+                                  <v-date-picker v-model="eventDate" locale="es-419" :min="datePermitted" @input="menu = false"></v-date-picker>
                                 </v-menu>
                        <h3> Seleccione la hora de la demostración:</h3>
                        <template>
@@ -1118,6 +1123,7 @@ saveEvent: function() {
           </v-card>
         </v-dialog>
       </v-toolbar>
+      <v-card>
       <v-data-table
         :headers="headersEvents"
         :items="Events"
@@ -1153,6 +1159,7 @@ saveEvent: function() {
           <v-btn color="primary" @click="getListData">Reset</v-btn>
         </template>
       </v-data-table>
+      </v-card>
     </div>
   </div>`
       });
