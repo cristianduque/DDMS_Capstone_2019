@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset= utf-8">
+    <meta charset="utf-8">
     <title></title>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.18"></script>
   <script src = "https://unpkg.com/vue-router/dist/vue-router.js"></script>
@@ -13,7 +12,6 @@
   <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
 
   <script type="text/javascript" src="https://cdn.rawgit.com/highcharts/highcharts-vue/1ce7e656/dist/script-tag/highcharts-vue.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
   <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-google-maps/0.1.21/vue-google-maps.js"></script>-->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -51,18 +49,65 @@
     <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
 
     <script type="text/javascript">
+    var hostweburl;
+    var appweburl;
+
+    // Load the required SharePoint libraries
+    $(document).ready(function () {
+      //Get the URI decoded URLs.
+      hostweburl = "https://aguadillana.sharepoint.com/sites/DDMS/" ;
+        /*  decodeURIComponent(
+              getQueryStringParameter("SPHostUrl")
+      );*/
+      appweburl = "https://aguadillana.sharepoint.com/sites/DDMS/" ;
+        /*  decodeURIComponent(
+              getQueryStringParameter("SPAppWebUrl")
+      );*/
+
+      // resources are in URLs in the form:
+      // web_url/_layouts/15/resource
+      var scriptbase = hostweburl + "/_layouts/15/";
+
+      // Load the js files and continue to the successHandler
+      $.getScript(scriptbase + "SP.RequestExecutor.js");
+    });
 
      Vue.use(Vuetify);
      Vue.use(VueRouter);
      var Charts = Vue.component('line-chart', {
        extends: VueChartJs.Line,
        mixins: [VueChartJs.mixins.reactiveProp],
-       props: ['options'], //'labels','label'],
-      /* data: function () {
+       //props: ['data','options'], //'labels','label'],
+       data: function () {
        return {
-
+       options: {
+       scales: {
+         yAxes: [{
+           ticks: {
+             beginAtZero: true
+           },
+           gridLines: {
+             display: true
+           }
+         }],
+         xAxes: [{
+           ticks: {
+             beginAtZero: true
+           },
+           gridLines: {
+             display: false
+           }
+         }]
+       },
+       legend: {
+         display: true
+       },
+       responsive: true,
+       maintainAspectRatio: false,
+       height: 200
        }
-     },*/
+       }
+       },
        mounted () {
        this.renderChart(this.chartData,this.options);
 
@@ -72,37 +117,37 @@
        extends: VueChartJs.Bar,
        //extends: VueChartJs.Mixins,
         mixins: [VueChartJs.mixins.reactiveProp],
-        props: ['options'], //'labels','label'],
-      /*  data: function () {
-		return {
-			options: {
-				scales: {
-					yAxes: [{
-						ticks: {
-							beginAtZero: true
-						},
-						gridLines: {
-							display: true
-						}
-					}],
-					xAxes: [{
-						ticks: {
-							beginAtZero: true
-						},
-						gridLines: {
-							display: false
-						}
-					}]
-				},
-				legend: {
-					display: true
-				},
-				responsive: true,
-				maintainAspectRatio: false,
-				height: 200
-			}
-		}
-	},*/
+        //props: ['data','options'], //'labels','label'],
+        data: function () {
+        return {
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        gridLines: {
+                            display: true
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        gridLines: {
+                            display: false
+                        }
+                    }]
+                },
+                legend: {
+                    display: true
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                height: 200
+            }
+        }
+    },
   mounted () {
     this.renderChart(this.chartData,this.options);
 
@@ -110,26 +155,29 @@
      });
      var Charts = Vue.component('pie-chart', {
        extends: VueChartJs.Pie,
-       mixins: [VueChartJs.mixins.reactiveProp],
-       //props: ['data', 'labels'],
-       data: function () {
-  return {
-    options: {responsive: true, maintainAspectRatio: false, height: 200,      tooltips: {
-        enabled: true,
-        callbacks: {
-          label:function (tooltipItem, data) {
-            let dataset = data.datasets[tooltipItem.datasetIndex]
-            //data['labels'][tooltipItem[0]['index']]
-            console.log(data.labels[tooltipItem.index]);
-            let currentValue = dataset.data[tooltipItem.index]
-            return data.labels[tooltipItem.index]+': '+currentValue + ' %'
-          }
-        }
-      }}
-  }
-},
+       props: ['data', 'labels'],
        mounted () {
-    this.renderChart(this.chartData, this.options)
+    this.renderChart({
+     labels: this.labels,
+     datasets: [
+       {
+         backgroundColor: [
+           '#41B883',
+           '#E46651',
+           '#00D8FF',
+           '#DD1B16',
+           'darkgreen',
+           'darkred',
+           'darkblue'
+         ],
+         data: this.data
+       }
+     ]
+   }, {responsive: true, maintainAspectRatio: false, pieceLabel: {
+           render: 'value',
+           precision: 1
+         },
+         showAllTooltips: true})
  }
 
      });
@@ -144,434 +192,10 @@
       var Approvals = Vue.component('Approvals', {
         data: function (){
           return{
-            MCSubmitted:[],
-            DemoForm:[],
-            ItemId: -1,
-            headersClients: [
-   {
-     text: 'Nombre',
-     align: 'left',
-     value: 'Demostradora'
-   },
-   { text: 'ID del Evento', align: 'left', value: 'Event_ID' },
-   { text: 'Fecha', align: 'left', value: 'Fecha' },
-   { text: 'Total', align: 'left', value: 'Total' },
-   { text: 'Actions', align: 'center', value: 'name', sortable: false }
- ],
- headersDemoForm: [
-{
-text: 'Titulo',
-align: 'left',
-value: 'Title'
-},
-{ text: 'Fecha', align: 'left', value: 'Fecha' },
-{ text: 'Producto', align: 'left', value: 'Product' },
-{ text: 'Demostradora', align: 'left', value: 'Demostradora' },
-{ text: 'Ruta', align: 'left', value: 'route' },
-{ text: 'Unidades Vendidas', align: 'left', value: 'UnidadesVendidas' },
-{ text: 'Actions', align: 'center', value: 'name', sortable: false }
-],
-
- dialogClient: false,
- editedIndex: -1,
-
-       editedItemClients: {
-         name: '',
-         Demostradora: '',
-         Event_ID: '',
-         Fecha: '',
-         Total: ''
-
-       },
-       defaultItemClients: {
-         name: '',
-         Demostradora: '',
-         Event_ID: '',
-         Fecha: '',
-         Total: ''
-
-       }
-
-
+            count:0
           }
         },
-        template: `<div>
-        <h1>Reportes</h1>
-
-
-        <v-dialog v-model="dialogClient" max-width="500px">
-
-        <v-card>
-          <v-card-title>
-            <span class="headline">{{ formTitle }}</span>
-          </v-card-title>
-
-          <v-card-text>
-          <v-container grid-list-md>
-              <v-layout wrap>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemClients.Demostradora" label="Demostradora"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemClients.Event_ID" label="Event_ID"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemClients.Fecha" label="Fecha"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemClients.Total" label="Total"></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" flat @click="closeClient">Cancel</v-btn>
-            <v-btn color="blue darken-1" flat @click="saveClient">Save</v-btn>
-          </v-card-actions>
-        </v-card>
-        </v-dialog>
-        </v-toolbar>
-        <v-data-table
-        :headers="headersDemoForm"
-        :items="DemoForm"
-        class="elevation-1"
-        >
-        <template v-slot:items="props">
-        <tr  @click= "linkfnDemo( props.item.Id )">
-        <td>{{props.item.Title}}</td>
-        <td class="text-xs-left">{{ props.item.Fecha}}</td>
-        <td class="text-xs-left">{{ props.item.Product}}</td>
-        <td class="text-xs-left">{{ props.item.Demostradora}}</td>
-        <td class="text-xs-left">{{ props.item.route}}</td>
-        <td class="text-xs-left">{{ props.item.UnidadesVendidas}}</td>
-        <td class="justify-center layout px-0">
-          <v-icon
-            small
-            class="mr-2"
-            @click="editItemClient(props.item)"
-          >
-            edit
-          </v-icon>
-          <v-icon
-            small
-            @click="deleteItemClient(props.item)"
-          >
-            delete
-          </v-icon>
-        </td>
-        </tr>
-        </template>
-        <template v-slot:no-data>
-        No hay Sometidos
-        <v-btn color="primary" @click="getListData">Reset</v-btn>
-        </template>
-        </v-data-table>
-
-        </template>
-
-
-        <h1>Costos Misceláneos</h1>
-
-        <v-dialog v-model="dialogClient" max-width="500px">
-
-        <v-card>
-          <v-card-title>
-            <span class="headline">{{ formTitle }}</span>
-          </v-card-title>
-
-          <v-card-text>
-          <v-container grid-list-md>
-              <v-layout wrap>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemClients.Demostradora" label="Demostradora"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemClients.Event_ID" label="Event_ID"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemClients.Fecha" label="Fecha"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemClients.Total" label="Total"></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" flat @click="closeClient">Cancel</v-btn>
-            <v-btn color="blue darken-1" flat @click="saveClient">Save</v-btn>
-          </v-card-actions>
-        </v-card>
-        </v-dialog>
-        </v-toolbar>
-        <v-data-table
-        :headers="headersClients"
-        :items="MCSubmitted"
-        class="elevation-1"
-        >
-        <template v-slot:items="props">
-        <tr  @click= "linkfn( props.item.id )">
-        <td>{{props.item.Demostradora}}</td>
-        <td class="text-xs-left">{{ props.item.Event_ID}}</td>
-        <td class="text-xs-left">{{ props.item.Fecha}}</td>
-        <td class="text-xs-left">{{ props.item.Total}}</td>
-        <td class="justify-center layout px-0">
-          <v-icon
-            small
-            class="mr-2"
-            @click="editItemClient(props.item)"
-          >
-            edit
-          </v-icon>
-          <v-icon
-            small
-            @click="deleteItemClient(props.item)"
-          >
-            delete
-          </v-icon>
-        </td>
-        </tr>
-        </template>
-        <template v-slot:no-data>
-        <v-btn color="primary" @click="getListData">Reset</v-btn>
-        </template>
-        </v-data-table>
-
-        </template>
-
-
-        </div>
-
-
-        `,
-        computed: {
-             formTitle () {
-               return this.editedIndex === -1 ? 'Nuevo' : 'Editar'
-             }
-           },
-
-           watch: {
-
-             dialogClient (val) {
-               val || this.closeClient()
-             }
-           },
-                    created: function(){
-                      this.getRequestDigestValue();
-                      this.getListData();
-                      //this.getListData();
-                    },
-                    methods:{
-                  editItemClient (item) {
-              this.editedIndex = this.MCSubmitted.indexOf(item)
-              this.ItemId = item.Id
-              this.editedItemClients = Object.assign({}, item)
-              this.dialogClient = true
-
-            },
-
-             deleteItemClient (item) {
-               const index = this.MCSubmitted.indexOf(item)
-               confirm('Are you sure you want to delete this item?') && this.Clients.splice(index, 1)
-               $.ajax({
-                   async: true,
-                   url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Receipt')/items('"+item.Id+"')",
-                   method: "POST",
-                   data: JSON.stringify({
-                     '__metadata': {
-                       'type': 'SP.Data.ReceiptListItem' // it defines the ListEntityTypeName
-                     },
-                    //  /*
-                     "status": 'Terminated'
-                      //*/
-                       //this.editedItem;
-                   }),
-                   headers: {
-                     "accept": "application/json;odata=verbose",
-                     "content-type": "application/json;odata=verbose",
-                     "X-RequestDigest": this.RequestDigest,
-                     "IF-MATCH": "*",
-                     "X-HTTP-Method": "MERGE"
-                   },
-                   success: function(data) {
-                     console.log("Item edited to terminated successfully");
-                     //swal("Info Succesfully Entered to List", {icon:"success"})
-                     //this.getListData();
-                   },
-                   error: function(error) {
-                     console.log(JSON.stringify(error));
-                   }
-                 });
-             },
-
-             closeClient () {
-               this.dialogClient = false
-               setTimeout(() => {
-                 this.editedItemClients = Object.assign({}, this.defaultItemClients)
-                 this.editedIndex = -1
-               }, 300)
-             },
-             saveClient () {
-               if (this.editedIndex > -1) {
-                 Object.assign(this.MCSubmitted[this.editedIndex], this.editedItemClients);
-                 $.ajax({
-                     async: true,
-                     url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items('"+this.ItemId+"')",
-                     method: "POST",
-                     data: JSON.stringify({
-                       '__metadata': {
-                         'type': 'SP.Data.ClientsListItem' // it defines the ListEntityTypeName
-                       },
-                      //  /*
-                       "Title": this.editedItemClients.Title,
-                       "t1q7": this.editedItemClients.t1q7,
-                       "zqlz": this.editedItemClients.zqlz,
-                       "q89x": this.editedItemClients.q89x,
-                       "nc7a": this.editedItemClients.nc7a,
-                      "c9jm": this.editedItemClients.c9jm,
-                      "OData__x0065_cv5": this.editedItemClients.OData__x0065_cv5
-
-                        //*/
-                         //this.editedItem;
-                     }),
-                     headers: {
-                       "accept": "application/json;odata=verbose",
-                       "content-type": "application/json;odata=verbose",
-                       "X-RequestDigest": this.RequestDigest,
-                       "IF-MATCH": "*",
-                       "X-HTTP-Method": "MERGE"
-                     },
-                     success: function(data) {
-                       console.log("Item edited successfully");
-                       //swal("Info Succesfully Entered to List", {icon:"success"})
-                       //this.getListData();
-                     },
-                     error: function(error) {
-                       console.log(JSON.stringify(error));
-                     }
-                   });
-               } else {
-                 this.Clients.push(this.editedItemClients)
-                 this.postListDataClient();
-               }
-               this.closeClient()
-             },
-             linkfn(id){
-      console.log(id);
-      location.href = "https://aguadillana.sharepoint.com/sites/DDMS/SitePages/MCform2.aspx?id="+id+"";
-  },
-  linkfnDemo(id){
-console.log(id);
-location.href = "https://aguadillana.sharepoint.com/sites/DDMS/SitePages/approvals.aspx?id="+id+"";
-},
-
-                      getListData: function(){
-                         var endPointUrl2 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Receipt')/items?$filter=Receipt_Status eq 'Sometido'";
-                         var endPointUrl1 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=EstatusAprobacion eq 'Sometido'";
-
-                      var headers = {
-                          "accept": "application/json;odata=verbose",
-                           "content-type": "application/json;odata=verbose"
-                      };
-                          this.status = "getting data...";
-                          var vm = this;
-                            axios.get(endPointUrl2).then(response => {
-                               //vm.MCSubmitted = response.data.value;
-                               //console.log(vm.MCSubmitted);
-                               for(var i=0;i<response.data.value.length;i++){
-                                 let dic = {id:0,Demostradora:'',Event_ID:'',Fecha:'',Total:''};
-                                 dic.id=response.data.value[i].ID;
-                                 dic.Demostradora = response.data.value[i].Email;
-                                 dic.Event_ID = response.data.value[i].event_id;
-                                 dic.Total = "$ "+response.data.value[i].OData__x0073_mm7;
-                                 dic.Fecha = response.data.value[i].Modified;
-                                 vm.MCSubmitted.push(dic);
-                                 console.log(vm.MCSubmitted);
-                               }
-
-                             });
-                             axios.get(endPointUrl1).then(response => {
-                                vm.DemoForm = response.data.value;
-                                console.log(vm.DemoForm);
-                              /*  for(var i=0;i<response.data.value.length;i++){
-                                  let dic = {id:0,Demostradora:'',Event_ID:'',Fecha:'',Total:''};
-                                  dic.id=response.data.value[i].ID;
-                                  dic.Demostradora = response.data.value[i].Email;
-                                  dic.Event_ID = response.data.value[i].event_id;
-                                  dic.Total = "$ "+response.data.value[i].OData__x0073_mm7;
-                                  dic.Fecha = response.data.value[i].Modified;
-                                  vm.MCSubmitted.push(dic);
-                                  console.log(vm.MCSubmitted);
-                                }*/
-
-                              });
-
-                      },
-                    postListDataClient: function(){
-                    $.ajax({
-                         async: true,
-                         url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items",
-                         method: "POST",
-                         data: JSON.stringify({
-                             '__metadata': {
-                                 'type': 'SP.Data.ClientsListItem' // it defines the ListEntityTypeName
-                             },
-                             "Title": this.editedItemClients.Title,
-                             "t1q7": this.editedItemClients.t1q7,
-                             "zqlz": this.editedItemClients.zqlz,
-                             "q89x": this.editedItemClients.q89x,
-                             "nc7a": this.editedItemClients.nc7a,
-                            "c9jm": this.editedItemClients.c9jm,
-                            "OData__x0065_cv5": this.editedItemClients.OData__x0065_cv5,
-                            "status": 'Active'
-                         }),
-
-                         headers: {
-                             "accept": "application/json;odata=verbose",
-                             "content-type": "application/json;odata=verbose",
-                             "X-RequestDigest": this.RequestDigest
-                             //"Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
-                             //"Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
-                         },
-                         success: function(data) {
-                             console.log("Item created successfully");
-                             //this.getListData();
-                         },
-                         error: function(error) {
-                             console.log(JSON.stringify(error));
-
-                         }
-                    });
-                  }
-
-                      ,
-                      getRequestDigestValue: function(){
-
-                        var headers ={
-                          "Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
-                          "Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
-                        };
-
-                        var vm = this;
-                        axios.post("https://aguadillana.sharepoint.com/sites/DDMS/_api/contextinfo",headers)
-                        .then(response => {
-                          console.log(response);
-                          vm.RequestDigest = response.data.FormDigestValue
-                        })
-                        .catch(function (error) {
-                          console.log(error);
-                          console.log("failed");
-                        });
-                  },
-
-
-                }
-
-
+        template: '<h1>Approvals</h1><!--<button v-on:click="count++"> You clicked me {{count}} times in Approvals. </button>-->'
       });
     var Planning =  Vue.component('Planning', {
         data: function (){
@@ -1031,22 +655,9 @@ saveEvent () {
        };
        this.status = "getting data...";
        var vm = this;
-       var i=0;
-       //let dic={em_id:0,Em_name:''}
        axios.get(endPointUrl).then(response => {
            console.log(response.data.value);
-           for(i;i<response.data.value.length;i++){
-             console.log(i);
-             console.log(response.data.value[i]);
-             console.log(response.data.value[i].Title);
-             console.log(response.data.value[i].vblv);
-             let dic={em_id:0,Em_name:''}
-             dic.em_id = response.data.value[i].Title;
-             dic.Em_name = response.data.value[i].Title +" "+response.data.value[i].vblv +" "+response.data.value[i].cytw ;
-             vm.demonstrators.push(dic);
-             console.log(vm.demonstrators);
-           }
-
+           vm.demonstrators = response.data.value;
        });
    },
    getApprovalListData: function () {
@@ -1339,8 +950,7 @@ saveEvent () {
                                   id="demList"
                                   v-model="editedItemEvents.event_demonstrator"
                                   :items="demonstrators"
-                                  item-text="Em_name"
-                                  item-value="em_id"
+                                  item-text="vblv"
                                   :error-messages="errorMessages"
                                   :rules="[(d) => !!d|| 'Este campo es requerido',
                                   (d) => checkDemonstratorConflict() || 'Demostradora tiene demostracion en la fecha escogida. Escoja otra fecha o otra demostradora'
@@ -1559,6 +1169,10 @@ value: 's2l1'
    dialogClient: false,
    dialogEmployee: false,
    editedIndex: -1,
+   valid: false,
+   valid2: false,
+   valid3: false,
+   rules: [ v=> !!v || 'This is Required'],
       editedItemProducts: {
         name: '',
         a83e: '',
@@ -1645,28 +1259,30 @@ value: 's2l1'
           </v-card-title>
 
           <v-card-text>
+          <v-form lazy-validation v-model="valid" ref="form">
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemProducts.s2l1" label="Num. producto"></v-text-field>
+                  <v-text-field v-model="editedItemProducts.s2l1" :rules="rules" label="Num. producto" oninput="this.value = this.value.replace(/[^a-z0-9]/ig, '');"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemProducts.e9lf" label="Descripcion"></v-text-field>
+                  <v-text-field v-model="editedItemProducts.e9lf" :rules="rules"  label="Descripcion" oninput="this.value = this.value.replace(/[^a-z0-9 ./]/ig, '');"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemProducts.a83e" label="Unidades"></v-text-field>
+                  <v-text-field v-model="editedItemProducts.a83e" :rules="rules"  label="Unidades" oninput="this.value = this.value.replace(/[^0-9]/g, '');"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemProducts.r0hu" label="Familia"></v-text-field>
+                  <v-text-field v-model="editedItemProducts.r0hu" :rules="rules"  label="Familia" oninput="this.value = this.value.replace(/[^a-z]/ig, '');"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemProducts.qrdu" label="Costo/LB"></v-text-field>
+                  <v-text-field v-model="editedItemProducts.qrdu" :rules="rules"  label="Costo/LB" oninput="this.value = this.value.replace(/[^0-9.$/]/g, '');"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItemProducts.se1v" label="Meta"></v-text-field>
+                  <v-text-field v-model="editedItemProducts.se1v" :rules="rules"  label="Meta" oninput="this.value = this.value.replace(/[^0-9]/g, '');"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
+            </v-form>
           </v-card-text>
 
           <v-card-actions>
@@ -1734,28 +1350,30 @@ vertical
   </v-card-title>
 
   <v-card-text>
+  <v-form lazy-validation v-model="valid2" ref="form2">
     <v-container grid-list-md>
       <v-layout wrap>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemEmployees.vblv" label="Nombre"></v-text-field>
+          <v-text-field v-model="editedItemEmployees.vblv" :rules="rules" label="Nombre" oninput="this.value = this.value.replace(/[^a-z]/ig, '');"></v-text-field>
         </v-flex>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemEmployees.cytw" label="Apellido"></v-text-field>
+          <v-text-field v-model="editedItemEmployees.cytw" :rules="rules"  label="Apellido" oninput="this.value = this.value.replace(/[^a-z]/ig, '');"></v-text-field>
         </v-flex>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemEmployees.bevs" label="Rol"></v-text-field>
+          <v-text-field v-model="editedItemEmployees.bevs" :rules="rules"  label="Rol" oninput="this.value = this.value.replace(/[^a-z]/ig, '');"></v-text-field>
         </v-flex>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemEmployees.w3s7" label="Ruta"></v-text-field>
+          <v-text-field v-model="editedItemEmployees.w3s7" :rules="rules"  label="Ruta" oninput="this.value = this.value.replace(/[^0-9a-z]/ig, '');"></v-text-field>
         </v-flex>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemEmployees.OData__x0077_v79" label="Email"></v-text-field>
+          <v-text-field v-model="editedItemEmployees.OData__x0077_v79" :rules="rules"  label="Email"></v-text-field>
         </v-flex>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemEmployees.OData__x0079_ex6" label="Salario"></v-text-field>
+          <v-text-field v-model="editedItemEmployees.OData__x0079_ex6" :rules="rules"  label="Salario" oninput="this.value = this.value.replace(/[^0-9.]/g, '');"></v-text-field>
         </v-flex>
       </v-layout>
     </v-container>
+    </v-form>
   </v-card-text>
 
   <v-card-actions>
@@ -1823,31 +1441,33 @@ vertical
   </v-card-title>
 
   <v-card-text>
+  <v-form lazy-validation v-model="valid3" ref="form3">
     <v-container grid-list-md>
       <v-layout wrap>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemClients.Title" label="Nombre"></v-text-field>
+          <v-text-field v-model="editedItemClients.Title" label="Nombre" :rules="rules" oninput="this.value = this.value.replace(/[^0-9a-z.]/ig, '');"></v-text-field>
         </v-flex>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemClients.t1q7" label="Num. Cliente"></v-text-field>
+          <v-text-field v-model="editedItemClients.t1q7" label="Num. Cliente" :rules="rules"  oninput="this.value = this.value.replace(/[^0-9]/g, '');"></v-text-field>
         </v-flex>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemClients.zqlz" label="Cadena"></v-text-field>
+          <v-text-field v-model="editedItemClients.zqlz" label="Cadena" :rules="rules"  oninput="this.value = this.value.replace(/[^a-z]/ig, '');"></v-text-field>
         </v-flex>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemClients.q89x" label="Ciudad"></v-text-field>
+          <v-text-field v-model="editedItemClients.q89x" label="Ciudad" :rules="rules"  oninput="this.value = this.value.replace(/[^a-z]/ig, '');"></v-text-field>
         </v-flex>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemClients.nc7a" label="Ruta"></v-text-field>
+          <v-text-field v-model="editedItemClients.nc7a" :rules="rules"  label="Ruta"oninput="this.value = this.value.replace(/[^0-9a-z.]/ig, '');"></v-text-field>
         </v-flex>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemClients.c9jm" label="Multiplicador"></v-text-field>
+          <v-text-field v-model="editedItemClients.c9jm" :rules="rules"  label="Multiplicador" oninput="this.value = this.value.replace(/[^0-9.]/g, '');"></v-text-field>
         </v-flex>
         <v-flex xs12 sm6 md4>
-          <v-text-field v-model="editedItemClients.OData__x0065_cv5" label="Email"></v-text-field>
+          <v-text-field v-model="editedItemClients.OData__x0065_cv5" :rules="rules"  label="Email"></v-text-field>
         </v-flex>
       </v-layout>
     </v-container>
+    </v-form>
   </v-card-text>
 
   <v-card-actions>
@@ -1903,6 +1523,7 @@ computed: {
      }
    },
 
+
    watch: {
      dialogProduct (val) {
        val || this.closeProduct()
@@ -1917,9 +1538,25 @@ computed: {
             created: function(){
               this.getRequestDigestValue();
               this.getListData();
-              //this.getListData();
             },
             methods:{
+              validate(){
+                if(this.$refs.form.validate() || this.$refs.form2.validate() || this.$refs.form3.validate()){
+                  this.snackbar = true
+                }
+              },
+
+              validate2(){
+                if(this.$refs.form2.validate()){
+                  this.snackbar = true
+                }
+              },
+
+              validate3(){
+                if(this.$refs.form3.validate()){
+                  this.snackbar = true
+                }
+              },
               editItemProduct (item) {
        this.editedIndex = this.Products.indexOf(item)
        this.ItemId = item.Id
@@ -1944,11 +1581,10 @@ this.dialogEmployee = true
      deleteItemProduct (item) {
        const index = this.Products.indexOf(item)
        confirm('Are you sure you want to delete this item?') && this.Products.splice(index, 1)
-       $.ajax({
-           async: true,
-           url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items('"+item.Id+"')",
-           method: "POST",
-           data: JSON.stringify({
+       var executor = new SP.RequestExecutor("https://aguadillana.sharepoint.com/sites/DDMS/");
+       executor.executeAsync({
+          method: "POST",
+           body: JSON.stringify({
              '__metadata': {
                'type': 'SP.Data.ProductListItem' // it defines the ListEntityTypeName
              },
@@ -1960,7 +1596,7 @@ this.dialogEmployee = true
            headers: {
              "accept": "application/json;odata=verbose",
              "content-type": "application/json;odata=verbose",
-             "X-RequestDigest": this.RequestDigest,
+             //"X-RequestDigest": this.RequestDigest,
              "IF-MATCH": "*",
              "X-HTTP-Method": "MERGE"
            },
@@ -1977,11 +1613,11 @@ this.dialogEmployee = true
      deleteItemClient (item) {
        const index = this.Clients.indexOf(item)
        confirm('Are you sure you want to delete this item?') && this.Clients.splice(index, 1)
-       $.ajax({
-           async: true,
+       var executor = new SP.RequestExecutor("https://aguadillana.sharepoint.com/sites/DDMS/");
+       executor.executeAsync({
            url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items('"+item.Id+"')",
            method: "POST",
-           data: JSON.stringify({
+           body: JSON.stringify({
              '__metadata': {
                'type': 'SP.Data.ClientsListItem' // it defines the ListEntityTypeName
              },
@@ -1993,7 +1629,7 @@ this.dialogEmployee = true
            headers: {
              "accept": "application/json;odata=verbose",
              "content-type": "application/json;odata=verbose",
-             "X-RequestDigest": this.RequestDigest,
+            // "X-RequestDigest": this.RequestDigest,
              "IF-MATCH": "*",
              "X-HTTP-Method": "MERGE"
            },
@@ -2010,11 +1646,11 @@ this.dialogEmployee = true
      deleteItemEmployee (item) {
        const index = this.Employees.indexOf(item)
        confirm('Are you sure you want to delete this item?') && this.Employees.splice(index, 1)
-       $.ajax({
-           async: true,
+       var executor = new SP.RequestExecutor("https://aguadillana.sharepoint.com/sites/DDMS/");
+       executor.executeAsync({
            url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items('"+item.Id+"')",
            method: "POST",
-           data: JSON.stringify({
+           body: JSON.stringify({
              '__metadata': {
                'type': 'SP.Data.EmployeeListItem' // it defines the ListEntityTypeName
              },
@@ -2026,7 +1662,7 @@ this.dialogEmployee = true
            headers: {
              "accept": "application/json;odata=verbose",
              "content-type": "application/json;odata=verbose",
-             "X-RequestDigest": this.RequestDigest,
+             //"X-RequestDigest": this.RequestDigest,
              "IF-MATCH": "*",
              "X-HTTP-Method": "MERGE"
            },
@@ -2065,11 +1701,11 @@ this.dialogEmployee = true
      saveEmployee () {
        if (this.editedIndex > -1) {
          Object.assign(this.Employees[this.editedIndex], this.editedItemEmployees);
-         $.ajax({
-             async: true,
+         var executor = new SP.RequestExecutor("https://aguadillana.sharepoint.com/sites/DDMS/");
+         executor.executeAsync({
              url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items('"+this.ItemId+"')",
              method: "POST",
-             data: JSON.stringify({
+             body: JSON.stringify({
                '__metadata': {
                  'type': 'SP.Data.EmployeeListItem' // it defines the ListEntityTypeName
                },
@@ -2086,7 +1722,7 @@ this.dialogEmployee = true
              headers: {
                "accept": "application/json;odata=verbose",
                "content-type": "application/json;odata=verbose",
-               "X-RequestDigest": this.RequestDigest,
+               //"X-RequestDigest": this.RequestDigest,
                "IF-MATCH": "*",
                "X-HTTP-Method": "MERGE"
              },
@@ -2100,19 +1736,25 @@ this.dialogEmployee = true
              }
            });
        } else {
-         this.Employees.push(this.editedItemEmployees)
-         this.postListDataEmployee();
+         this.validate2();
+         if(this.valid2){
+           this.Employees.push(this.editedItemEmployees)
+           this.postListDataEmployee();
+         }else{
+           swal("Error!!!", "Some fields are empty", "error",{closeOnClickOutside: false})
+         }
+
        }
        this.closeEmployee()
      },
      saveClient () {
        if (this.editedIndex > -1) {
          Object.assign(this.Clients[this.editedIndex], this.editedItemClients);
-         $.ajax({
-             async: true,
+         var executor = new SP.RequestExecutor("https://aguadillana.sharepoint.com/sites/DDMS/");
+         executor.executeAsync({
              url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items('"+this.ItemId+"')",
              method: "POST",
-             data: JSON.stringify({
+             body: JSON.stringify({
                '__metadata': {
                  'type': 'SP.Data.ClientsListItem' // it defines the ListEntityTypeName
                },
@@ -2131,7 +1773,7 @@ this.dialogEmployee = true
              headers: {
                "accept": "application/json;odata=verbose",
                "content-type": "application/json;odata=verbose",
-               "X-RequestDigest": this.RequestDigest,
+               //"X-RequestDigest": this.RequestDigest,
                "IF-MATCH": "*",
                "X-HTTP-Method": "MERGE"
              },
@@ -2153,11 +1795,11 @@ this.dialogEmployee = true
      saveProduct () {
        if (this.editedIndex > -1) {
          Object.assign(this.Products[this.editedIndex], this.editedItemProducts);
-         $.ajax({
-             async: true,
+         var executor = new SP.RequestExecutor("https://aguadillana.sharepoint.com/sites/DDMS/");
+         executor.executeAsync({
              url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items('"+this.ItemId+"')",
              method: "POST",
-             data: JSON.stringify({
+             body: JSON.stringify({
                '__metadata': {
                  'type': 'SP.Data.ProductListItem' // it defines the ListEntityTypeName
                },
@@ -2174,7 +1816,7 @@ this.dialogEmployee = true
              headers: {
                "accept": "application/json;odata=verbose",
                "content-type": "application/json;odata=verbose",
-               "X-RequestDigest": this.RequestDigest,
+               //"X-RequestDigest": this.RequestDigest,
                "IF-MATCH": "*",
                "X-HTTP-Method": "MERGE"
              },
@@ -2188,6 +1830,7 @@ this.dialogEmployee = true
              }
            });
        } else {
+
          this.Products.push(this.editedItemProducts)
          this.postListDataProduct();
        }
@@ -2218,11 +1861,12 @@ this.dialogEmployee = true
 
               },
               postListDataProduct: function(){
-              $.ajax({
-                   async: true,
+                var executor = new SP.RequestExecutor("https://aguadillana.sharepoint.com/sites/DDMS/");
+                executor.executeAsync({
+
                    url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items",
                    method: "POST",
-                   data: JSON.stringify({
+                   body: JSON.stringify({
                        '__metadata': {
                            'type': 'SP.Data.ProductListItem' // it defines the ListEntityTypeName
                        },
@@ -2237,8 +1881,8 @@ this.dialogEmployee = true
 
                    headers: {
                        "accept": "application/json;odata=verbose",
-                       "content-type": "application/json;odata=verbose",
-                       "X-RequestDigest": this.RequestDigest
+                       "content-type": "application/json;odata=verbose"
+                       //"X-RequestDigest": this.RequestDigest
                        //"Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
                        //"Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
                    },
@@ -2254,11 +1898,11 @@ this.dialogEmployee = true
             },
 
               postListDataEmployee: function(){
-              $.ajax({
-                   async: true,
+                var executor = new SP.RequestExecutor("https://aguadillana.sharepoint.com/sites/DDMS/");
+                executor.executeAsync({
                    url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items",
                    method: "POST",
-                   data: JSON.stringify({
+                   body: JSON.stringify({
                        '__metadata': {
                            'type': 'SP.Data.EmployeeListItem' // it defines the ListEntityTypeName
                        },
@@ -2274,7 +1918,7 @@ this.dialogEmployee = true
                    headers: {
                        "accept": "application/json;odata=verbose",
                        "content-type": "application/json;odata=verbose",
-                       "X-RequestDigest": this.RequestDigest
+                       //"X-RequestDigest": this.RequestDigest
                        //"Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
                        //"Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
                    },
@@ -2289,11 +1933,11 @@ this.dialogEmployee = true
               });
             },
             postListDataClient: function(){
-            $.ajax({
-                 async: true,
+              var executor = new SP.RequestExecutor("https://aguadillana.sharepoint.com/sites/DDMS/");
+              executor.executeAsync({
                  url: "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items",
                  method: "POST",
-                 data: JSON.stringify({
+                 body: JSON.stringify({
                      '__metadata': {
                          'type': 'SP.Data.ClientsListItem' // it defines the ListEntityTypeName
                      },
@@ -2310,7 +1954,7 @@ this.dialogEmployee = true
                  headers: {
                      "accept": "application/json;odata=verbose",
                      "content-type": "application/json;odata=verbose",
-                     "X-RequestDigest": this.RequestDigest
+                     //"X-RequestDigest": this.RequestDigest
                      //"Cookie": "FedAuth=77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48U1A+VjUsMGguZnxtZW1iZXJzaGlwfDEwMDMyMDAwM2NlMjFmNzNAbGl2ZS5jb20sMCMuZnxtZW1iZXJzaGlwfGNhcHN0b25lQGxhYWd1YWRpbGxhbmEuY29tLDEzMTk5MTIzNjkwMDAwMDAwMCwxMzE5NTA2MjUwMzAwMDAwMDAsMTMxOTkyMTAxMDc5MDU1MjkwLDAuMC4wLjAsMixmNDRiNzA4OC0xNTc5LTQ3OWUtYTQ3NS1iZmQyYjQ2MDI0OWEsLCxhZWE4ZDA5ZS00MDc4LTgwMDAtOTk5NS1kODc2MTViMDEyOGYsYWVhOGQwOWUtNDA3OC04MDAwLTk5OTUtZDg3NjE1YjAxMjhmLCwwLDAsMCwsYmJXUStQWDUwekRyWHhBLzdOcHhlM0JpS0FaZEtrMTRNRGtFOW9GWUQ2aE9QZFBqMTZIUlVIOGRjWWRnOGVkT0doM2p6VVduZkY4U25MRDRPTW9LQTFFVWZ0UzhENUNkc1lheHg1OGdKSUo2U1ZoTjJlT3VHcmM4M2pISFREQ0xVdmVrTEgzMFJBWVpkU2xicmFmc0grVkV1TWhjN2l2ZThwWE5Kc3djWDJxbS9OWEVKREhBVC9NZk9OTTd3MzEzaVBxWmJXT2hETkx1Z2orMTJ3SE83M3NwRkorOHQxYllTOEJxU0hqQURuWVFrV2lRdVY4aHBWL011ekNJSU4zSXpKNVdodHA4c1YwTjNxTUhpTFluZEJUT245MzVud1ljRHUyVE5yaTZsWGE4NUhXb0ZkbDdiazljQ1FVUDUxcUFmRXNBZldzU2Z6UEluK2dhRGN4UnJnPT08L1NQPg==; path=/; secure; HttpOnly",
                      //"Cookie": "rtFa=ibALGjJdBQDSLFH1z9kQ0+CkjjfKKbdDQnfCAHKKjzcmRjQ0QjcwODgtMTU3OS00NzlFLUE0NzUtQkZEMkI0NjAyNDlBr0JITHJLD45lVwPZQR5mn5F95FfVvEqF0WrL2388U7Czs5a7Yz8P0CCCj7llogci6rPTv3DAri+iLcdArQQ/rKlHCc7UNZyiF0UKRP8iDtyrwayhlMlkpXCr8VqTybmiQ3cdK71Odk9PdfQkPXw5O5Re+RrY7bkGLXuHh1T4KYLw/5qLsKgT1Jj/DQS6owOquGRVvTe+Trte1Eioz7mKBgQN5e0Gkb06+NDdtInIRAjevi5ot7BIgeb0bSvz9EGCtVO9xlzmm3n2PN7wuJR7NDp22U9XkJ3G0NoNWHwWaR12+wgGZLYZ2ds68BsSl77XmIUAOV4mCui1yTaXkoeFn0UAAAA=; domain=sharepoint.com; path=/; secure; HttpOnly"
                  },
@@ -2370,7 +2014,7 @@ this.dialogEmployee = true
                 TotalVEmpaque:0,
                 TotalQMes:0,
                 TotalVMes:0,
-                loaded: false,
+
                 AvgQRuta:0,
                 AvgVRuta:0,
                 AvgQFamilia:0,
@@ -2379,19 +2023,16 @@ this.dialogEmployee = true
                 AvgVEmpaque:0,
                 AvgQMes:0,
                 AvgVMes:0,
-                chartDemosPorRutaData:[],
+                chartDemosPorRutaData:null,
                 chartventasPorRoutes:null,
                 chartdemoPorFamilia:null,
                 chartventasPorFamilia:null,
                 chartdemoPorEmpaque:null,
                 chartventasPorEmpaque:null,
-                chartPieData:null,
                 chartdemoPorMes:[],
                 chartventasPorMes:[],
-                PieData:[],
-                PieLabels:[],
                 ventasPorMes:[0,0,0,0,0,0,0,0,0,0,0,0],
-                demosPorMes:[],
+                demoPorMes:[0,0,0,0,0,0,0,0,0,0,0,0],
                 demoPorRoutes:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 ventasPorRoutes:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 demoPorEmpaque:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -2400,13 +2041,6 @@ this.dialogEmployee = true
                 ventasPorFamilia:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 tiendas: [],
                  search: '',
-                 Proj:0,
-                 ProjbyDay:0,
-                 fromDate: new Date(new Date().getFullYear(), 0, 1).toISOString().substr(0, 10),
-                  toDate: new Date().toISOString().substr(0, 10),
-      menu: false,
-      modal: false,
-      menu2: false,
 
                 mes:['January','February','March','April','May','June','July','August','September','October','November','December'],
                 headersDemostradora: [
@@ -2435,9 +2069,6 @@ this.dialogEmployee = true
                     { text: 'Unidades Vendidas', align: 'center',value: 'UnidadesVendidas' }
                   ],
                   tab: null,
-                  optionsSales:null,
-                  optionsNormal: null,
-
       items: [
         'Reporte de Demos', 'Reporte de Demostradora'
       ]
@@ -2446,9 +2077,10 @@ this.dialogEmployee = true
             <template>
        <v-tabs
          v-model="tab"
+         color="gray"
          grow
        >
-         <v-tabs-slider color="#B8D971"></v-tabs-slider>
+         <v-tabs-slider color="yellow"></v-tabs-slider>
 
          <v-tab
            v-for="item in items"
@@ -2460,349 +2092,32 @@ this.dialogEmployee = true
      </template>
     <v-tabs-items v-model="tab">
 
+
+
       <v-tab-item>
-
-
-      <v-container grid-list-xl fluid>
-       <v-layout row wrap mt-3 mb-3>
-       <v-flex xs4>
-      <v-menu
-        v-model="menu2"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        lazy
-        transition="scale-transition"
-        offset-y
-        full-width
-        min-width="290px"
-      >
-        <template v-slot:activator="{ on }">
-          <v-text-field
-            v-model="fromDate"
-            label="Picker without buttons"
-            prepend-icon="event"
-            readonly
-            v-on="on"
-          ></v-text-field>
-        </template>
-        <v-date-picker v-model="fromDate" @input="menu2 = false"></v-date-picker>
-      </v-menu>
-    </v-flex>
-
-    <v-flex xs4 pr-5>
-          <v-menu
-            v-model="menu2"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            lazy
-            transition="scale-transition"
-            offset-y
-            full-width
-            min-width="290px"
-          >
-            <template v-slot:activator="{ on }">
-              <v-text-field
-                v-model="toDate"
-                label="Picker without buttons"
-                prepend-icon="event"
-                readonly
-                v-on="on"
-              ></v-text-field>
-            </template>
-            <v-date-picker v-model="toDate" @input="menu2 = false"></v-date-picker>
-          </v-menu>
-        </v-flex>
-
-
-       <v-flex xs4 pl-5>
-   <v-btn @click="convertToPDF()">Download Report &nbsp;<v-icon>cloud_download</v-icon></v-btn>
- </v-flex>
-       <v-flex  xs4 >
-      <v-card
-    class="elevation-10"
-    color="#26c6da"
-    dark
-  >
-    <v-card-title>
-      <v-icon
-        large
-        left
-      >
-        check_circle
-      </v-icon>
-      <span class="title font-weight-light">Demostraciones Totales</span>
-    </v-card-title>
-
-    <v-card-text class="headline font-weight-bold text-xs-center">
-       {{TotalQMes}}
-    </v-card-text>
-    </v-card>
-    </v-flex>
-    <v-flex  xs4>
-   <v-card
- class=" elevation-10"
- color="#26c6da"
- dark
-
->
- <v-card-title>
-   <v-icon
-     large
-     left
-   >
-     attach_money
-   </v-icon>
-   <span class="title font-weight-light">Total de Ventas</span>
- </v-card-title>
-
- <v-card-text class="headline font-weight-bold text-xs-center">
-    $ {{TotalVMes}}
- </v-card-text>
-     </v-card>
- </v-flex>
- <v-flex  xs4>
-<v-card
-class="elevation-10 "
-color="#26c6da"
-dark
-
->
-<v-card-title>
-<v-icon
-  large
-  left
->
-trending_up
-</v-icon>
-<span class="title font-weight-light">Proyección de Ventas Anual</span>
-</v-card-title>
-
-<v-card-text class="headline font-weight-bold text-xs-center">
- $ {{Proj}}
-</v-card-text>
-
-
-  </v-card>
-  </v-flex>
-
-
-
-<v-flex  xs6 >
-<v-card
-class="elevation-10"
->
-<v-card-title>
-<v-icon
- large
- left
->
- attach_money
-</v-icon>
-<span class="title font-weight-light">Demostraciones por Mes</span>
-</v-card-title>
-<v-card-text>
-<span>Total de Demos: {{TotalQMes}}  Promedio: {{AvgQMes}}</span>
-<line-chart id="demosMes" v-if="loaded" :chart-data="chartdemoPorMes" :options="optionsNormal"></line-chart>
-</v-card-text>
-</v-card>
-</v-flex>
-<v-flex  xs6>
-<v-card
-class=" elevation-10"
->
-<v-card-title>
-<v-icon
- large
- left
->
- attach_money
-</v-icon>
-<span class="title font-weight-light">Ventas por Mes</span>
-</v-card-title>
-<v-card-text>
-<span>Total de Ventas:$ {{TotalVMes}}  Promedio:$ {{AvgVMes}}</span>
-<line-chart id="ventasMes" v-if="loaded" :chart-data="chartventasPorMes" :options="optionsSales"></line-chart>
-</v-card-text>
-</v-card>
-</v-flex>
-
-
-
-<v-flex  xs6 >
-<v-card
-class="elevation-10"
->
-<v-card-title>
-<v-icon
- large
- left
->
- attach_money
-</v-icon>
-<span class="title font-weight-light">Demostraciones por Ruta</span>
-</v-card-title>
-<v-card-text>
-<p>Total de Demos: {{TotalQRuta}} -  Promedio: {{AvgQRuta}}</p>
-<bar-chart id="demosRutas" v-if="loaded" :chart-data="chartDemosPorRutaData" :options="optionsNormal"></bar-chart>
-</v-card-text>
-</v-card>
-</v-flex>
-<v-flex  xs6>
-<v-card
-class=" elevation-10"
->
-<v-card-title>
-<v-icon
- large
- left
->
- attach_money
-</v-icon>
-<span class="title font-weight-light">Ventas por Ruta</span>
-</v-card-title>
-
-<v-card-text>
-<p>Total de Ventas:$ {{TotalVRuta}}  Promedio:$ {{AvgVRuta}}</p>
-<bar-chart id="ventasRutas" v-if="loaded" :chart-data="chartventasPorRoutes" :options="optionsSales"></bar-chart>
-</v-card-text>
-</v-card>
-</v-flex>
-
-
-<v-flex  xs6 >
-<v-card
-class="elevation-10"
->
-<v-card-title>
-<v-icon
- large
- left
->
- attach_money
-</v-icon>
-<span class="title font-weight-light">Demostraciones por Empaque</span>
-</v-card-title>
-<v-card-text>
-<p>Total de Demos: {{TotalQEmpaque}} Promedio:$ {{AvgQEmpaque}}</p>
-<bar-chart id="demosEmpaques" v-if="loaded" :chart-data="chartdemoPorEmpaque" :options="optionsNormal"></bar-chart>
-</v-card-text>
-</v-card>
-</v-flex>
-<v-flex  xs6>
-<v-card
-class=" elevation-10"
->
-<v-card-title>
-<v-icon
- large
- left
->
- attach_money
-</v-icon>
-<span class="title font-weight-light">Ventas por Empaque</span>
-</v-card-title>
-
-<v-card-text>
-<p>Total de Ventas:$ {{TotalVEmpaque}} -  Promedio:$ {{AvgVEmpaque}}</p>
-<bar-chart id="ventasEmpaques" v-if="loaded" :chart-data="chartventasPorEmpaque" :options="optionsSales"></bar-chart>
-</v-card-text>
-</v-card>
-</v-flex>
-
-
-<v-flex  xs4>
-<v-card
-class="elevation-10"
->
-<v-card-title>
-<v-icon
- large
- left
->
- attach_money
-</v-icon>
-<span class="title font-weight-light">Demostraciones por Familia</span>
-</v-card-title>
-<v-card-text>
-<p>Total de Demos: {{TotalQFamilia}} -  Promedio: {{AvgQFamilia}}</p>
-<bar-chart id="demosFamilia" v-if="loaded" :chart-data="chartdemoPorFamilia" :options="optionsNormal"></bar-chart>
-</v-card-text>
-</v-card>
-</v-flex>
-<v-flex  xs4>
-<v-card
-class=" elevation-10"
->
-<v-card-title>
-<v-icon
- large
- left
->
- attach_money
-</v-icon>
-<span class="title font-weight-light">Ventas por Familia</span>
-</v-card-title>
-
-<v-card-text>
-<p>Total de Ventas:$ {{TotalVFamilia}} -  Promedio:$ {{AvgVFamilia}} </p>
-  <bar-chart id="ventasFamilia" v-if="loaded" :chart-data="chartventasPorFamilia" :options="optionsSales"></bar-chart>
-</v-card-text>
-</v-card>
-</v-flex>
-<v-flex  xs4>
-<v-card
-class=" elevation-10"
->
-<v-card-title>
-<v-icon
- large
- left
->
- attach_money
-</v-icon>
-<span class="title font-weight-light">Distribucion de Ventas por Familia</span>
-</v-card-title>
-
-<v-card-text>
-    <pie-chart id="distribucionFamilia" v-if="loaded" :chart-data="chartPieData"></pie-chart>
-</v-card-text>
-</v-card>
-</v-flex>
-
-
-
-</v-layout>
-</v-container>
-
-
-<!--
         <v-card flat>
-
           <v-card-text>
-          <v-btn @click="convertToPDF()">Generate Report</v-btn>
+          <v-btn @click="getListData()">Generate Report</v-btn>
           <h1>Monthly</h1>
           <p>Total de Demos: {{TotalQMes}} -  Promedio: {{AvgQMes}}</p>
           <p>Total de Ventas:$ {{TotalVMes}} -  Promedio:$ {{AvgVMes}}</p>
-            <line-chart v-if="loaded" :chart-data="chartdemoPorMes" :options="optionsNormal"></line-chart>
-            <line-chart v-if="loaded" :chart-data="chartventasPorMes" :options="optionsSales"></line-chart>
+            <line-chart  :chart-data="chartdemoPorMes"></line-chart>
+            <line-chart  :chart-data="chartventasPorMes"></line-chart>
           <h1>Routes</h1>
           <p>Total de Demos: {{TotalQRuta}} -  Promedio: {{AvgQRuta}}</p>
           <p>Total de Ventas:$ {{TotalVRuta}} - Promedio:$ {{AvgVRuta}}</p>
-          <bar-chart v-if="loaded" :chart-data="chartDemosPorRutaData" :options="optionsNormal"></bar-chart>
-          <bar-chart v-if="loaded" :chart-data="chartventasPorRoutes" :options="optionsSales"></bar-chart>
+          <bar-chart :chart-data="chartDemosPorRutaData"></bar-chart>
+          <bar-chart :chart-data="chartventasPorRoutes"></bar-chart>
           <h1>Family Of Products</h1>
           <p>Total de Demos: {{TotalQFamilia}} -  Promedio: {{AvgQFamilia}}</p>
           <p>Total de Ventas:$ {{TotalVFamilia}} -  Promedio:$ {{AvgVFamilia}} </p>
-
-          <bar-chart v-if="loaded" :chart-data="chartdemoPorFamilia" :options="optionsNormal"></bar-chart>
-          <bar-chart v-if="loaded" :chart-data="chartventasPorFamilia" :options="optionsSales"></bar-chart>
-          <pie-chart v-if="loaded" :chart-data="chartPieData"></pie-chart>
+          <bar-chart :chart-data="chartdemoPorFamilia"></bar-chart>
+          <bar-chart :chart-data="chartventasPorFamilia"></bar-chart>
           <h1>Empaque</h1>
-          <p>Total de Demos: {{TotalQEmpaque}} - Promedio:$ {{AvgQEmpaque}}</p>
-          <p>Total de Ventas:$ {{TotalVEmpaque}} -  Promedio:$ {{AvgVEmpaque}}</p>
-          <bar-chart v-if="loaded" :chart-data="chartdemoPorEmpaque" :options="optionsNormal"></bar-chart>
-          <bar-chart v-if="loaded" :chart-data="chartventasPorEmpaque" :options="optionsSales"></bar-chart>
--->
+          <p>Total de Demos: {{TotalQEmpaque}} - Promedio: {{avgQEmpaque}}</p>
+          <p>Total de Ventas:$ {{TotalVEmpaque}} -  Promedio:$ {{avgVEmpaque}}</p>
+          <bar-chart :chart-data="chartdemoPorEmpaque"></bar-chart>
+          <bar-chart :chart-data="chartventasPorEmpaque"></bar-chart>
            <v-data-table
              :headers="headers"
              :items="forms"
@@ -2812,7 +2127,7 @@ class=" elevation-10"
              sort-icon="mdi-menu-down"
              >
 
-             <template v-slot:items="props" id="demos">
+             <template v-slot:items="props">
                <td>{{props.item.Title}}</td>
                <td class="text-xs-right">{{props.item.Tienda}}</td>
                 <td class="text-xs-right">{{props.item.Product}}</td>
@@ -2826,11 +2141,10 @@ class=" elevation-10"
            </v-card-text>
 
            </v-card>
-
            </v-tab-item>
 
+
            <v-tab-item>
-             <bar-chart v-if="loaded" :chart-data="chartventasPorEmpaque" :options="optionsSales"></bar-chart>
 
 <v-card>
   <v-card-title>
@@ -2865,157 +2179,42 @@ class=" elevation-10"
 </v-card>
 
                 </v-tab-item>
+
+                <v-tab-item>
+                  <v-card flat>
+                    <v-card-text>
+                    <pie-chart v-bind:labels="['four', 'five', 'six']"v-bind:data="[8,9,10]"></pie-chart>
+                     <v-data-table
+                       :headers="headers"
+                       :items="forms"
+                       class="elevation-l"
+                       prev-icon="mdi-menu-left"
+                       next-icon="mdi-menu-right"
+                       sort-icon="mdi-menu-down"
+                       >
+
+                       <template v-slot:items="props">
+                         <td>{{props.item.Title}}</td>
+                         <td class="text-xs-right">{{props.item.Tienda}}</td>
+                          <td class="text-xs-right">{{props.item.Pueblo}}</td>
+                          <td class="text-xs-right">{{props.item.PrecioEspecial}}</td>
+                          <td class="text-xs-right">{{props.item.UnidadesVendidas}}</td>
+                        </template>
+                     </v-data-table>
+
+                     </v-card-text>
+
+                     </v-card>
+                     </v-tab-item>
     </v-tabs-items>
            </div>`
            ,
-           watch: {
-
-           },
-           created: function(){
+          // created: function(){
                  //this.getListFields();
-                 this.getListData();
+                // this.getListData();
                  //console.log(this.forms);
-             },
+            // },
            methods:{
-         convertToPDF: function () {
-           var demosMes = document.querySelectorAll('#line-chart');
-           var barChart = document.querySelectorAll('#bar-chart');
-           var pieChart = document.querySelector('#pie-chart');
-           console.log(pieChart);
-//creates image
-    var demosMesImg = demosMes[0].toDataURL("image/png", 1.0);
-
-//creates image
-var ventasMesImg = demosMes[1].toDataURL("image/png", 1.0);
-
-//creates image
-var demosRutasImg = barChart[0].toDataURL("image/png", 1.0);
-
-//creates image
-var ventasRutasImg = barChart[1].toDataURL("image/png", 1.0);
-
-//creates image
-var demosFamiliaImg = barChart[4].toDataURL("image/png", 1.0);
-
-//creates image
-var ventasFamiliaImg = barChart[5].toDataURL("image/png", 1.0);
-
-//creates image
-var distribucionFamiliaImg = pieChart.toDataURL("image/png", 1.0);
-
-//creates image
-var demosEmpaquesImg = barChart[2].toDataURL("image/png", 1.0);
-
-//creates image
-var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
-               var doc= new jsPDF()
-              var  specialElementHandlers= {
-        '#editor': function (element, renderer) {
-     return true;
-  }
-  }
-  console.log($('#demos')[0]);
-    doc.fromHTML($('#demos')[0], 15, 15, {
-        'width': 190,
-            'elementHandlers': specialElementHandlers
-    });
-    var m_names = new Array("January", "February", "March",
-                           "April", "May", "June", "July",
-                           "August", "September",
-                           "October", "November", "December");
-    var today = new Date();
-    var curr_date = today.getDate();
-    var curr_month = today.getMonth();
-    var curr_year = today.getFullYear();
-
-    today = m_names[curr_month] + " " + curr_date + ", " + curr_year;
-    var newdat = today;
-
-    doc.setFontType("italic");
-    doc.setFontSize(10);
-
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
-    doc.setFontType("bold");
-    doc.setFontSize(18);
-    doc.text(47, 25, 'Cantidad de Demostraciones Por Mes');
-    doc.addImage(demosMesImg, 'PNG', 30, 40, 147, 125);
-    doc.addPage();
-    doc.setFontType("italic");
-    doc.setFontSize(10);
-
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
-    doc.setFontType("bold");
-    doc.setFontSize(18);
-    doc.text(47, 25, 'Ventas de Demostraciones Por Mes');
-    doc.addImage(ventasMesImg, 'PNG', 30, 40, 147, 125);
-    doc.addPage();
-    doc.setFontType("italic");
-    doc.setFontSize(10);
-
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
-    doc.setFontType("bold");
-    doc.setFontSize(18);
-    doc.text(47, 25, 'Cantidad de Demostraciones Por Rutas');
-    doc.addImage(demosRutasImg, 'PNG', 30, 40, 147, 125);
-    doc.addPage();
-    doc.setFontType("italic");
-    doc.setFontSize(10);
-
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
-    doc.setFontType("bold");
-    doc.setFontSize(18);
-    doc.text(47, 25, 'Ventas de Demostraciones Por Rutas');
-    doc.addImage(ventasRutasImg, 'PNG', 30, 40, 147, 125);
-    doc.addPage();
-    doc.setFontType("italic");
-    doc.setFontSize(10);
-
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
-    doc.setFontType("bold");
-    doc.setFontSize(18);
-    doc.text(47, 25, 'Cantidad de Demostraciones Por Empaque');
-    doc.addImage(demosEmpaquesImg, 'PNG', 30, 40, 147, 125);
-    doc.addPage();
-    doc.setFontType("italic");
-    doc.setFontSize(10);
-
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
-    doc.setFontType("bold");
-    doc.setFontSize(18);
-    doc.text(47, 25, 'Ventas de Demostraciones Por Empaque');
-    doc.addImage(ventasEmpaquesImg, 'PNG', 30, 40, 147, 125);
-    doc.addPage();
-    doc.setFontType("italic");
-    doc.setFontSize(10);
-
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
-    doc.setFontType("bold");
-    doc.setFontSize(18);
-    doc.text(47, 25, 'Cantidad de Demostraciones Por Familia');
-    doc.addImage(demosFamiliaImg, 'PNG', 30, 40, 147, 125);
-    doc.addPage();
-    doc.setFontType("italic");
-    doc.setFontSize(10);
-
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
-    doc.setFontType("bold");
-    doc.setFontSize(18);
-    doc.text(47, 25, 'Ventas de Demostraciones Por Familia');
-    doc.addImage(ventasFamiliaImg, 'PNG', 30, 40, 147, 125);
-    doc.addPage();
-    doc.setFontType("italic");
-    doc.setFontSize(10);
-
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
-    doc.setFontType("bold");
-    doc.setFontSize(18);
-    doc.text(47, 25, 'Distribucion de Ventas Por Familia');
-    doc.addImage(distribucionFamiliaImg, 'PNG', 30, 40, 147, 125);
-
-
-
-    doc.save('Demo-Report-'+newdat+'.pdf');
-},
 
                     sumOf: function(arr){
                       var sum=0;
@@ -3024,16 +2223,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                       }
                       return sum;
                     },
-                    sumOfProj: function(arr,arrLen){
-                      var sum=0;
-                      arrLen+=1;
-                      for(var i=0; i<arrLen; i++){
-                        sum += arr[i];
-                      }
-                      return sum;
-                    },
              getListData: function(){
-               this.loaded = false;
               var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items";
               var endPointUrl1 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Routes')/items";
               var endPointUrl2 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items";
@@ -3046,44 +2236,40 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                  this.status = "getting data...";
                  var vm = this;
                  var sales=0;
-                 var i=0,j=0,z=0;
+                 var i=0,j=0;
                  var fecha;
-                 var arr =[];
-                 var arrFam = [];
-                 var Fam=[];
-                 var today= new Date();
-                 var mm= today.getMonth();
-                 var dd= today.getDate();
-                 for(z;z<12;z++){
-                   arr[z]=0;
-                   vm.demoPorMes=arr;
-                 }
+
+
+                /*vm.ventasPorMes=[0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.demoPorMes=[0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.demoPorRoutes=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.ventasPorRoutes=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.demoPorEmpaque=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.ventasPorEmpaque=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.demoPorFamilia=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                 vm.ventasPorFamilia=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];*/
                  axios.get(endPointUrl1).then(response => {
+                    console.log(response.data.value);
                     for(j=0; j< response.data.value.length; j++){
+                      //console.log(response.data.value[j].Title);
                       vm.rutas[j] = response.data.value[j].Title;
                     }
                   });
                   axios.get(endPointUrl2).then(response => {
+                     console.log(response.data.value);
                      for(j=0; j< response.data.value.length; j++){
-                       arrFam[j] = response.data.value[j].r0hu;
+                       //console.log(response.data.value[j].Title);
+                       vm.familia[j] = response.data.value[j].r0hu;
                        vm.empaque[j] = response.data.value[j].s2l1;
                      }
-                     arrFam= Array.from(new Set(arrFam));
-                     for(j=0;j<arrFam.length;j++){
-                       Fam[j]=arrFam[j];
-                     }
-                     console.log(Fam);
-                     vm.familia=Fam;
-                      console.log(vm.familia);
-                     vm.PieLabels =Fam;
-                     console.log(vm.PieLabels);
-                     vm.empaque= Array.from(new Set(vm.empaque));
                    });
                    axios.get(endPointUrl3).then(response => {
+                      console.log(response.data.value);
                       for(j=0; j< response.data.value.length; j++){
+                        //console.log(response.data.value[j].Title);
                         vm.clientes[j] = response.data.value[j].zqlz;
+
                       }
-                       vm.clientes= Array.from(new Set(vm.clientes));
                     });
                  axios.get(endPointUrl).then(response => {
                     console.log(response.data.value);
@@ -3094,28 +2280,22 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                       //vm.tiendas.push(vm.forms[i].Tienda);
                       vm.ventasPorMes[fecha.getMonth()] += vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
                       vm.demoPorMes[fecha.getMonth()]++;
-                    //  if(fecha<){
                       vm.demoPorRoutes[vm.rutas.indexOf(vm.forms[i].route)]++;
                       vm.ventasPorRoutes[vm.rutas.indexOf(vm.forms[i].route)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
                       vm.demoPorEmpaque[vm.empaque.indexOf(vm.forms[i].Producto)]++;
                       vm.ventasPorEmpaque[vm.empaque.indexOf(vm.forms[i].Producto)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
-                      vm.demoPorFamilia[Fam.indexOf(vm.forms[i].familia)]++;
-                      vm.ventasPorFamilia[Fam.indexOf(vm.forms[i].familia)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
-                      //}
+                      vm.demoPorFamilia[vm.familia.indexOf(vm.forms[i].familia)]++;
+                      vm.ventasPorFamilia[vm.familia.indexOf(vm.forms[i].familia)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
+                      //console.log(vm.ventasPorMes);
+                      //console.log(vm.tiendas);
+                      //sales = vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
+                      //vm.forms.push({key: "UnidadesVendidas",value: sales});
+                      //console.log(sales);
+                      //vm.ventas.push(sales);
+                      //console.log(sumOf(vm.demoPorMes));
 
                     }
-                    //console.log(mm);
-                    //console.log(vm.ventasPorMes);
-                     vm.Proj=parseFloat(this.sumOfProj(vm.ventasPorMes,mm)).toFixed(2);
-                     //console.log(vm.Proj);
-                     vm.ProjbyDay= parseFloat(vm.Proj/mm).toFixed(2);
-                     //console.log(vm.ProjbyDay);
-                     for(i=mm;i<12;i++){
-                      vm.Proj=parseFloat(Number(vm.Proj)+Number(vm.ProjbyDay)).toFixed(2);
-                       //console.log(vm.Proj);
-                     }
-                     console.log(parseFloat(vm.Proj).toFixed(2));
-                    vm.TotalQMes=this.sumOf(vm.demoPorMes);
+                    vm.TotalQMes=parseFloat(this.sumOf(vm.demoPorMes)).toFixed(2);
                     vm.TotalVMes=parseFloat(this.sumOf(vm.ventasPorMes)).toFixed(2);
                     vm.TotalQRuta=parseFloat(this.sumOf(vm.demoPorRoutes)).toFixed(2);
                     vm.TotalVRuta=parseFloat(this.sumOf(vm.ventasPorRoutes)).toFixed(2);
@@ -3125,11 +2305,6 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                     vm.TotalVFamilia=parseFloat(this.sumOf(vm.ventasPorFamilia)).toFixed(2);
 
 
-                     vm.ventasPorFamilia.forEach(function(element) {
-                       vm.PieData.push(parseFloat(element/vm.TotalVMes*100).toFixed(2));
-                     });
-
-
 
                     vm.AvgQMes=parseFloat(this.sumOf(vm.demoPorMes)/vm.demoPorMes.length).toFixed(2);
                     vm.AvgVMes=parseFloat(this.sumOf(vm.ventasPorMes)/vm.ventasPorMes.length).toFixed(2);
@@ -3137,75 +2312,10 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                     vm.AvgVRuta=parseFloat(this.sumOf(vm.ventasPorRoutes)/vm.ventasPorRoutes.length).toFixed(2);
                     vm.AvgQEmpaque=parseFloat(this.sumOf(vm.demoPorEmpaque)/vm.demoPorEmpaque.length).toFixed(2);
                     vm.AvgVEmpaque=parseFloat(this.sumOf(vm.ventasPorEmpaque)/vm.ventasPorEmpaque.length).toFixed(2);
-                    vm.AvgQFamilia=parseFloat(this.sumOf(vm.demoPorFamilia)/Fam.length).toFixed(2);
-                    vm.AvgVFamilia=parseFloat(this.sumOf(vm.ventasPorFamilia)/Fam.length).toFixed(2);
-                    vm.loaded = true;
+                    vm.AvgQFamilia=parseFloat(this.sumOf(vm.demoPorFamilia)/vm.demoPorFamilia.length).toFixed(2);
+                    vm.AvgVFamilia=parseFloat(this.sumOf(vm.ventasPorFamilia)/vm.ventasPorFamilia.length).toFixed(2);
 
                   });
-
-                  vm.optionsNormal = {
-                  scales: {
-                    yAxes: [{
-                      ticks: {
-                        beginAtZero: true
-
-                      },
-                      gridLines: {
-                        display: true
-                      }
-                    }],
-                    xAxes: [{
-                      ticks: {
-                        beginAtZero: true
-                      },
-                      gridLines: {
-                        display: false
-                      }
-                    }]
-                  },
-                  legend: {
-                    display: true
-                  },
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  height: 200
-                };
-
-                  vm.optionsSales= {
-                  scales: {
-                    yAxes: [{
-                      ticks: {
-                        beginAtZero: true
-
-                      },
-                      gridLines: {
-                        display: true
-                      }
-                    }],
-                    xAxes: [{
-                      ticks: {
-                        beginAtZero: true
-                      },
-                      gridLines: {
-                        display: false
-                      }
-                    }]
-                  },
-                  legend: {
-                    display: true
-                  },
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  height: 200,
-                  tooltips:{
-                    callbacks: {
-               label: (tooltipItem, data) => {
-                   return `$ ${tooltipItem.yLabel}`
-               }
-           }
-                  }
-                };
-
                   vm.chartdemoPorMes=
                   {
                     labels: vm.mes,
@@ -3247,7 +2357,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                   };
                   vm.chartventasPorRoutes=
                      {
-                       labels:vm.rutas,
+                       labels:vm.familia,
                        datasets: [
                          {
                            label: 'Ventas',
@@ -3258,7 +2368,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                      };
                      vm.chartdemoPorFamilia=
                         {
-                          labels: Fam,//vm.familia,
+                          labels:vm.familia,
                           datasets: [
                             {
                               label: 'Cantidad de Demos',
@@ -3269,7 +2379,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                         };
                         vm.chartventasPorFamilia=
                            {
-                             labels: Fam,//vm.familia,
+                             labels:vm.familia,
                              datasets: [
                                {
                                  label: 'Ventas',
@@ -3300,23 +2410,6 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                                      }
                                    ]
                                  };
-
-                                 vm.chartPieData={
-                                  labels: Fam,//['EMPANADO','LONGANIZA'],//vm.PieLabels,
-                                  datasets: [
-                                    {
-                                      backgroundColor: [
-
-                                        //'darkgreen',
-                                        'darkred',
-                                        'darkblue'
-                                      ],
-                                      data: vm.PieData
-                                    }
-                                  ]
-                                };
-                                console.log(vm.chartPieData);
-
            }
          }
           });
