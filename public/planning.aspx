@@ -183,6 +183,9 @@
             products: [],
             demonstrators: [],
             employees: [],
+            supervisors: [],
+            gerentes: [],
+            defaultEmployeeApproval: '',
             currentDate: '',
             eventList: [],
   errorMessages: '',
@@ -260,8 +263,13 @@
        formTitle () {
          return this.editedIndex === -1 ? 'Nuevo Evento' : 'Editar Evento'
        },
-       computedDateFormatted () {
-        return this.formatDate(this.eventDate);
+       computedDateFormatted: {
+         get(){
+            return this.formatDate(this.eventDate);
+          },
+          set(){
+            this.eventDate = '';
+          }
       },
        eventsMap () {
            const map = {};
@@ -394,9 +402,10 @@ closeCancelEvent () {
   this.dialogEventCancel = false
 },
 saveEvent: function() {
+  console.log(this.editedItemEvents.event_client);
   if (this.editedIndex > -1) {
     Object.assign(this.Events[this.editedIndex], this.editedItemEvents);
-    if(this.editedItemEvents.Title === '' || this.eventDate === '' || this.eventTime === '' || this.editedItemEvents.event_client === '' || this.editedItemEvents.event_demonstrator === '' || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === '' || this.editedItemEvents.event_approver1 === '') {
+    if(this.editedItemEvents.Title === '' || this.eventDate === '' || this.eventDate === undefined || this.eventTime === '' || this.eventTime === null || this.editedItemEvents.event_client === '' || this.editedItemEvents.event_client === undefined || this.editedItemEvents.event_demonstrator === '' || this.editedItemEvents.event_demonstrator === undefined || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.products.toString() === undefined || this.editedItemEvents.event_mult === '' || this.editedItemEvents.event_mult === undefined || this.editedItemEvents.event_approver1 === '' || this.editedItemEvents.event_approver1 === undefined) {
         swal({
             title: "Campos vacíos",
             text: "Usted tiene campos vacíos en el formulario. Por favor verifique que cada campo este lleno",
@@ -477,7 +486,7 @@ saveEvent: function() {
     }
   } else {
     this.postListDataEvent();
-    if(this.editedItemEvents.Title === '' || this.eventDate === '' || this.eventTime === '' || this.editedItemEvents.event_client === '' || this.editedItemEvents.event_demonstrator === '' || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === '' || this.editedItemEvents.event_approver1 === '')
+    if(this.editedItemEvents.Title === '' || this.eventDate === '' || this.eventDate === undefined || this.eventTime === '' || this.eventTime === null || this.editedItemEvents.event_client === '' || this.editedItemEvents.event_client === undefined || this.editedItemEvents.event_demonstrator === '' || this.editedItemEvents.event_demonstrator === undefined || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.products.toString() === undefined || this.editedItemEvents.event_mult === '' || this.editedItemEvents.event_mult === undefined || this.editedItemEvents.event_approver1 === '' || this.editedItemEvents.event_approver1 === undefined)
         return;
     if (this.checkDemonstratorConflict() === false || this.checkClientConflict() === false)
         return;
@@ -528,7 +537,7 @@ saveEvent: function() {
                });
          },
          postListDataEvent: function(){
-           if(this.editedItemEvents.Title === '' || this.eventDate === '' || this.eventTime === '' || this.editedItemEvents.event_client === '' || this.editedItemEvents.event_demonstrator === '' || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.event_mult === '' || this.editedItemEvents.event_approver1 === '') {
+           if(this.editedItemEvents.Title === '' || this.eventDate === '' || this.eventDate === undefined || this.eventTime === '' || this.eventTime === null || this.editedItemEvents.event_client === '' || this.editedItemEvents.event_client === undefined || this.editedItemEvents.event_demonstrator === '' || this.editedItemEvents.event_demonstrator === undefined || this.editedItemEvents.products.toString() === '' || this.editedItemEvents.products.toString() === undefined || this.editedItemEvents.event_mult === '' || this.editedItemEvents.event_mult === undefined || this.editedItemEvents.event_approver1 === '' || this.editedItemEvents.event_approver1 === undefined) {
                swal({
                    title: "Campos vacíos",
                    text: "Usted tiene campos vacíos en el formulario. Por favor verifique que cada campo este lleno",
@@ -663,8 +672,36 @@ saveEvent: function() {
            vm.demonstrators = response.data.value;
        });
    },
+   getSupervisors: function(){
+     var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items?$filter=bevs eq 'SUPERVISOR'";
+     console.log(endPointUrl);
+     var headers = {
+         "accept": "application/json;odata=verbose",
+         "content-type": "application/json;odata=verbose"
+     };
+     this.status = "getting data...";
+     var vm = this;
+     axios.get(endPointUrl).then(response => {
+         console.log(response.data.value);
+         vm.supervisors = response.data.value;
+     });
+   },
+   getManagers: function(){
+     var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items?$filter=bevs eq 'GERENTE'";
+     console.log(endPointUrl);
+     var headers = {
+         "accept": "application/json;odata=verbose",
+         "content-type": "application/json;odata=verbose"
+     };
+     this.status = "getting data...";
+     var vm = this;
+     axios.get(endPointUrl).then(response => {
+         console.log(response.data.value);
+         vm.gerentes = response.data.value;
+     });
+   },
    getApprovalListData: function () {
-       var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items?$filter=bevs eq 'SUPERVISOR'";
+       var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Employee')/items?$filter=bevs eq 'VENDOR'";
        console.log(endPointUrl);
        var headers = {
            "accept": "application/json;odata=verbose",
@@ -676,6 +713,26 @@ saveEvent: function() {
            console.log(response.data.value);
            vm.employees = response.data.value;
        });
+   },
+   getApproversFromClient: function(){
+     var j = 0;
+     var i = 0;
+     var route = '';
+     for(i=0; i < this.clients.length; i++){
+         if(this.editedItemEvents.event_client === this.clients[i].Title ){
+           console.log(this.editedItemEvents.event_client);
+           console.log(this.clients[i].Title);
+           route = this.clients[i].nc7a;
+           console.log(route);
+       }
+     }
+    for(j=0; j < this.employees.length; j++){
+      console.log(this.employees[j].w3s7);
+       if(this.employees[j].w3s7 === route){
+         console.log(this.employees[j].employee_route);
+         this.editedItemEvents.event_approver1 = this.employees[j].vblv;
+       }
+    }
    },
    getEventListData: function () {
        var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items?$filter=Event_Status eq 'AGENDA'";
@@ -697,10 +754,13 @@ saveEvent: function() {
            var temp = this.eventDate + " " + this.eventTime;
            var eDate = new Date(temp);
            eDate.setHours(eDate.getHours() - 4);
+           console.log(eDate.toISOString());
            var date = new Date(this.eventList[j].event_date);
            date.setHours(date.getHours() - 3);
            // now you can get the string
            var isodateList = date.toISOString();
+           console.log(isodateList);
+           console.log(" ");
            if(this.eventList[j].event_client === eClient && isodateList === eDate.toISOString()){
                    return false;
            }
@@ -755,7 +815,7 @@ saveEvent: function() {
       return timeString;
     },
     formatDate:function(date) {
-       //if (!date) return null
+       if (!date) return null
 
        const [year, month, day] = date.split('-')
        return `${day}/${month}/${year}`
@@ -769,6 +829,8 @@ saveEvent: function() {
        this.getClientListData();
        this.getDemonstratorListData();
        this.getApprovalListData();
+       this.getSupervisors();
+       this.getManagers();
        this.getEventListData();
    }
     },
@@ -994,6 +1056,7 @@ saveEvent: function() {
                                   :items="clients"
                                   item-text="Title"
                                   :error-messages="errorMessages"
+                                  @change="getApproversFromClient"
                                   :rules="[(c) => !!c || 'Este campo es requerido',
                                   (c) => checkClientConflict() || 'Cliente tiene demostración en la fecha escogida. Escoja otra fecha o otro cliente'
                                   ]"
@@ -1046,13 +1109,14 @@ saveEvent: function() {
                               > </v-text-field>
                   </div>
                   <div class="approval">
-                      <h3> Seleccione las personas que serán parte del proceso de aprobación:</h3>
+                      <h3> Seleccione las personas que serán parte del proceso de aprobación: </h3>
                               <v-select
                                   v-model="editedItemEvents.event_approver1"
                                   id="first-employee"
                                   :items="employees"
-                                  label="Primera persona en aprobar"
+                                  label="Vendedores (Requerido)"
                                   item-text="vblv"
+                                  item-value=""
                                   :rules="[(e) => !!e || 'Este campo es requerido']"
                                   required
                                   clearable
@@ -1062,8 +1126,8 @@ saveEvent: function() {
                               <v-select
                                   v-model="editedItemEvents.event_approver2"
                                   id="second-employee"
-                                  :items="employees"
-                                  label="Segunda persona en aprobar"
+                                  :items="supervisors"
+                                  label="Supervisores (Opcional)"
                                   item-text="vblv"
                                   clearable
                                   >
@@ -1072,8 +1136,8 @@ saveEvent: function() {
                               <v-select
                                   v-model="editedItemEvents.event_approver3"
                                   id="third-employee"
-                                  :items="employees"
-                                  label="Tercera persona en aprobar el reporte"
+                                  :items="gerentes"
+                                  label="Gerentes de Ventas (Opcional)"
                                   item-text="vblv"
                                   clearable
                                   >
