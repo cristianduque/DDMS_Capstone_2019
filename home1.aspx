@@ -470,8 +470,14 @@ location.href = "https://aguadillana.sharepoint.com/sites/DDMS/SitePages/approva
 },
 
                       getListData: function(){
+                         var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/currentuser";
+                        axios.get(endPointUrl).then(response =>  {
+                  // returns user email
+                  user_email = response.data.Email;
                          var endPointUrl2 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Receipt')/items?$filter=Receipt_Status eq 'Sometido'";
-                         var endPointUrl1 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=EstatusAprobacion eq 'Sometido'";
+                         var endPointUrl1 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=EstatusAprobacion eq 'Sometido' and (aprobador1 eq '"+user_email+"' or aprobador2 eq '"+user_email+"' or aprobador3 eq '"+user_email+"')";
+
+
 
                       var headers = {
                           "accept": "application/json;odata=verbose",
@@ -509,6 +515,7 @@ location.href = "https://aguadillana.sharepoint.com/sites/DDMS/SitePages/approva
                                 }*/
 
                               });
+                                });
 
                       },
                     postListDataClient: function(){
@@ -2385,6 +2392,9 @@ this.dialogEmployee = true
                 chartventasPorFamilia:null,
                 chartdemoPorEmpaque:null,
                 chartventasPorEmpaque:null,
+                chartdemoPorClientes:null,
+                chartventasPorClientes:null,
+                chartdemoCanceladas: null,
                 chartPieData:null,
                 chartdemoPorMes:[],
                 chartventasPorMes:[],
@@ -2398,17 +2408,21 @@ this.dialogEmployee = true
                 ventasPorEmpaque:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 demoPorFamilia:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 ventasPorFamilia:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                demoPorCliente:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                ventasPorCliente:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                razonesParaCancelar:[0,0,0,0],
                 tiendas: [],
                  search: '',
                  Proj:0,
                  ProjbyDay:0,
+                 QEventCanceled:0,
                  fromDate: new Date(new Date().getFullYear(), 0, 1).toISOString().substr(0, 10),
                   toDate: new Date().toISOString().substr(0, 10),
       menu: false,
       modal: false,
       menu2: false,
-
-                mes:['January','February','March','April','May','June','July','August','September','October','November','December'],
+  menu1: false,
+                mes:['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Deciembre'],
                 headersDemostradora: [
                     {
                       text: 'Key',
@@ -2467,7 +2481,7 @@ this.dialogEmployee = true
        <v-layout row wrap mt-3 mb-3>
        <v-flex xs4>
       <v-menu
-        v-model="menu2"
+        v-model="menu1"
         :close-on-content-click="false"
         :nudge-right="40"
         lazy
@@ -2485,7 +2499,7 @@ this.dialogEmployee = true
             v-on="on"
           ></v-text-field>
         </template>
-        <v-date-picker v-model="fromDate" @input="menu2 = false"></v-date-picker>
+        <v-date-picker v-model="fromDate" @input="menu1 = false"></v-date-picker>
       </v-menu>
     </v-flex>
 
@@ -2509,7 +2523,7 @@ this.dialogEmployee = true
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="toDate" @input="menu2 = false"></v-date-picker>
+            <v-date-picker v-model="toDate" @input="menu2 = false; getListData()"></v-date-picker>
           </v-menu>
         </v-flex>
 
@@ -2530,11 +2544,11 @@ this.dialogEmployee = true
       >
         check_circle
       </v-icon>
-      <span class="title font-weight-light">Demostraciones Totales</span>
+      <span class="title font-weight-light">Demostraciones Totales vs. Canceladas</span>
     </v-card-title>
 
     <v-card-text class="headline font-weight-bold text-xs-center">
-       {{TotalQMes}}
+       {{TotalQMes}} vs. {{QEventCanceled}}
     </v-card-text>
     </v-card>
     </v-flex>
@@ -2587,7 +2601,7 @@ trending_up
 
 
 
-<v-flex  xs6 >
+<v-flex  xs4>
 <v-card
 class="elevation-10"
 >
@@ -2606,7 +2620,7 @@ class="elevation-10"
 </v-card-text>
 </v-card>
 </v-flex>
-<v-flex  xs6>
+<v-flex  xs4>
 <v-card
 class=" elevation-10"
 >
@@ -2622,6 +2636,25 @@ class=" elevation-10"
 <v-card-text>
 <span>Total de Ventas:$ {{TotalVMes}}  Promedio:$ {{AvgVMes}}</span>
 <line-chart id="ventasMes" v-if="loaded" :chart-data="chartventasPorMes" :options="optionsSales"></line-chart>
+</v-card-text>
+</v-card>
+</v-flex>
+
+<v-flex  xs4>
+<v-card
+class=" elevation-10"
+>
+<v-card-title>
+<v-icon
+ large
+ left
+>
+ attach_money
+</v-icon>
+<span class="title font-weight-light">Razones Para Cancelar</span>
+</v-card-title>
+<v-card-text>
+<bar-chart v-if="loaded" :chart-data="chartdemoCanceladas" :options="optionsNormal"></bar-chart>
 </v-card-text>
 </v-card>
 </v-flex>
@@ -2688,6 +2721,8 @@ class="elevation-10"
 </v-card-text>
 </v-card>
 </v-flex>
+
+
 <v-flex  xs6>
 <v-card
 class=" elevation-10"
@@ -2708,6 +2743,52 @@ class=" elevation-10"
 </v-card-text>
 </v-card>
 </v-flex>
+
+
+
+<v-flex  xs6 >
+<v-card
+class="elevation-10"
+>
+<v-card-title>
+<v-icon
+ large
+ left
+>
+ attach_money
+</v-icon>
+<span class="title font-weight-light">Demostraciones por Cliente</span>
+</v-card-title>
+<v-card-text>
+<!--<p>Total de Demos: {{TotalQEmpaque}} Promedio: {{AvgQEmpaque}}</p>-->
+<bar-chart v-if="loaded" :chart-data="chartdemoPorClientes" :options="optionsNormal"></bar-chart>
+</v-card-text>
+</v-card>
+</v-flex>
+
+
+<v-flex  xs6>
+<v-card
+class=" elevation-10"
+>
+<v-card-title>
+<v-icon
+ large
+ left
+>
+ attach_money
+</v-icon>
+<span class="title font-weight-light">Ventas por Cliente</span>
+</v-card-title>
+
+<v-card-text>
+<!--<p>Total de Ventas:$ {{TotalVEmpaque}} -  Promedio:$ {{AvgVEmpaque}}</p>-->
+<bar-chart v-if="loaded" :chart-data="chartventasPorClientes" :options="optionsSales"></bar-chart>
+</v-card-text>
+</v-card>
+</v-flex>
+
+
 
 
 <v-flex  xs4>
@@ -2895,10 +2976,16 @@ var demosRutasImg = barChart[0].toDataURL("image/png", 1.0);
 var ventasRutasImg = barChart[1].toDataURL("image/png", 1.0);
 
 //creates image
-var demosFamiliaImg = barChart[4].toDataURL("image/png", 1.0);
+var demosClientesImg = barChart[4].toDataURL("image/jpg", 1.0);
 
 //creates image
-var ventasFamiliaImg = barChart[5].toDataURL("image/png", 1.0);
+var ventasClientesImg = barChart[5].toDataURL("image/jpg", 1.0);
+
+//creates image
+var demosFamiliaImg = barChart[6].toDataURL("image/png", 1.0);
+
+//creates image
+var ventasFamiliaImg = barChart[7].toDataURL("image/png", 1.0);
 
 //creates image
 var distribucionFamiliaImg = pieChart.toDataURL("image/png", 1.0);
@@ -2919,22 +3006,49 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
         'width': 190,
             'elementHandlers': specialElementHandlers
     });
-    var m_names = new Array("January", "February", "March",
-                           "April", "May", "June", "July",
-                           "August", "September",
-                           "October", "November", "December");
-    var today = new Date();
-    var curr_date = today.getDate();
+    var m_names = new Array("Enero", "Febrero", "Marzo",
+                           "Abril", "Mayo", "Junio", "Julio",
+                           "Agosto", "Septiembre",
+                           "Octubre", "Noviembre", "Diciembre");
+    var today = new Date(this.fromDate);
+    var curr_date = today.getDate()+1;
     var curr_month = today.getMonth();
     var curr_year = today.getFullYear();
 
     today = m_names[curr_month] + " " + curr_date + ", " + curr_year;
     var newdat = today;
 
+    var Ttoday = new Date(this.toDate);
+    var curr_date = Ttoday.getDate()+1;
+    var curr_month = Ttoday.getMonth();
+    var curr_year = Ttoday.getFullYear();
+
+    Ttoday = m_names[curr_month] + " " + curr_date + ", " + curr_year;
+    var Tnewdat = Ttoday;
+
     doc.setFontType("italic");
     doc.setFontSize(10);
 
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
+    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+ Tnewdat);
+    doc.setFontType("bold");
+    doc.setFontSize(18);
+    doc.text(47, 25, 'Cantidad de Demostraciones Por Cliente');
+    doc.addImage(demosClientesImg, 'PNG', 30, 40, 147, 125);
+    doc.addPage();
+    doc.setFontType("italic");
+    doc.setFontSize(10);
+
+    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+ Tnewdat);
+    doc.setFontType("bold");
+    doc.setFontSize(18);
+    doc.text(47, 25, 'Ventas de Demostraciones Por Cliente');
+    doc.addImage(ventasClientesImg, 'PNG', 30, 40, 147, 125);
+    doc.addPage();
+    doc.setFontType("italic");
+    doc.setFontSize(10);
+
+
+    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+ Tnewdat);
     doc.setFontType("bold");
     doc.setFontSize(18);
     doc.text(47, 25, 'Cantidad de Demostraciones Por Mes');
@@ -2943,7 +3057,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
     doc.setFontType("italic");
     doc.setFontSize(10);
 
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
+    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+ Tnewdat);
     doc.setFontType("bold");
     doc.setFontSize(18);
     doc.text(47, 25, 'Ventas de Demostraciones Por Mes');
@@ -2952,7 +3066,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
     doc.setFontType("italic");
     doc.setFontSize(10);
 
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
+    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+ Tnewdat);
     doc.setFontType("bold");
     doc.setFontSize(18);
     doc.text(47, 25, 'Cantidad de Demostraciones Por Rutas');
@@ -2961,7 +3075,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
     doc.setFontType("italic");
     doc.setFontSize(10);
 
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
+    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+ Tnewdat);
     doc.setFontType("bold");
     doc.setFontSize(18);
     doc.text(47, 25, 'Ventas de Demostraciones Por Rutas');
@@ -2970,7 +3084,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
     doc.setFontType("italic");
     doc.setFontSize(10);
 
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
+    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+ Tnewdat);
     doc.setFontType("bold");
     doc.setFontSize(18);
     doc.text(47, 25, 'Cantidad de Demostraciones Por Empaque');
@@ -2979,7 +3093,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
     doc.setFontType("italic");
     doc.setFontSize(10);
 
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
+    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+ Tnewdat);
     doc.setFontType("bold");
     doc.setFontSize(18);
     doc.text(47, 25, 'Ventas de Demostraciones Por Empaque');
@@ -2988,7 +3102,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
     doc.setFontType("italic");
     doc.setFontSize(10);
 
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
+    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+ Tnewdat);
     doc.setFontType("bold");
     doc.setFontSize(18);
     doc.text(47, 25, 'Cantidad de Demostraciones Por Familia');
@@ -2997,7 +3111,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
     doc.setFontType("italic");
     doc.setFontSize(10);
 
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
+    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+Tnewdat);
     doc.setFontType("bold");
     doc.setFontSize(18);
     doc.text(47, 25, 'Ventas de Demostraciones Por Familia');
@@ -3006,7 +3120,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
     doc.setFontType("italic");
     doc.setFontSize(10);
 
-    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+newdat);
+    doc.text(60, 10, 'PARA EL PERIODO DE '+newdat+' A '+ Tnewdat);
     doc.setFontType("bold");
     doc.setFontSize(18);
     doc.text(47, 25, 'Distribucion de Ventas Por Familia');
@@ -3034,10 +3148,14 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                     },
              getListData: function(){
                this.loaded = false;
-              var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items";
+               console.log(this.toDate);
+               console.log(this.fromDate);
+              var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=Fecha ge '"+this.fromDate+"' and Fecha le '"+this.toDate+"'";
               var endPointUrl1 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Routes')/items";
               var endPointUrl2 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items";
-              var endPointUrl3 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items";
+              var endPointUrl3 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Clients')/items?$top=500";
+              var endPointUrl4 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('ReasonsToCancel')/items";
+              var endPointUrl5 = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items?$filter=Event_Status eq 'CANCELED' and event_date ge '"+this.fromDate+"' and event_date le '"+this.toDate+"'";
               console.log(endPointUrl);
              var headers = {
                  "accept": "application/json;odata=verbose",
@@ -3050,10 +3168,26 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                  var fecha;
                  var arr =[];
                  var arrFam = [];
+                 var arrClientes = [];
+                 var rtc=[]
                  var Fam=[];
+                 var Clientes=[];
+
                  var today= new Date();
                  var mm= today.getMonth();
                  var dd= today.getDate();
+                 this.ventasPorMes=[0,0,0,0,0,0,0,0,0,0,0,0];
+                 this.demosPorMes =[];
+                 this.PieData=[];
+                 this.demoPorRoutes=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                 this.ventasPorRoutes=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                 this.demoPorEmpaque=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                 this.ventasPorEmpaque=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                 this.demoPorFamilia=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                 this.ventasPorFamilia=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                 this.demoPorCliente=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                this.ventasPorCliente=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                 this.razonesParaCancelar=[0,0,0,0];
                  for(z;z<12;z++){
                    arr[z]=0;
                    vm.demoPorMes=arr;
@@ -3079,12 +3213,33 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                      console.log(vm.PieLabels);
                      vm.empaque= Array.from(new Set(vm.empaque));
                    });
-                   axios.get(endPointUrl3).then(response => {
-                      for(j=0; j< response.data.value.length; j++){
-                        vm.clientes[j] = response.data.value[j].zqlz;
-                      }
-                       vm.clientes= Array.from(new Set(vm.clientes));
-                    });
+
+                    axios.get(endPointUrl4).then(response => {
+                      console.log(response.data.value);
+                       for(j=0; j< response.data.value.length; j++){
+                         rtc[j] = response.data.value[j].Title;//zqlz;
+                         console.log(rtc[j] );
+                       }
+                     });
+                     axios.get(endPointUrl5).then(response => {
+                       console.log(response.data.value);
+                        this.QEventCanceled=response.data.value.length;
+                        for(j=0; j< response.data.value.length; j++){
+                          console.log(response.data.value[j].event_reason);
+                        this.razonesParaCancelar[rtc.indexOf(response.data.value[j].event_reason)]++;//zqlz;
+                        }
+                      });
+                      axios.get(endPointUrl3).then(response => {
+                        console.log(response.data.value);
+                         for(j=0; j< response.data.value.length; j++){
+                           arrClientes[j] = response.data.value[j].zqlz;
+                         }
+                          arrClientes= Array.from(new Set(arrClientes));
+                          console.log(arrClientes);
+                          for(j=0;j<arrClientes.length;j++){
+                            Clientes[j]=arrClientes[j];
+                          }
+
                  axios.get(endPointUrl).then(response => {
                     console.log(response.data.value);
                     vm.forms = response.data.value
@@ -3101,9 +3256,15 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                       vm.ventasPorEmpaque[vm.empaque.indexOf(vm.forms[i].Producto)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
                       vm.demoPorFamilia[Fam.indexOf(vm.forms[i].familia)]++;
                       vm.ventasPorFamilia[Fam.indexOf(vm.forms[i].familia)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
+                      vm.demoPorCliente[Clientes.indexOf(vm.forms[i].event_chain)]++;
+                      vm.ventasPorCliente[Clientes.indexOf(vm.forms[i].event_chain)]+=vm.forms[i].UnidadesVendidas * vm.forms[i].PrecioEspecial;
                       //}
-
+console.log(vm.forms[i].event_chain);
+console.log(Clientes.indexOf(vm.forms[i].event_chain));
                     }
+                    console.log(vm.ventasPorCliente);
+                    console.log(vm.demoPorCliente);
+                    console.log(this.razonesParaCancelar);
                     //console.log(mm);
                     //console.log(vm.ventasPorMes);
                      vm.Proj=parseFloat(this.sumOfProj(vm.ventasPorMes,mm)).toFixed(2);
@@ -3142,7 +3303,7 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
                     vm.loaded = true;
 
                   });
-
+   });
                   vm.optionsNormal = {
                   scales: {
                     yAxes: [{
@@ -3205,35 +3366,76 @@ var ventasEmpaquesImg = barChart[3].toDataURL("image/png", 1.0);
            }
                   }
                 };
-
-                  vm.chartdemoPorMes=
-                  {
-                    labels: vm.mes,
-                    datasets: [
-                      {
-                        lineTension: 0,
-                        label: 'Cantidad de Demos',
-                        backgroundColor: '#f87979',
-                        borderColor: '#f87979',
-                        fill: false,
-                        data: vm.demoPorMes
-                      }
-                    ]
-                  };
-                  vm.chartventasPorMes=
-                  {
-                    labels: this.mes,
-                    datasets: [
-                      {
-                        lineTension: 0,
-                        label: 'Ventas',
-                        backgroundColor: '#f87979',
-                        borderColor: '#f87979',
-                        fill: false,
-                        data: this.ventasPorMes
-                      }
-                    ]
-                  };
+                vm.chartdemoCanceladas=
+                {
+                  labels: rtc,
+                  datasets: [
+                    {
+                      lineTension: 0,
+                      label: 'Razones Para Cancelar',
+                      backgroundColor: '#f87979',
+                      borderColor: '#f87979',
+                      fill: false,
+                      data: vm.razonesParaCancelar
+                    }
+                  ]
+                };
+                vm.chartdemoPorClientes=
+                {
+                  labels: Clientes,
+                  datasets: [
+                    {
+                      lineTension: 0,
+                      label: 'Cantidad de Demos',
+                      backgroundColor: '#f87979',
+                      borderColor: '#f87979',
+                      fill: false,
+                      data: vm.demoPorCliente
+                    }
+                  ]
+                };
+                vm.chartventasPorClientes=
+                {
+                  labels: Clientes,
+                  datasets: [
+                    {
+                      lineTension: 0,
+                      label: 'Ventas',
+                      backgroundColor: '#f87979',
+                      borderColor: '#f87979',
+                      fill: false,
+                      data: vm.ventasPorCliente
+                    }
+                  ]
+                };
+                vm.chartdemoPorMes=
+                {
+                  labels: vm.mes,
+                  datasets: [
+                    {
+                      lineTension: 0,
+                      label: 'Cantidad de Demos',
+                      backgroundColor: '#f87979',
+                      borderColor: '#f87979',
+                      fill: false,
+                      data: vm.demoPorMes
+                    }
+                  ]
+                };
+                vm.chartventasPorMes=
+                {
+                  labels: this.mes,
+                  datasets: [
+                    {
+                      lineTension: 0,
+                      label: 'Ventas',
+                      backgroundColor: '#f87979',
+                      borderColor: '#f87979',
+                      fill: false,
+                      data: this.ventasPorMes
+                    }
+                  ]
+                };
                vm.chartDemosPorRutaData=
                   {
                     labels:vm.rutas,
