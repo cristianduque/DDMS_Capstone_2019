@@ -173,120 +173,134 @@
         template: '<h1>Approvals</h1><!--<button v-on:click="count++"> You clicked me {{count}} times in Approvals. </button>-->'
       });
     var Planning =  Vue.component('Planning', {
+      /**
+       * Function that initializes the data is going to be managed in the component
+       */
         data: function (){
           return{
-            Events:[],
-            eventDate:new Date().toISOString().substr(0, 10),
-            datePermitted: '',
-            eventTime:'',
-            clients:[],
-            products: [],
-            demonstrators: [],
-            employees: [],
-            supervisors: [],
-            gerentes: [],
-            defaultEmployeeApproval: '',
-            currentDate: '',
-            eventList: [],
-  errorMessages: '',
-    menu: false,
-            menuTime: false,
+            Events:[], //All of the events
+            eventDate:new Date().toISOString().substr(0, 10), //Date chosen by user
+            datePermitted: '', //Holds the date picker limit
+            eventTime:'', //Holds the time chosen by the user
+            clients:[], //All of the current clients
+            products: [], //All of the current products
+            demonstrators: [], //All of the current demonstrators
+            employees: [], //All of the current employees
+            supervisors: [], //All of the current supervisors
+            gerentes: [], //All of the current managers
+            eventList: [], //All of the events in agenda
+  errorMessages: '', //Error Messages when a rule is broken in the form
+    menu: false, //Menu dialog of the date picker
+            menuTime: false, //Menu dialog of the time picker
+            //Items of the data table
             editedItemEvents: {
-              name: '',
-              Title: '',
-                      event_id: '',
-                      event_date: '',
-                      products: [],
-                      event_client: '',
-                      event_demonstrator:'',
-                      event_mult: '',
-                      event_approver1: '',
-                      event_approver2: '',
-                      event_approver3: '',
-                      Event_Status: '',
-                      Event_Status_Text:'',
-                      event_reason:''
+              name: '', //Name of the event
+              Title: '', //Name of the event
+                      event_id: '', //Id of the event
+                      event_date: '', //Date and time of a event
+                      products: [], //Products of the event
+                      event_client: '', //Client of the event
+                      event_demonstrator:'', //demonstrator of the event
+                      event_mult: '', //multiplier of the event
+                      event_approver1: '', //First approver of the event
+                      event_approver2: '', //Second approver of the event
+                      event_approver3: '', //Third approver of the event
+                      Event_Status: '', //Status of the event
+                      Event_Status_Text:'', //Comment section of the event status
+                      event_reason:'' //The reason of cancelation of event
             },
             defaultItemEvents: {
-              name: '',
-              Title: '',
-                      event_id: '',
-                      event_date: '',
-                      products: [],
-                      event_client: '',
-                      event_demonstrator:'',
-                      event_mult: '',
-                      event_approver1: '',
-                      event_approver2: '',
-                      event_approver3: '',
-                      Event_Status: '',
-                      Event_Status_Text:'',
-                      event_reason:''
+              name: '', //Name of the event
+              Title: '', //Name of the event
+                      event_id: '', //Id of the event
+                      event_date: '', //Date and time of a event
+                      products: [], //Products of the event
+                      event_client: '', //Client of the event
+                      event_demonstrator:'', //demonstrator of the event
+                      event_mult: '', //multiplier of the event
+                      event_approver1: '', //First approver of the event
+                      event_approver2: '', //Second approver of the event
+                      event_approver3: '', //Third approver of the event
+                      Event_Status: '', //Status of the event
+                      Event_Status_Text:'', //Comment section of the event status
+                      event_reason:'' //The reason of cancelation of event
             },
+            //Header names of the table to display data
             headersEvents: [
-              {
+              {       //Name of event
                       text: 'Nombre',
-                      align: 'left',
+                      align: 'center',
                       value: 'Title'
                       },
-                      { text: 'Fecha', align: 'center', value: 'event_date' },
-                      { text: 'Productos', align: 'center', value: 'products' },
-                      { text: 'Cliente', align: 'center', value: 'event_client' },
-                      { text: 'Demonstrador/a', align: 'center', value: 'event_demonstrator' },
-                      { text: 'Multiplicador', align: 'center', value: 'event_mult' },
-                      { text: 'Aprobador #1', align: 'center', value: 'event_approver1' },
-                      { text: 'Aprobador #2', align: 'center', value: 'event_approver2'},
-                      { text: 'Aprobador #3', align: 'center', value: 'event_approver3'},
-                      //{ text: 'Estado', align: 'left', value: 'Event_Status'},
-                      //{ text: 'Razon', align: 'left', value: 'Event_Status_Text'},
-                      { text: 'Acciones', align: 'center', value: 'name', sortable: false }
+                      { text: 'Fecha', align: 'center', value: 'event_date' }, //Date of event
+                      { text: 'Productos', align: 'center', value: 'products' }, //Products of event
+                      { text: 'Cliente', align: 'center', value: 'event_client' }, //Client of event
+                      { text: 'Demonstrador/a', align: 'center', value: 'event_demonstrator' },//demonstrator of event
+                      { text: 'Multiplicador', align: 'center', value: 'event_mult' }, //Multiplier of event
+                      { text: 'Aprobador #1', align: 'center', value: 'event_approver1' }, //First approver of the event
+                      { text: 'Aprobador #2', align: 'center', value: 'event_approver2'}, //Second approver of the event
+                      { text: 'Aprobador #3', align: 'center', value: 'event_approver3'}, //Third approver of the event
+                      { text: 'Acciones', align: 'center', value: 'name', sortable: false } //Actions of editing and canceling a event
             ],
-               dialogEvent: false,
-               dialogEventCancel:false,
-                 ItemId: -1,
-                 editedIndex:-1,
-                 canceledIndex:-1,
-                 type: 'month',
-      start: new Date().toISOString().substring(0,10),
-      typeOptions: [
-        { text: 'Day', value: 'day' },
-        { text: '4 Day', value: '4day' },
-        { text: 'Week', value: 'week' },
-        { text: 'Month', value: 'month' },
-        { text: 'Custom Daily', value: 'custom-daily' },
-        { text: 'Custom Weekly', value: 'custom-weekly' }
-      ],
-      Reasons:[]
+               dialogEvent: false, //variable to toggle the dialog event window
+               dialogEventCancel:false, //variable to toggle the dialog event cancel window
+                 ItemId: -1, //variable to hold the item id
+                 editedIndex:-1, //variable to hold the index of the edit item chosen
+                 canceledIndex:-1, //variable to hold the index of the cancel item chosen
+                 type: 'month', //Type of calendar view
+      start: new Date().toISOString().substring(0,10), //Date permitted variable
+      Reasons:[] //The reasons of cancelation of a event
     }
   },
+  /**
+   * Functions that execute to update a v-model variable
+   */
   computed: {
+      /**
+       * Changes the title of the dialog depending of the editedIndex
+       */
        formTitle () {
          return this.editedIndex === -1 ? 'Nuevo Evento' : 'Editar Evento'
        },
+       /**
+        * Executes the formatDate function to DD/MM/YYYY format
+        */
        computedDateFormatted: {
          get(){
             return this.formatDate(this.eventDate);
           },
+          //if the clearable feature is clicked, the eventDate is null
           set(){
             this.eventDate = '';
           }
       },
+      /**
+       * Maps the dates of the events of the calendar
+       */
        eventsMap () {
            const map = {};
            var list = this.eventList;
+           //For each event in agenda, map the date and push it to the map
            list.forEach(e => (map[e.event_date.substring(0,10)] = map[e.event_date.substring(0,10)] || []).push(e));
-           console.log(map);
            return map;
        },
+       /**
+        * Gets the month and year of the calendar
+        */
        getYearAndMonth: {
          get(){
              //this function will determine what is displayed in the input
             var dateString  = this.start;
+            //Get year
             var year        = dateString.substring(0,4);
+            //Get month
             var month       = dateString.substring(5,7);
+            //Get day
             var day         = dateString.substring(8,10);
+            //Get the whole date in Date object
             var date        = new Date(year, month-1, day);
 
+            //Array of months
             var month = new Array();
             month[0] = "Enero";
             month[1] = "Febrero";
@@ -301,19 +315,32 @@
             month[10] = "Noviembre";
             month[11] = "Diciembre";
 
+            //Return month and year is currently viewing
             var n = month[date.getMonth()];
             return n + " " + date.getFullYear();
          }
      }
        },
+       /**
+        * Function that is executed when a event is launched by the user
+        */
      watch: {
+       /**
+        * Opens the dialog view of event depending of its value
+        */
        dialogEvent (val) {
          val || this.closeEvent()
        },
+       /**
+        * Opens the dialog view of event cancelation depending of its value
+        */
        dialogEventCancel (val) {
          val || this.closeCancelEvent()
        }
     },
+    /**
+     * Function that executes when the rendering of the page is being executed
+     */
     created: function(){
       this.getRequestDigestValue();
       this.getListData();
