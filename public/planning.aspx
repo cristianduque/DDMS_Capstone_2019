@@ -189,6 +189,9 @@
             supervisors: [], //All of the current supervisors
             gerentes: [], //All of the current managers
             eventList: [], //All of the events in agenda
+            pagination: {rowsPerPage: 10}, //Pagination of the events table
+            loaded: false, //Rendering of the pagination of the table
+
   errorMessages: '', //Error Messages when a rule is broken in the form
     menu: false, //Menu dialog of the date picker
             menuTime: false, //Menu dialog of the time picker
@@ -262,6 +265,12 @@
        formTitle () {
          return this.editedIndex === -1 ? 'Nuevo Evento' : 'Editar Evento'
        },
+
+       pages () {
+        if (this.pagination.rowsPerPage == null || this.pagination.totalItems == null) return 0
+
+        return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
+      },
        /**
         * Executes the formatDate function to DD/MM/YYYY format
         */
@@ -569,6 +578,8 @@
          * The GET request to get all events in agenda and the reasons to cancel a event.
          */
          getListData: function(){
+           //Initialize in false
+           this.loaded = false;
            //The REST API endpoints of the GET data of the events in agenda
           var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items?$filter=Event_Status eq 'AGENDA'";
           //The REST API endpoints of the GET data of the reasons to cancel
@@ -612,6 +623,8 @@
                }
                //Save response data to Events array
                 vm.Events = response.data.value;
+                //Load content in table
+                this.loaded = true;
                 //console.log(vm.Events);
               });
               //GET mehtod of the Reasons endPointUrl
@@ -1157,7 +1170,6 @@
   </v-container>
 </template>
 
-
     <div>
       <v-toolbar flat color="white">
         <v-toolbar-title>Eventos en Agenda</v-toolbar-title>
@@ -1393,7 +1405,10 @@
       </v-toolbar>
       <v-card>
       <v-data-table
+        v-if="loaded"
         :headers="headersEvents"
+        :pagination.sync="pagination"
+        hide-actions
         :items="Events"
         class="elevation-1"
       >
@@ -1427,6 +1442,11 @@
           <v-btn color="primary" @click="getListData">Reset</v-btn>
         </template>
       </v-data-table>
+
+      <div class="text-xs-center pt-2">
+          <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
+      </div>
+
       </v-card>
     </div>
   </div>`
