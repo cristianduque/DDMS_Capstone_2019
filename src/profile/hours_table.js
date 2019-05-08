@@ -1,4 +1,15 @@
-  var vm = new Vue({
+/**
+*
+* This function fetches from Events and DemoForm the establish
+* event hours and the registered ones.
+*
+* @author: Diego Capre 
+* @version: 1.0
+* @date: 2019-05-07
+*
+**/
+
+var vm = new Vue({
       el: '#hours',
       data: function () {
       return {
@@ -19,10 +30,10 @@
       },
       mounted(){
          
-        // Get report title 
+        // Get report title from page's URL
         var id = window.location.href.split('=').pop();
       
-        // Fetch form to get event_id and work hours
+        // Fetch demo form to get event_id and registered work hours
         var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('DemoForm')/items?$filter=event_id eq '"+ id +"'&$select=*";
         var headers = {
                         "async": false,
@@ -30,15 +41,30 @@
                         "content-type": "application/json;odata=verbose"
                     }; 
         axios.get(endPointUrl).then(response => {
-                      //console.log(response.data.value[0]); //debugging
-                      var form = response.data.value[0];
-                      var event_id = form.event_id;
-                      //console.log(event_id); //debugging
-                       
-                      var leaving_time = (form.HoraSalida).substring(0,(form.HoraSalida).length-3);
-                      var arrival_time = (form.HoraLlegada).substring(0,(form.HoraLlegada).length-3);
                       
-                      // Fetch form to get event_id and work hours
+                      var form = response.data.value[0]; 
+                      var event_id = form.event_id;
+
+                      var leaving_time = (form.HoraSalida).split(" ");
+                      leaving_time = leaving_time[1].split(":");
+                    
+                      // Adjust registered hours from 24-Hour format to 12-Hour format
+                        if( Number(leaving_time[0]) > 12){ 
+                          if(Number(leaving_time[0]) == 12){leaving_time[0] = (Number(leaving_time[0])); }
+                          else{leaving_time[0] = (Number(leaving_time[0]))%12; }
+                        }
+                      leaving_time = leaving_time[0]+":"+leaving_time[1];
+            
+                      var arrival_time = (form.HoraLlegada).split(" ");
+                      arrival_time = arrival_time[1].split(":");
+        
+                        if( Number(arrival_time[0]) > 12){ 
+                          if(Number(arrival_time[0]) == 12){arrival_time[0] = (Number(arrival_time[0])); }
+                          else{arrival_time[0] = (Number(arrival_time[0]))%12; }
+                        }
+                      arrival_time = arrival_time[0]+":"+arrival_time[1];
+                      
+                      // Fetch event's form
                       var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Events')/items?$filter=event_id eq '"+ id +"'&$select=*";
                       var headers = {
                         "async": false,
@@ -46,36 +72,34 @@
                         "content-type": "application/json;odata=verbose"
                        }; 
                       axios.get(endPointUrl).then(response => {
-                      //console.log(response.data.value[0]); //debugging
-                      var establish_hour = (response.data.value[0].event_date).substring(11,13);
-                      var minutes        = (response.data.value[0].event_date).substring(14,16);
-                      var am_pm          = "";
-                      //console.log(establish_hour);
-                      if( Number(establish_hour) > 12){ establish_hour = (Number(establish_hour)-3)%12; am_pm = " PM"; }
+                      
+                      var date = (response.data.value[0].event_date).split("T"); // establishet datetime
+                      var time = date[1].split(":")                              // split time portion
+                      var establish_hour = time[0];                              // HH
+                      var minutes        = time[1];                              // MM
+                      var am_pm          = "";                                   // AM or PM 
+                      
+                      // Asdjust establish hours format from 24 Hours to 12 Hours format and set's if AM or PM
+                      if( Number(establish_hour) > 12){ 
+                          if((Number(establish_hour)-3) == 12){establish_hour = (Number(establish_hour)-3); }
+                          else{establish_hour = (Number(establish_hour)-3)%12; }
+                          am_pm = " PM"; }
                       else{ am_pm =" AM";}
                       
-                      var ending_hour = (Number(establish_hour) + 5)+":"+minutes+am_pm;
+                      // Set establish ending hours
+                      var ending_hour = (((Number(establish_hour)+5)) % 12)+":"+minutes+am_pm;
                       establish_hour  = establish_hour+":"+minutes+am_pm;
-                          
-                      //console.log(establish_hour);
-                      //console.log(ending_hour);
+                    
+                    
                       var establish = {name: 'Horas Establecidas', entrance: "",exit: ""};
                       establish.entrance = establish_hour; establish.exit = ending_hour;
                       this.reports.push(establish);
                           
                       var register = {name: 'Horas Registradas', entrance: "", exit: ""};
-                      register.entrance = arrival_time+am_pm; register.exit = leaving_time+am_pm;
+                      register.entrance = arrival_time +am_pm; register.exit = leaving_time +am_pm;
                       this.reports.push(register);
           });
         });
-      
-        
-        
-        
-        
-        
-        
-        
-        
-    }
+         
+      }
     })

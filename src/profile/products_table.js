@@ -1,6 +1,15 @@
-  var vm = new Vue({
+/**
+*
+* This functions fetches the products demonstrated and
+* shows each product and what was sold.
+*
+* @author: Diego Capre 
+* @version: 1.0
+* @date: 2019-05-07
+*
+**/
+var vm = new Vue({
       el: '#products',
-     
       data: function () {
         return {
             
@@ -38,18 +47,20 @@
       mounted (){
      
         // Global variable scope
-        var family ="";
-        var form  = "";
-        var form2 = "";
-        var form3 ="";
-        var date  = "";
-        var title = "";
-        var units   = 0;
+        var family = "";
+        var form   = "";
+        var form2  = "";
+        var form3  = "";
+        var date   = "";
+        var title  = "";
+        var units  = 0;
         var units2 = 0;
-        var product = "";
+        var product    = "";
         var user_email = "";
+        var total  = 0;
+        var flag  = 0;
         
-        // Get report title 
+        // Get report title from page's URL
         var id = window.location.href.split('=').pop();
             
         // Get Report by title
@@ -59,12 +70,11 @@
                                 "accept": "application/json;odata=verbose",
                                 "content-type": "application/json;odata=verbose"
                             };
-        this.status = "getting data..."; 
         axios.get(endPointUrl).then(response =>  {
                                                    
-            var form = response.data.value;    // Demo Form
-            let product     = form[0].Producto;// Product demosntrated
-            let title       = form[0].Title;   // CAN CHANGE TO (event_id), Use to identify extra products sold if
+            var form = response.data.value;        // Demo Form
+            let product     = form[0].product_id;  // Product demosntrated
+            let title       = form[0].Title;       // CAN CHANGE TO (event_id), Use to identify extra products sold if
                                 
         // Get Product family by searching in Products the specified product and returning family type
         var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items?$filter= s2l1 eq '"+ product +"' &$select=*";
@@ -76,19 +86,15 @@
                                         
         axios.get(endPointUrl).then(response =>  { 
                               
-              //console.log(response.data.value)
-              let family = response.data.value[0].r0hu; // get product demonstrated family (Embutidos || Empanados)
-              let units  = Number(form[0].UnidadesVendidas);
-              var product_title = response.data.value[0].e9lf;
-            
-              //console.log(product_title);
-                                            
+              let family = response.data.value[0].r0hu;        // get product demonstrated family 
+              let units  = Number(form[0].UnidadesVendidas);   // amount sold
+              var product_title = response.data.value[0].e9lf; // product's title
+        
               var dic = { value: false,name: 'Producto 1',sold: 0,}
               dic.name = product_title; dic.sold = units;
-              //console.log(dic);
               this.reports.push(dic);
                                             
-              // Search for any extra products
+              // Search for any extra products with event's id
               var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('ExtraProdsDemo')/items?$filter=event_id eq '"+ id +"'&$select=Title,UnidadesVendidas"
               var headers = {
                              "async": false,
@@ -96,20 +102,22 @@
                              "content-type": "application/json;odata=verbose"
                                                 };
               axios.get(endPointUrl).then(response =>  { 
-                                            //console.log(response.data.value[0]);       //debug
-              var form3 = response.data.value;
-              if (response.data.value[0] === 'undefined'){} // No extra products demo
+              
+              var form3 = response.data.value; // extra products 
+                  
+              // No extra products, Total = Initial
+              if (response.data.value[0] === 'undefined'){} // do nothing
               else{
-                    
+                    // loop through products 
                     var j;
                     for( j=0; ; j++ ){
-                        if(typeof response.data.value[j] === 'undefined'){break} // no more 
-                        
+                        if(typeof response.data.value[j] === 'undefined'){break;} // no more items
+                        else{
                         let dic2 = { value: false,name: 'Producto 1',sold: 0,}
                         let units2 = Number(form3[j].UnidadesVendidas);
                         dic2.sold = units2;
-                        //console.log(dic2.sold);
-                        
+                        total = total + units2;
+
                         // Get Product name by searching in Products the specified product and returning family type
                         var endPointUrl = "https://aguadillana.sharepoint.com/sites/DDMS/_api/web/lists/getbyTitle('Product')/items?$filter= s2l1 eq '"+ product +"' &$select=*";
                         var headers = {
@@ -118,29 +126,18 @@
                             "content-type": "application/json;odata=verbose"
                         };
                         axios.get(endPointUrl).then(response =>  { 
-
-
-                                //console.log(dic2.sold);
-                                let product_title2 = response.data.value[0].e9lf;
                             
+                                let product_title2 = response.data.value[0].e9lf;
                                 dic2.name = product_title2;
-                                //console.log(dic2);
                                 this.reports.push(dic2);
-
-
 
                         });
                     
-                    
-                    }
-                  }
-                                            
-                 
-                                            
+                        }
+                    }//for
+                  }                                                    
                 }); //Fourth Query
-             }); //Third Query
+             }); //Third Query              
             }); // Second Query
-          
-         
       },
     })

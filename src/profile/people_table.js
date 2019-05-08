@@ -1,9 +1,17 @@
-  var vm = new Vue({
+/**
+*
+* This functions fetches the amount of people attended 
+* on a fill demo form.
+*
+* @author: Diego Capre 
+* @version: 1.0
+* @date: 2019-05-07
+*
+**/
+var vm = new Vue({
       el: '#attendance',
-     
       data: function () {
         return {
-            
           headers: [
             {
               text: '',
@@ -12,25 +20,15 @@
               value: 'name',
               width: '25%'
             },
-            { text: 'Total de personas atendidas', value: 'attended', width: '15%',sortable: false, align: 'center', },
-            
-           
+            { text: 'Total de personas atendidas', value: 'attended', width: '20%',sortable: false, align: 'center', },
           ],
-          reports: [
-//            {
-//              value: false,
-//              name: 'Hora 1',
-//              attended: 35,
-//            },
-      
-
-          ]
+          reports: []
         }
       },
       
       mounted () {
           
-           // Global variable scope
+        // Global variable scope
         var family ="";
         var form  = "";
         var form2 = "";
@@ -42,7 +40,7 @@
         var product = "";
         var user_email = "";
         
-        // Get report title 
+        // Get report title from page's URL
         var id = window.location.href.split('=').pop();
             
         // Get Report by title
@@ -52,10 +50,7 @@
                                 "accept": "application/json;odata=verbose",
                                 "content-type": "application/json;odata=verbose"
                             };
-        this.status = "getting data..."; 
         axios.get(endPointUrl).then(response =>  {
-            
-            //console.log(response.data.value[0]);
             
             var dic1 = {value: false,name: 'Hora 1',attended: 0,};
             dic1.attended = response.data.value[0].Atendidos1;

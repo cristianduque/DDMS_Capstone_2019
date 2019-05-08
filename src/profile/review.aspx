@@ -29,7 +29,7 @@
     <!-- Link to profile CSS -->
 <!--    <link rel="stylesheet" type="text/css" href="review.css">-->
     
-    <style>
+<style>
      /* Optional: Makes the sample page fill the window. */
 html, body {
         height: 100%;
@@ -38,7 +38,7 @@ html, body {
       }
 
    
-    .v-progress-circular{ 
+.v-progress-circular{ 
         margin: 1rem;
     }
  
@@ -78,48 +78,56 @@ html, body {
         margin-left: auto;
         margin-right: auto;
 }
-/* Set-up map container position relative*/
-/* Set-up map container position relative*/
-.map_container{
-    position: relative;
-    padding: 50%;
-    padding-bottom: 95%; 
-    height: 0;
-    overflow: auto;
-    margin: auto;  
-    
-    
-}
 
 #map {
-        position: absolute;
-        top: 3%;
-        left: 3%;
-        right: 3%;
-        width:90%;
+      
+        width: auto;
         height:500px;
-        margin-left: auto;
-        margin-right: auto;
+        margin-top: 2%;
+        margin-left: 3%;
+        margin-right: 3%;
         border-radius: 15px;
 
       } 
 
+/*
 #hours{
     height: 40%;
     padding-bottom: 5%;
 }
+*/
 
+/*
 #products{
     height: 50%;
     padding-bottom: 5%
 }
+*/
 
+/*
 #attendance{
     height: 50%;
     margin-bottom: 20%;
 }
+*/
+    
+.application--wrap {
+    flex: 1 1 auto;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 10vh; 
+    height: auto;
+    max-width: 100%;
+    position: relative;
+    margin-bottom: 1rem;
+}
 
-    </style>
+.theme--light.v-table tbody tr:hover:not(.v-datatable__expand-row) {
+    background: transparent;
+}  
+
+</style>
         
     
 </head>
@@ -132,10 +140,10 @@ html, body {
         <v-flex xs12>
         <div id="menu">
           <v-app id="inspire">
-            <v-toolbar color="red" dark fixed>
+            <v-toolbar color="#2095c0" fixed>
 
-                  <v-toolbar-side-icon><a style="text-decorations:none; background-color: transparent; color:transparent;"href="https://aguadillana.sharepoint.com/sites/DDMS/perfil/SitePages/history.aspx"><v-icon>arrow_back</v-icon></a></v-toolbar-side-icon>
-                  <v-toolbar-title >Reseña</v-toolbar-title>
+                  <v-toolbar-side-icon><a style="text-decoration:none; background-color: transparent; color:white;"href="https://aguadillana.sharepoint.com/sites/DDMS/perfil/SitePages/history.aspx"><v-icon style="color:white">arrow_back</v-icon></a></v-toolbar-side-icon>
+                  <v-toolbar-title style="color:white" >Reseña</v-toolbar-title>
                   <v-spacer></v-spacer>
                   <v-toolbar-items class="hidden-sm-and-down">
                   </v-toolbar-items>
@@ -183,60 +191,30 @@ html, body {
  },
 })</script>
     
-    <!-- Donut Charts -->
+    <!-- Meta Chart -->
     <v-layout row wrap>
         
-        <div class="text-xs-center">
-        
-            <v-flex xs6 id="pie">
-            <v-progress-circular
-              :rotate="90"
-              :size="150"
-              :width="30"
-              :value="value"
-              color="primary"
-            >
-              {{ value }}
-            </v-progress-circular>
-            </v-flex>
-            <h2>Embutidos</h2>
-
-            <v-flex xs6 id="pie2">
-            <v-progress-circular
-              :rotate="90"
-              :size="150"
-              :width="30"
-              :value="value"
-              color="primary"
-            >
-              {{ value }}
-            </v-progress-circular>
-            </v-flex>
-            <h2>Empanados</h2>
-    </div>
-    
+        <div  class="flex display-4 font-weight-regular" style="color:#2095c0; text-align: center; margin-top:5rem; ">
+            <v-flex xs12 id="meta" >
 <!--
-        <v-flex xs6 md6 shrink pa-1>
-            <div class="chart_container">
-             <div id="embutidos"></div>
-            </div>
-             <p>Embutidos</p>
-        </v-flex>
-        <v-flex xs6 md6 shrink pa-1>
-            <div class="chart_container">
-             <div id="empanados"></div>
-            </div>
-             <p>Empanados</p>
-        </v-flex>
+                <div style="margin-left: 30%">Cajas Vendidas: {{value}}</div>
+                <div style="margin-right: 50%;">Cajas Esperadas: {{total}}</div>
 -->
+                 <div class="flex display-1 font-weight-regular" style="color:#2095c0; text-align: center; margin-left: 1rem;  margin-bottom: 1rem;">Cajas Vendidas: {{value}} </div>
+                <div class="flex display-1 font-weight-regular" style="color:#2095c0; text-align: center;  margin-left: 1rem; margin-bottom: 3rem;">Meta Esperada: {{total}}</div>
+            </v-flex>
+    </div>
+<!--
+    <div class="flex display-2 font-weight-regular" style="color:#2095c0; text-align: center; margin-top:2rem; "> META</div>
+    <div class="flex title font-weight-regular" style="color:#2095c0; text-align: center; margin-bottom: 2rem;"> Cajas vendidas </div>
+-->
+
     </v-layout>
         
-    <script type="text/javascript" src="embutidos_chart.js"></script>
-    
-    <script type="text/javascript" src="empanados_chart.js"></script>
-    
+    <script type="text/javascript" src="meta.js"></script>
+
         
-    <div class="flex display-1 font-weight-thin" style="margin-left: 1rem"> Localización:</div>
+    <div class="flex display-1 font-weight-thin" style="margin-left: 1rem; margin-bottom: 2rem;"> Localización:</div>
     <!-- Google Map w/ Marker -->
     <v-layout row wrap>
         <v-flex xs12>
@@ -246,7 +224,7 @@ html, body {
          </v-flex>
     </v-layout>
     <script type="text/javascript" src="map_report.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDg71kA9ufXlx4ZdpQEvlii-nrKoDx-jlM&callback=initMap" async defer></script> 
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANn9G0LKcoEKip9nEpH9MtkcO8EvgbbVY&callback=initMap" async defer></script> 
 
     <!-- Work Hours Table -->
     <v-layout row wrap>
@@ -260,6 +238,7 @@ html, body {
               Horas Trabajadas
               </v-card-title>
             <v-spacer></v-spacer>
+            <v-card>
             <v-data-table :headers="headers" :items="reports"  :hide-actions="true"  >
               <template slot="items" slot-scope="props">
                 <tr @click="rowClick(props.item.name)">
@@ -271,10 +250,11 @@ html, body {
                 
             <!-- Detects if there isn't any data and display accordingly -->
              <template v-slot:no-data>
-                    <v-alert :value="true" color="error" icon="warning">Sorry, nothing to display here :(</v-alert>
+                    <v-alert :value="true" color="error" icon="warning">Disculpa, no hay datos al momento.</v-alert>
             </template>
                 
             </v-data-table>
+            </v-card>
           </template>
         </v-container>
 
@@ -297,20 +277,22 @@ html, body {
               Productos Vendidos
               </v-card-title>
             <v-spacer></v-spacer>
-            <v-data-table :headers="headers" :items="reports"  :hide-actions="true"  >
+            <v-card>
+            <v-data-table :headers="headers" :items="reports" :hide-actions="true"  >
               <template slot="items" slot-scope="props">
                 <tr @click="rowClick(props.item.name)">
                   <td>{{ props.item.name }}</td>
                   <td class="text-xs-center">{{ props.item.sold }}</td>
                 </tr>
               </template>
-                
+                 
             <!-- Detects if there isn't any data and display accordingly -->
              <template v-slot:no-data>
-                    <v-alert :value="true" color="error" icon="warning">Sorry, nothing to display here :(</v-alert>
+                    <v-alert :value="true" color="error" icon="warning">Disculpa, no hay datos al momento.</v-alert>
             </template>
                 
             </v-data-table>
+            </v-card>
           </template>
         </v-container>
 
@@ -330,9 +312,10 @@ html, body {
         <v-container>
           <template>
               <v-card-title>
-              Personas Atendida
+              Personas Atendidas
               </v-card-title>
             <v-spacer></v-spacer>
+            <v-card>
             <v-data-table :headers="headers" :items="reports" :hide-actions="true"  >
               <template slot="items" slot-scope="props">
                 <tr @click="rowClick(props.item.name)">
@@ -343,10 +326,11 @@ html, body {
                 
             <!-- Detects if there isn't any data and display accordingly -->
              <template v-slot:no-data>
-                    <v-alert :value="true" color="error" icon="warning">Sorry, nothing to display here :(</v-alert>
+                    <v-alert :value="true" color="error" icon="warning">Disculpa, no hay datos al momento.</v-alert>
             </template>
                 
             </v-data-table>
+            </v-card>
           </template>
         </v-container>
 
@@ -357,28 +341,39 @@ html, body {
     </v-layout>
     <script type="text/javascript" src="people_table.js"></script>
     
-    <!-- Miscellaneous -->
-
-        
+    <!-- Miscellaneous --> 
     <v-layout row wrap>
         <v-flex xs12>
             <div id="add">          
         <v-app id="inspire">
         <div class="text-xs-center">
-            <v-card id="misc2">
+            <div id="misc2"     style="
+                                margin-top: 7vh;
+                                margin-left: 5%;
+                                margin-right: 5%;
+                                box-shadow: 3px 1px 10px 1px #888888;"
+                 >
+<!--                <div id = "reporte" class="flex display-1 font-weight-thin" style="margin-left: 1rem">Gastos</div>-->
+                  <v-card-title>
+              Gastos Incurrido
+              </v-card-title>
+            <v-spacer></v-spacer>
               <v-list two-line>
                 <template v-for="(item, index) in items">
                   <v-list-tile
                     :key="item.title"
                     avatar
                     ripple
-                    @click= "toggle(index)"
+                    @click= "toggle(index),linkfn(item.subtitle)"
                   >
                     <v-list-tile-content>
 
                       <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                       <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
-                      <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
+                      <v-list-tile-sub-title style="color:#ff6f6f;"v-html="item.subtitle" v-if=" item.subtitle == 'Denegado' "></v-list-tile-sub-title>
+                      <v-list-tile-sub-title style="color:#2095c0;"v-html="item.subtitle" v-else-if=" item.subtitle == 'Editable' "></v-list-tile-sub-title>
+                      <v-list-tile-sub-title style="color:#7fbf7f;"v-html="item.subtitle" v-else-if=" item.subtitle == 'Aprobado' "></v-list-tile-sub-title>
+                      <v-list-tile-sub-title style="color:black;"v-html="item.subtitle" v-else></v-list-tile-sub-title>
                     </v-list-tile-content>
 
                   </v-list-tile>
@@ -388,19 +383,28 @@ html, body {
                   ></v-divider>
                 </template>
               </v-list>
-            </v-card>
-          <v-btn fab dark color="green" id="misc" @click = linkfn()>
-            <v-icon dark>add</v-icon>
-              <div  class="flex title" style="margin-left: 1rem"> Añadir Recibo</div>
-          </v-btn>
-          
-        </div>
+           
+            <div id= "misc">
+                <div id = "reporte" class="flex display-1 font-weight-thin" style="margin-left: 1rem"> Añadir Gastos</div>
+                  <v-btn fab dark color="green"  @click = "linkfn2()">
+                    <v-icon dark>add</v-icon>
+                  </v-btn>
+            </div>
+            
+            </div>
+            </div>
       </v-app>       
     </div>
         </v-flex>
     </v-layout>
     <script type="text/javascript" src="miscellaneous.js"></script>
     
+        <!-- Validate user -->
+    <div id="validation"></div>
+
+
+<script type="text/javascript" src=validation.js></script>  
+        
     </v-container>
 </body>
 </html>
